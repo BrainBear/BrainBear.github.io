@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo," />
+  <meta name="keywords" content="Gradle,Android," />
 
 
 
@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="Hello Hexo.">
+<meta name="description" content="在打包发版本的我们经常会混淆代码，但是在出Bug的时候，混淆后的代码让我们不好定位问题。Android Studio默认使用ProGuard来混淆代码，在混淆的时候会生成一个Mapping文件，这个Mapping保存了代码的混淆关系，通过这个Mapping文件我们就可以将难懂的代码还原具体的信息。但是每次打包都手动去备份Mapping文件和Apk文件的话太过于繁琐，而使用Gradle脚本可以使这件">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello Hexo">
-<meta property="og:url" content="http://yoursite.com/hello_hexo/index.html">
+<meta property="og:title" content="使用Gradle脚本备份Mapping和Apk文件">
+<meta property="og:url" content="http://yoursite.com/使用Gradle脚本备份Mapping和Apk文件/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
-<meta property="og:description" content="Hello Hexo.">
-<meta property="og:updated_time" content="2017-01-07T17:10:05.309Z">
+<meta property="og:description" content="在打包发版本的我们经常会混淆代码，但是在出Bug的时候，混淆后的代码让我们不好定位问题。Android Studio默认使用ProGuard来混淆代码，在混淆的时候会生成一个Mapping文件，这个Mapping保存了代码的混淆关系，通过这个Mapping文件我们就可以将难懂的代码还原具体的信息。但是每次打包都手动去备份Mapping文件和Apk文件的话太过于繁琐，而使用Gradle脚本可以使这件">
+<meta property="og:updated_time" content="2017-02-14T16:11:49.394Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello Hexo">
-<meta name="twitter:description" content="Hello Hexo.">
+<meta name="twitter:title" content="使用Gradle脚本备份Mapping和Apk文件">
+<meta name="twitter:description" content="在打包发版本的我们经常会混淆代码，但是在出Bug的时候，混淆后的代码让我们不好定位问题。Android Studio默认使用ProGuard来混淆代码，在混淆的时候会生成一个Mapping文件，这个Mapping保存了代码的混淆关系，通过这个Mapping文件我们就可以将难懂的代码还原具体的信息。但是每次打包都手动去备份Mapping文件和Apk文件的话太过于繁琐，而使用Gradle脚本可以使这件">
 
 
 
@@ -121,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/hello_hexo/"/>
+  <link rel="canonical" href="http://yoursite.com/使用Gradle脚本备份Mapping和Apk文件/"/>
 
 
 
 
 
-  <title> Hello Hexo | brainBear' Blog </title>
+  <title> 使用Gradle脚本备份Mapping和Apk文件 | brainBear' Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -240,7 +240,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/hello_hexo/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/使用Gradle脚本备份Mapping和Apk文件/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="brainBear">
@@ -264,7 +264,7 @@
             
             
               
-                Hello Hexo
+                使用Gradle脚本备份Mapping和Apk文件
               
             
           </h1>
@@ -279,8 +279,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-08T01:08:30+08:00">
-                2017-01-08
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-14T23:30:32+08:00">
+                2017-02-14
               </time>
             
 
@@ -315,7 +315,9 @@
       
 
       
-        <p>Hello Hexo.</p>
+        <p>在打包发版本的我们经常会混淆代码，但是在出Bug的时候，混淆后的代码让我们不好定位问题。Android Studio默认使用ProGuard来混淆代码，在混淆的时候会生成一个Mapping文件，这个Mapping保存了代码的混淆关系，通过这个Mapping文件我们就可以将难懂的代码还原具体的信息。但是每次打包都手动去备份Mapping文件和Apk文件的话太过于繁琐，而使用Gradle脚本可以使这件事情变得简单。<a id="more"></a></p>
+<p>脚本本身比较简单，大家看注释应该可以看懂了 (●’◡’●)，需要注意的是备份脚本是在Module下的Build.gradle文件。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;com.android.application&apos;</div><div class="line"></div><div class="line">android &#123;</div><div class="line">    /*</div><div class="line">    省略部分无关</div><div class="line">    */</div><div class="line">    buildTypes &#123;</div><div class="line">        release &#123;</div><div class="line">            minifyEnabled true</div><div class="line">            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        applicationVariants.all &#123; variant -&gt;</div><div class="line">            if (variant.getBuildType().isMinifyEnabled()) &#123; //只有开启混淆了才进行备份</div><div class="line">                variant.assemble.doLast &#123; //在编译完成后再执行下面操作</div><div class="line">                    copy &#123;</div><div class="line">                        //备份生成的文件名格式为 Module名_Flavor名_buildType名_VersionName_代码库版本_编译时间</div><div class="line">                        def name = &quot;$&#123;project.name&#125;_$&#123;variant.productFlavors[0].name&#125;_$&#123;variant.buildType.name&#125;_$&#123;defaultConfig.versionName&#125;($&#123;getGitVersion()&#125;)_$&#123;getTime()&#125;&quot;</div><div class="line">                        //备份的路径为Module目录下的outputs文件夹，可以根据需要自定义</div><div class="line">                        def path = &quot;$&#123;projectDir&#125;/outputs&quot;;</div><div class="line">                        from variant.mappingFile</div><div class="line">                        into path</div><div class="line">                        //将混淆文件文件名中的&quot;mapping&quot;替换为刚刚设定的文件名</div><div class="line">                        rename &quot;mapping&quot;, name</div><div class="line">                        from variant.outputs.outputFile</div><div class="line">                        into path</div><div class="line">                        //这里生成的apk名需要根据具体情况进行修改，raname函数支持正则匹配，即使生成的apk名字带有Flavor和BuildType也可以很方便地替换</div><div class="line">                        rename &quot;app-release&quot;, name</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">dependencies &#123;</div><div class="line">  /*</div><div class="line">  省略部分无关代码</div><div class="line">  */</div><div class="line">&#125;</div><div class="line"></div><div class="line">//获取Git版本</div><div class="line">def getGitVersion() &#123;</div><div class="line">    return &apos;git rev-parse --short HEAD&apos;.execute().text.trim()</div><div class="line">&#125;</div><div class="line"></div><div class="line">//获取SVN版本</div><div class="line">def getSvnRevision() &#123;</div><div class="line">    new ByteArrayOutputStream().withStream &#123; os -&gt;</div><div class="line">        def result = exec &#123;</div><div class="line">            executable = &apos;svn&apos;</div><div class="line">            args = [&apos;info&apos;]</div><div class="line">            standardOutput = os</div><div class="line">        &#125;</div><div class="line">        def outputAsString = os.toString()</div><div class="line">        def matchLastChangedRev = outputAsString =~ /Last Changed Rev: (\d+)/</div><div class="line"></div><div class="line">        ext.svnRev = &quot;$&#123;matchLastChangedRev[0][1]&#125;&quot;.toInteger()</div><div class="line">    &#125;</div><div class="line">    return svnRev</div><div class="line">&#125;</div><div class="line"></div><div class="line">//获取当前时间</div><div class="line">def getTime() &#123;</div><div class="line">    return new Date().format(&quot;yyyyMMddHHmm&quot;)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在脚本里面需要获取代码库版本，可以根据使用的是Git还是Svn选择使用。</p>
 
       
     </div>
@@ -339,7 +341,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Hexo/" rel="tag"># Hexo</a>
+            <a href="/tags/Gradle/" rel="tag"># Gradle</a>
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
           
         </div>
       
@@ -348,15 +352,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/hello_hexo/" rel="next" title="Hello Hexo">
+                <i class="fa fa-chevron-left"></i> Hello Hexo
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/使用Gradle脚本备份Mapping和Apk文件/" rel="prev" title="使用Gradle脚本备份Mapping和Apk文件">
-                使用Gradle脚本备份Mapping和Apk文件 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
