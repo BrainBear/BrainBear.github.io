@@ -1,0 +1,728 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,ProGuard," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="一般Apk打包的时候，我们都要使用ProGuard进行混淆处理，增加逆向的难度，但是如果使用了插件化技术的话，混淆就可能增加了难度。要明确哪些类需要混淆，哪些类不能混淆。之前遇到ProGuard的问题都是Google一下解决问题，今天来系统学习一下ProGuard。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android ProGuard入门">
+<meta property="og:url" content="http://yoursite.com/Android ProGuard入门/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="一般Apk打包的时候，我们都要使用ProGuard进行混淆处理，增加逆向的难度，但是如果使用了插件化技术的话，混淆就可能增加了难度。要明确哪些类需要混淆，哪些类不能混淆。之前遇到ProGuard的问题都是Google一下解决问题，今天来系统学习一下ProGuard。">
+<meta property="og:image" content="https://www.guardsquare.com/files/media/guardsquare2016/Website/ProGuard/ProGuard_build_process.png">
+<meta property="og:updated_time" content="2017-05-14T14:51:44.879Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android ProGuard入门">
+<meta name="twitter:description" content="一般Apk打包的时候，我们都要使用ProGuard进行混淆处理，增加逆向的难度，但是如果使用了插件化技术的话，混淆就可能增加了难度。要明确哪些类需要混淆，哪些类不能混淆。之前遇到ProGuard的问题都是Google一下解决问题，今天来系统学习一下ProGuard。">
+<meta name="twitter:image" content="https://www.guardsquare.com/files/media/guardsquare2016/Website/ProGuard/ProGuard_build_process.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Android ProGuard入门/"/>
+
+
+
+
+
+  <title> Android ProGuard入门 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Android ProGuard入门/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android ProGuard入门
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T22:48:32+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一般Apk打包的时候，我们都要使用ProGuard进行混淆处理，增加逆向的难度，但是如果使用了插件化技术的话，混淆就可能增加了难度。要明确哪些类需要混淆，哪些类不能混淆。之前遇到ProGuard的问题都是Google一下解决问题，今天来系统学习一下ProGuard。<a id="more"></a></p>
+<h3 id="ProGuard"><a href="#ProGuard" class="headerlink" title="ProGuard"></a>ProGuard</h3><p>Android SDK就有ProGuard。提起ProGuard都以为是用来混淆代码的，但是ProGuard功能并不是只有混淆代码的作用。ProGuard有以下功能：</p>
+<ul>
+<li>压缩（shrink)：移除代码中没使用的类，方法，字段等</li>
+<li>优化(optimize)：对字节码进行优化，移除无用的指令</li>
+<li>混淆(obfuscate)：使用无意义的字符对类，方法，字段等进行重命名</li>
+<li>预校验(preverify)：对处理后的代码进行校验</li>
+</ul>
+<p>ProGuard执行流程如下<br><img src="https://www.guardsquare.com/files/media/guardsquare2016/Website/ProGuard/ProGuard_build_process.png" alt="ProGuard"></p>
+<h3 id="Android默认混淆文件"><a href="#Android默认混淆文件" class="headerlink" title="Android默认混淆文件"></a>Android默认混淆文件</h3><p>Android 中有一个默认的混淆文件，里面已经有一些混淆规则了。注释是英文的，比较简单，我还加上了中文的注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line"># This is a configuration file for ProGuard.</div><div class="line"># http://proguard.sourceforge.net/index.html#manual/usage.html</div><div class="line"></div><div class="line"># 混淆时不使用大小写混合，混淆后的类名为小写</div><div class="line">-dontusemixedcaseclassnames</div><div class="line"></div><div class="line"># 不忽略非公共库的类</div><div class="line">-dontskipnonpubliclibraryclasses</div><div class="line"></div><div class="line"># 混淆后生成映射文件，这个非常重要，可以使用printmapping设置映射文件的名称</div><div class="line">-verbose</div><div class="line"></div><div class="line"># Optimization is turned off by default. Dex does not like code run</div><div class="line"># through the ProGuard optimize and preverify steps (and performs some</div><div class="line"># of these optimizations on its own).</div><div class="line"># 不优化代码</div><div class="line">-dontoptimize</div><div class="line"># 不预校验</div><div class="line">-dontpreverify</div><div class="line"># Note that if you want to enable optimization, you cannot just</div><div class="line"># include optimization flags in your own project configuration file;</div><div class="line"># instead you will need to point to the</div><div class="line"># &quot;proguard-android-optimize.txt&quot; file instead of this one from your</div><div class="line"># project.properties file.</div><div class="line"></div><div class="line"># 不混淆注解</div><div class="line">-keepattributes *Annotation*</div><div class="line">-keep public class com.google.vending.licensing.ILicensingService</div><div class="line">-keep public class com.android.vending.licensing.ILicensingService</div><div class="line"></div><div class="line"># For native methods, see http://proguard.sourceforge.net/manual/examples.html#native</div><div class="line"># 不混淆native方法</div><div class="line">-keepclasseswithmembernames class * &#123;</div><div class="line">    native &lt;methods&gt;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"># keep setters in Views so that animations can still work.</div><div class="line"># see http://proguard.sourceforge.net/manual/examples.html#beans</div><div class="line"># 不混淆View的子类中的setter和getter方法</div><div class="line">-keepclassmembers public class * extends android.view.View &#123;</div><div class="line">   void set*(***);</div><div class="line">   *** get*();</div><div class="line">&#125;</div><div class="line"></div><div class="line"># We want to keep methods in Activity that could be used in the XML attribute onClick</div><div class="line"># 不混淆Activity中参数是View的方法，保证在XML中直接使用onClick指定点击的回调方法</div><div class="line">-keepclassmembers class * extends android.app.Activity &#123;</div><div class="line">   public void *(android.view.View);</div><div class="line">&#125;</div><div class="line"></div><div class="line"># For enumeration classes, see http://proguard.sourceforge.net/manual/examples.html#enumerations</div><div class="line"># 不混淆枚举类型</div><div class="line">-keepclassmembers enum * &#123;</div><div class="line">    public static **[] values();</div><div class="line">    public static ** valueOf(java.lang.String);</div><div class="line">&#125;</div><div class="line"></div><div class="line"># 不混淆实现了Parcelable接口的类</div><div class="line">-keepclassmembers class * implements android.os.Parcelable &#123;</div><div class="line">  public static final android.os.Parcelable$Creator CREATOR;</div><div class="line">&#125;</div><div class="line"></div><div class="line"># 不混淆R文件下的资源</div><div class="line">-keepclassmembers class **.R$* &#123;</div><div class="line">    public static &lt;fields&gt;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"># The support library contains references to newer platform versions.</div><div class="line"># Don&apos;t warn about those in case this app is linking against an older</div><div class="line"># platform version.  We know about them, and they are safe.</div><div class="line"># 不输出Android.support.**相关的警告信息</div><div class="line">-dontwarn android.support.**</div><div class="line"></div><div class="line"># Understand the @Keep support annotation.</div><div class="line"># 不混淆Keep注解</div><div class="line">-keep class android.support.annotation.Keep</div><div class="line"></div><div class="line"># 不混淆使用了Keep注解的类</div><div class="line">-keep @android.support.annotation.Keep class * &#123;*;&#125;</div><div class="line"></div><div class="line"># 不混淆使用了Keep注解的方法</div><div class="line">-keepclasseswithmembers class * &#123;</div><div class="line">    @android.support.annotation.Keep &lt;methods&gt;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"># 不混淆使用了Keep注解的字段</div><div class="line">-keepclasseswithmembers class * &#123;</div><div class="line">    @android.support.annotation.Keep &lt;fields&gt;;</div><div class="line">&#125;</div><div class="line"></div><div class="line"># 不混淆使用了Keep注解的构造函数</div><div class="line">-keepclasseswithmembers class * &#123;</div><div class="line">    @android.support.annotation.Keep &lt;init&gt;(...);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="混淆规则"><a href="#混淆规则" class="headerlink" title="混淆规则"></a>混淆规则</h3><p>上面是Android Studio中默认的混淆文件，但是它只是配置了最基本的规则，我们需要根据项目的需要自定义配置混淆规则。</p>
+<h4 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h4><p>如果项目比较大的话，混淆配置会很复杂，也不可能针对每个具体的类来配置混淆，所以ProGuard提供了通配符，通过通配符程序员可以非常方便快速地配置好混淆条件。</p>
+<p>常用通配符</p>
+<table>
+<thead>
+<tr>
+<th>通配符</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>?</td>
+<td>匹配任意一个字符</td>
+</tr>
+<tr>
+<td>*</td>
+<td>匹配任意长度的字符，但不包括包名分隔符(.)</td>
+</tr>
+<tr>
+<td>**</td>
+<td>匹配任意长度的字符，包括包名分隔符(.)</td>
+</tr>
+<tr>
+<td>…</td>
+<td>匹配任意参数列表</td>
+</tr>
+<tr>
+<td>&lt;init&gt;</td>
+<td>匹配构造函数</td>
+</tr>
+</tbody>
+</table>
+<h4 id="保持命令"><a href="#保持命令" class="headerlink" title="保持命令"></a>保持命令</h4><ul>
+<li><p>keep</p>
+<p>不混淆某个类，如不混淆MainActivity</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-keep public class com.brainbear.ProguardDemo.MainActivity &#123;</div><div class="line">  *;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>keepclassmembers</p>
+<p>不混淆某个类的字段或方法，如不混淆实现了Serializable接口的类的关键字段和方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">  -keepclassmembers class * implements java.io.Serializable &#123;</div><div class="line">    static final long serialVersionUID;</div><div class="line">    private static final java.io.ObjectStreamField[] serialPersistentFields;</div><div class="line">    !static !transient &lt;fields&gt;;</div><div class="line">    private void writeObject(java.io.ObjectOutputStream);</div><div class="line">    private void readObject(java.io.ObjectInputStream);</div><div class="line">    java.lang.Object writeReplace();</div><div class="line">    java.lang.Object readResolve();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>keepclasseswithmembers</p>
+<p>不混淆具有某些字段或方法的类，如不混淆含有main方法的类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">  -keepclasseswithmembers public class * &#123;</div><div class="line">    public static void main(java.lang.String[]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>keepnames</p>
+<p>保护指定的类名，前提是这个类在压缩这个阶段没有被删除。如保护实现了Serializable接口的类的类名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-keepnames class * implements java.io.Serializable</div></pre></td></tr></table></figure>
+</li>
+<li><p>keepclassmembernames</p>
+<p>保护指定的类成员名称，前提是这些成员在压缩阶段没有被删除。</p>
+</li>
+<li><p>keepclasseswithmembernames</p>
+<p>拥有指定成员的类名称将被保护，根据类成员确定一些将要被保护的类名称，前提是这些类在压缩阶段没有被去掉，仅在混淆阶段有效。</p>
+</li>
+</ul>
+<h3 id="坑"><a href="#坑" class="headerlink" title="坑"></a>坑</h3><ul>
+<li><p>不混淆某个内部类</p>
+<p>内部类比较特殊，如果MainActivity.class有个Inner.class，如果写成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-kepp public class com.brainbear.ProguardDemo.MainActivity &#123;</div><div class="line">  *;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样写的话Inner.class是会被混淆的，Inner需要显式注明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-keep public class com.brainbear.ProguardDemo.MainActivity$Inner &#123;</div><div class="line">  *;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>或者写成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">-keep public class com.brainbear.ProguardDemo.** &#123;</div><div class="line">  *;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>keepattributes</p>
+<p>如果你按上面配置，内部类还是被混淆了的话，有可能是因为没有配置保留内部类的属性，ProGuard官方就建议SDK开发的话保留Exceptions,InnerClasses,Signature属性，同时保留SourceFile及LineNumberTable属性使混淆后仍能获取准确的堆栈信息。如果希望不混淆注解的话还需要加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">-keepattributes Exceptions,InnerClasses,Signature,SourceFile,LineNumberTable,annotations</div></pre></td></tr></table></figure>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/ProGuard/" rel="tag"># ProGuard</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/一个简单的Log库/" rel="next" title="一个简单的Log库">
+                <i class="fa fa-chevron-left"></i> 一个简单的Log库
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ProGuard"><span class="nav-number">1.</span> <span class="nav-text">ProGuard</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android默认混淆文件"><span class="nav-number">2.</span> <span class="nav-text">Android默认混淆文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混淆规则"><span class="nav-number">3.</span> <span class="nav-text">混淆规则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通配符"><span class="nav-number">3.1.</span> <span class="nav-text">通配符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#保持命令"><span class="nav-number">3.2.</span> <span class="nav-text">保持命令</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#坑"><span class="nav-number">4.</span> <span class="nav-text">坑</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
