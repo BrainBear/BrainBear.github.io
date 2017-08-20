@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="Android,Java,JNI," />
 
 
 
@@ -84,15 +84,16 @@
 
 
 
-<meta name="description" content="多写代码 少写Bug">
-<meta property="og:type" content="website">
-<meta property="og:title" content="brainBear' Blog">
-<meta property="og:url" content="http://yoursite.com/tags/Android/index.html">
+<meta name="description" content="有时候我们需要在native层做一些耗时的操作，操作完成后需要通知到java继续执行。这时候就需要在native层主动调用java的代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JNI学习笔记2 传参">
+<meta property="og:url" content="http://yoursite.com/JNI学习笔记3_native代码调用java代码/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
-<meta property="og:description" content="多写代码 少写Bug">
+<meta property="og:description" content="有时候我们需要在native层做一些耗时的操作，操作完成后需要通知到java继续执行。这时候就需要在native层主动调用java的代码。">
+<meta property="og:updated_time" content="2017-08-20T12:36:01.458Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="brainBear' Blog">
-<meta name="twitter:description" content="多写代码 少写Bug">
+<meta name="twitter:title" content="JNI学习笔记2 传参">
+<meta name="twitter:description" content="有时候我们需要在native层做一些耗时的操作，操作完成后需要通知到java继续执行。这时候就需要在native层主动调用java的代码。">
 
 
 
@@ -120,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/Android/"/>
+  <link rel="canonical" href="http://yoursite.com/JNI学习笔记3_native代码调用java代码/"/>
 
 
 
 
 
-  <title> Tag: Android | brainBear' Blog </title>
+  <title> JNI学习笔记2 传参 | brainBear' Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -147,7 +148,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left  ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -229,270 +230,167 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-collapse">
-    <div class="collection-title">
-      <h2 >
-        Android
-        <small>Tag</small>
-      </h2>
-    </div>
-
+  <div id="posts" class="posts-expand">
     
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/JNI学习笔记3_native代码调用java代码/" itemprop="url">
-              
-                <span itemprop="name">JNI学习笔记2 传参</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-08-20T20:36:32+08:00"
-              content="2017-08-20" >
-          08-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/JNI学习笔记2_传参/" itemprop="url">
-              
-                <span itemprop="name">JNI学习笔记2 传参</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-08-20T12:36:32+08:00"
-              content="2017-08-20" >
-          08-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/JNI学习笔记1_native方法注册/" itemprop="url">
-              
-                <span itemprop="name">JNI学习笔记1 native方法注册</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-08-06T22:36:32+08:00"
-              content="2017-08-06" >
-          08-06
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/Android ProGuard入门/" itemprop="url">
-              
-                <span itemprop="name">Android ProGuard入门</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-11T22:48:32+08:00"
-              content="2017-05-11" >
-          05-11
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/一个简单的Log库/" itemprop="url">
-              
-                <span itemprop="name">一个简单的Log库</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-06T22:36:32+08:00"
-              content="2017-05-06" >
-          05-06
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/Android Sensor简单了解/" itemprop="url">
-              
-                <span itemprop="name">Android Sensor简单了解</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-04-17T23:30:32+08:00"
-              content="2017-04-17" >
-          04-17
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/Android插件换肤基础/" itemprop="url">
-              
-                <span itemprop="name">Android插件换肤基础</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-03-24T23:30:32+08:00"
-              content="2017-03-24" >
-          03-24
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/Activity的滑动返回/" itemprop="url">
-              
-                <span itemprop="name">Activity的滑动返回</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-02-16T22:30:32+08:00"
-              content="2017-02-16" >
-          02-16
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h1 class="post-title">
-        
-            <a class="post-title-link" href="/使用Gradle脚本备份Mapping和Apk文件/" itemprop="url">
-              
-                <span itemprop="name">使用Gradle脚本备份Mapping和Apk文件</span>
-              
-            </a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-02-14T23:30:32+08:00"
-              content="2017-02-14" >
-          02-14
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-    
-  </div>
 
   
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/JNI学习笔记3_native代码调用java代码/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JNI学习笔记2 传参
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-20T20:36:32+08:00">
+                2017-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>有时候我们需要在native层做一些耗时的操作，操作完成后需要通知到java继续执行。这时候就需要在native层主动调用java的代码。<a id="more"></a></p>
+<p>代码比较简单就直接来吧，首先自定义一个接口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public interface ICallback &#123;</div><div class="line"></div><div class="line">    void callback(String str);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>简单起见就只定义了一个callback方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private native void nativeReflectTest(ICallback cb);</div></pre></td></tr></table></figure>
+<p>声明一个native方法，将这个接口传到native。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">extern &quot;C&quot;</div><div class="line">JNIEXPORT void JNICALL</div><div class="line">Java_brainbear_jnidemo_MainActivity_nativeReflectTest(JNIEnv *env, jobject instance, jobject cb) &#123;</div><div class="line"></div><div class="line">    jclass clazz = env-&gt;GetObjectClass(cb);</div><div class="line">    jmethodID method = env-&gt;GetMethodID(clazz, &quot;callback&quot;, &quot;(Ljava/lang/String;)V&quot;);</div><div class="line"></div><div class="line">    env-&gt;CallVoidMethod(cb, method, env-&gt;NewStringUTF(&quot;native reflect test success&quot;));</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在这个方法中直接就调用了相应的接口。过程和java的放射很像。</p>
+<ul>
+<li><p>获取到要想的类<br>因为在这个例子中我们直接传入了接口的实例，所以通过GetObjectClass获取到相应的类。否则就要通过FindClass方法来获取</p>
+</li>
+<li><p>获取到methodID<br>要通过GetMethodID方法来获取到想要的方法id，GetMethodID方法第一个参数是指定的类，第二个参数是需要获取的方法名，第三个参数是方法参数，因为java支持方法重载，同名的方法可以有不同的参数列表或返回值，所以在native层中需要通过指定方法签名来确定具体要调用的是哪个方法。如果是获取静态方法的methodID就需要调用GetStaticMethodID方法。</p>
+</li>
+<li><p>调用<br>JNI中提供了一系列Call<tpye>Method方法，其中的type代表返回值，由于我们这个接口没有返回值，所以调用的是CallVoidMethod。</tpye></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/JNI/" rel="tag"># JNI</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/JNI学习笔记2_传参/" rel="next" title="JNI学习笔记2 传参">
+                <i class="fa fa-chevron-left"></i> JNI学习笔记2 传参
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
           
           </div>
@@ -500,6 +398,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -675,6 +577,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
 
   
 
@@ -706,6 +612,10 @@
 
   
 
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
   
 
 
