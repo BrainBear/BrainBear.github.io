@@ -1,0 +1,662 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Java,JNI," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在声明native方法的时候，参数都是java的数据类型，但是在JNI中，是不能直接使用java的数据类型的，JNI就自定义了一些数据类型与java的的数据类型对应。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JNI学习笔记2 传参">
+<meta property="og:url" content="http://yoursite.com/JNI学习笔记2_传参/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="在声明native方法的时候，参数都是java的数据类型，但是在JNI中，是不能直接使用java的数据类型的，JNI就自定义了一些数据类型与java的的数据类型对应。">
+<meta property="og:updated_time" content="2017-08-20T11:23:56.191Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JNI学习笔记2 传参">
+<meta name="twitter:description" content="在声明native方法的时候，参数都是java的数据类型，但是在JNI中，是不能直接使用java的数据类型的，JNI就自定义了一些数据类型与java的的数据类型对应。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/JNI学习笔记2_传参/"/>
+
+
+
+
+
+  <title> JNI学习笔记2 传参 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/JNI学习笔记2_传参/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                JNI学习笔记2 传参
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-20T12:36:32+08:00">
+                2017-08-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在声明native方法的时候，参数都是java的数据类型，但是在JNI中，是不能直接使用java的数据类型的，JNI就自定义了一些数据类型与java的的数据类型对应。<a id="more"></a></p>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>在java中有基本数据类型和引用数据类型，在jni.h的头文件中，定义了以下类型<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">typedef uint8_t         jboolean;       /* unsigned 8 bits */</div><div class="line">typedef int8_t          jbyte;          /* signed 8 bits */</div><div class="line">typedef uint16_t        jchar;          /* unsigned 16 bits */</div><div class="line">typedef int16_t         jshort;         /* signed 16 bits */</div><div class="line">typedef int32_t         jint;           /* signed 32 bits */</div><div class="line">typedef int64_t         jlong;          /* signed 64 bits */</div><div class="line">typedef float           jfloat;         /* 32-bit IEEE 754 */</div><div class="line">typedef double          jdouble;        /* 64-bit IEEE 754 */</div></pre></td></tr></table></figure></p>
+<p>这些类型和java的基本类型一一对应，但是需要注意的是java中char是占8位，而JNI中的jchar占16位。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">#ifdef __cplusplus</div><div class="line">/*</div><div class="line"> * Reference types, in C++</div><div class="line"> */</div><div class="line">class _jobject &#123;&#125;;</div><div class="line">class _jclass : public _jobject &#123;&#125;;</div><div class="line">class _jstring : public _jobject &#123;&#125;;</div><div class="line">class _jarray : public _jobject &#123;&#125;;</div><div class="line">class _jobjectArray : public _jarray &#123;&#125;;</div><div class="line">class _jbooleanArray : public _jarray &#123;&#125;;</div><div class="line">class _jbyteArray : public _jarray &#123;&#125;;</div><div class="line">class _jcharArray : public _jarray &#123;&#125;;</div><div class="line">class _jshortArray : public _jarray &#123;&#125;;</div><div class="line">class _jintArray : public _jarray &#123;&#125;;</div><div class="line">class _jlongArray : public _jarray &#123;&#125;;</div><div class="line">class _jfloatArray : public _jarray &#123;&#125;;</div><div class="line">class _jdoubleArray : public _jarray &#123;&#125;;</div><div class="line">class _jthrowable : public _jobject &#123;&#125;;</div><div class="line"></div><div class="line">typedef _jobject*       jobject;</div><div class="line">typedef _jclass*        jclass;</div><div class="line">typedef _jstring*       jstring;</div><div class="line">typedef _jarray*        jarray;</div><div class="line">typedef _jobjectArray*  jobjectArray;</div><div class="line">typedef _jbooleanArray* jbooleanArray;</div><div class="line">typedef _jbyteArray*    jbyteArray;</div><div class="line">typedef _jcharArray*    jcharArray;</div><div class="line">typedef _jshortArray*   jshortArray;</div><div class="line">typedef _jintArray*     jintArray;</div><div class="line">typedef _jlongArray*    jlongArray;</div><div class="line">typedef _jfloatArray*   jfloatArray;</div><div class="line">typedef _jdoubleArray*  jdoubleArray;</div><div class="line">typedef _jthrowable*    jthrowable;</div><div class="line">typedef _jobject*       jweak;</div><div class="line"></div><div class="line"></div><div class="line">#else /* not __cplusplus */</div><div class="line"></div><div class="line">/*</div><div class="line"> * Reference types, in C.</div><div class="line"> */</div><div class="line">typedef void*           jobject;</div><div class="line">typedef jobject         jclass;</div><div class="line">typedef jobject         jstring;</div><div class="line">typedef jobject         jarray;</div><div class="line">typedef jarray          jobjectArray;</div><div class="line">typedef jarray          jbooleanArray;</div><div class="line">typedef jarray          jbyteArray;</div><div class="line">typedef jarray          jcharArray;</div><div class="line">typedef jarray          jshortArray;</div><div class="line">typedef jarray          jintArray;</div><div class="line">typedef jarray          jlongArray;</div><div class="line">typedef jarray          jfloatArray;</div><div class="line">typedef jarray          jdoubleArray;</div><div class="line">typedef jobject         jthrowable;</div><div class="line">typedef jobject         jweak;</div><div class="line"></div><div class="line">#endif /* not __cplusplus */</div></pre></td></tr></table></figure>
+<p>这是JNI的引用类型，以C为例，各种数组类型都是jarray类型，而jarray又是jobject类型，而jobject类型是一个void指针。在c语言中void指针可以指向任何数据类型。</p>
+<h2 id="代码演示"><a href="#代码演示" class="headerlink" title="代码演示"></a>代码演示</h2><p>下面就以几个例子来简单演示一下</p>
+<h3 id="基本类型"><a href="#基本类型" class="headerlink" title="基本类型"></a>基本类型</h3><p>这个例子是简单的传入一个int值，加1之后返回，native方法声明如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private native int jintTest(int i);</div></pre></td></tr></table></figure></p>
+<p>具体实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">extern &quot;C&quot;</div><div class="line">JNIEXPORT jint JNICALL</div><div class="line">Java_brainbear_jnidemo_MainActivity_jintTest(JNIEnv *env, jobject instance, jint i) &#123;</div><div class="line"></div><div class="line">    return i + 1;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><p>传入一个字符串，在native层将这个字符串倒置，然后返回，方法声明<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private native String jstringTest(String str);</div></pre></td></tr></table></figure></p>
+<p>具体实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">extern &quot;C&quot;</div><div class="line">JNIEXPORT jstring JNICALL</div><div class="line">Java_brainbear_jnidemo_MainActivity_jstringTest(JNIEnv *env, jobject instance, jstring str_) &#123;</div><div class="line">    const char *str = env-&gt;GetStringUTFChars(str_, 0);</div><div class="line"></div><div class="line"></div><div class="line">    size_t size = strlen(str);</div><div class="line">    char *temp = new char[size];</div><div class="line">    strcpy(temp, str);</div><div class="line"></div><div class="line">    //字符数组倒置</div><div class="line">    for (int i = 0; i &lt; size / 2; i++) &#123;</div><div class="line">        char c = temp[i];</div><div class="line">        temp[i] = temp[size - i - 1];</div><div class="line">        temp[size - i - 1] = c;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    env-&gt;ReleaseStringUTFChars(str_, str);</div><div class="line"></div><div class="line">    return env-&gt;NewStringUTF(temp);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>JNI中提供了GetStringUTFChars函数来将java String对象转换成字符数组，需要注意的是调用了GetStringUTFChars方法必须调用ReleaseStringUTFChars函数来释放资源，否则会造成内存泄漏。</p>
+<h3 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h3><p>下面这个例子是在java中传入一个整形数组，然后将数组内的元素加10。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">private native void jarrayTest(int[] array);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">extern &quot;C&quot;</div><div class="line">JNIEXPORT void JNICALL</div><div class="line">Java_brainbear_jnidemo_MainActivity_jarrayTest(JNIEnv *env, jobject instance, jintArray array_) &#123;</div><div class="line">    jint *array = env-&gt;GetIntArrayElements(array_, NULL);</div><div class="line">    jsize size = env-&gt;GetArrayLength(array_);</div><div class="line"></div><div class="line">    for(int i = 0; i &lt; size; i++)&#123;</div><div class="line">        array[i] += 10;</div><div class="line">    &#125;</div><div class="line">    env-&gt;ReleaseIntArrayElements(array_, array, 0);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>JNI中对不同类型的数组提供了不同的函数来操作，但是只是名字不一样而已，GetIntArrayElements中第二个参数是一个jboolean指针，用于表示是返回原始数组还是拷贝。最后要调用ReleaseIntArrayElements释放资源，并使修改反映到元素数组中，</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Java/" rel="tag"># Java</a>
+          
+            <a href="/tags/JNI/" rel="tag"># JNI</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/JNI学习笔记1_native方法注册/" rel="next" title="JNI学习笔记1 native方法注册">
+                <i class="fa fa-chevron-left"></i> JNI学习笔记1 native方法注册
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据类型"><span class="nav-number">1.</span> <span class="nav-text">数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码演示"><span class="nav-number">2.</span> <span class="nav-text">代码演示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本类型"><span class="nav-number">2.1.</span> <span class="nav-text">基本类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串"><span class="nav-number">2.2.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组"><span class="nav-number">2.3.</span> <span class="nav-text">数组</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
