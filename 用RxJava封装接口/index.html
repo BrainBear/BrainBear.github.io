@@ -1,0 +1,666 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,RxJava," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="很久之前就用过RxJava，但是只是简单的使用，并没有比较深入的使用，最近在使用的过程中，越用越觉得好用，最明显的是异步操作更简洁，但是也遇到一些问题，我们在项目中总会用到第三方的API接口，这些第三方的异步接口一般都是通过回掉来执行操作的，如果我们在项目就使用了RxJava，当然想把这些异步接口也用RxJava封装，使得在调用上更加方便。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用RxJava封装接口">
+<meta property="og:url" content="http://yoursite.com/用RxJava封装接口/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="很久之前就用过RxJava，但是只是简单的使用，并没有比较深入的使用，最近在使用的过程中，越用越觉得好用，最明显的是异步操作更简洁，但是也遇到一些问题，我们在项目中总会用到第三方的API接口，这些第三方的异步接口一般都是通过回掉来执行操作的，如果我们在项目就使用了RxJava，当然想把这些异步接口也用RxJava封装，使得在调用上更加方便。">
+<meta property="og:updated_time" content="2018-03-25T12:55:55.119Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用RxJava封装接口">
+<meta name="twitter:description" content="很久之前就用过RxJava，但是只是简单的使用，并没有比较深入的使用，最近在使用的过程中，越用越觉得好用，最明显的是异步操作更简洁，但是也遇到一些问题，我们在项目中总会用到第三方的API接口，这些第三方的异步接口一般都是通过回掉来执行操作的，如果我们在项目就使用了RxJava，当然想把这些异步接口也用RxJava封装，使得在调用上更加方便。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/用RxJava封装接口/"/>
+
+
+
+
+
+  <title> 用RxJava封装接口 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/用RxJava封装接口/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                用RxJava封装接口
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-23T23:36:32+08:00">
+                2018-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>很久之前就用过RxJava，但是只是简单的使用，并没有比较深入的使用，最近在使用的过程中，越用越觉得好用，最明显的是异步操作更简洁，但是也遇到一些问题，我们在项目中总会用到第三方的API接口，这些第三方的异步接口一般都是通过回掉来执行操作的，如果我们在项目就使用了RxJava，当然想把这些异步接口也用RxJava封装，使得在调用上更加方便。<br><a id="more"></a></p>
+<h2 id="同步接口"><a href="#同步接口" class="headerlink" title="同步接口"></a>同步接口</h2><p>同步比较简单，Observable提供了fromCallable方法，直接调用就可以了。</p>
+<h2 id="异步接口"><a href="#异步接口" class="headerlink" title="异步接口"></a>异步接口</h2><p>异步接口就比较麻烦了，一开始我想从create操作符入手，但是写了写发现不好处理，感觉无从下手的感觉，然后发现了RxBinding的这个库，RxBinding是JakeWharton大神开源的一个库，主要就是将Android里面ui控件的异步回掉全部转成了Observable。场景和我的是一样的，所以就学习一下大神的实现方法。</p>
+<p>RxBinding的使用很简单，就从最简单的入手，给view设置点击监听，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">RxView.clicks(view)</div><div class="line">    .subscribe(new Consumer&lt;Object&gt;() &#123;</div><div class="line">        @Override</div><div class="line">        public void accept(Object o) throws Exception &#123;</div><div class="line">            Log.d(TAG, &quot;click&quot;);     </div><div class="line">        &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure></p>
+<p>只是调用了RxView类的一个静态方法clicks，就给view设置了click事件的监听。整个的代码也比较少，我就贴出来了</p>
+<p>clicks方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public static Observable&lt;Object&gt; clicks(@NonNull View view) &#123;</div><div class="line">  checkNotNull(view, &quot;view == null&quot;);</div><div class="line">  return new ViewClickObservable(view);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>里面就是简单的new了一个ViewClickObservable对象，把要设置监听事件的view传进去了</p>
+<p>ViewClickObservable.class<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">final class ViewClickObservable extends Observable&lt;Object&gt; &#123;</div><div class="line">  private final View view;</div><div class="line"></div><div class="line">  ViewClickObservable(View view) &#123;</div><div class="line">    this.view = view;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  @Override protected void subscribeActual(Observer&lt;? super Object&gt; observer) &#123;</div><div class="line">    if (!checkMainThread(observer)) &#123;</div><div class="line">      return;</div><div class="line">    &#125;</div><div class="line">    Listener listener = new Listener(view, observer);</div><div class="line"></div><div class="line">    //把Disposable对象传出去</div><div class="line">    observer.onSubscribe(listener);</div><div class="line">    </div><div class="line">    //设置点击事件</div><div class="line">    view.setOnClickListener(listener);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  static final class Listener extends MainThreadDisposable implements OnClickListener &#123;</div><div class="line">    private final View view;</div><div class="line">    private final Observer&lt;? super Object&gt; observer;</div><div class="line"></div><div class="line">    Listener(View view, Observer&lt;? super Object&gt; observer) &#123;</div><div class="line">      this.view = view;</div><div class="line">      this.observer = observer;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override public void onClick(View v) &#123;</div><div class="line">      //点击事件发生后先判断订阅关系有没有被取消掉了，如果取消就发送事件了</div><div class="line">      if (!isDisposed()) &#123;</div><div class="line">        observer.onNext(Notification.INSTANCE);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override protected void onDispose() &#123;</div><div class="line">      //取消订阅事件之后反注册</div><div class="line">      view.setOnClickListener(null);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>ViewClickObservable类继承了Observable类，Observable类内部非常复杂，有1W+行代码，但是就只有一个抽象方法：subscribeActual。具体我就不仔细说了（主要是我对Observable这个也是半桶水），简单来说就是Observable调用的subscribe方法内部会调用subscribeActual方法。是订阅真正发生的时机。所以在这里设置点击事件监听。</p>
+<p>这里面有个Listener类，这个类继承了MainThreadDisposable类和实现了OnClickListener接口。实现OnClickListener接口是为了让点击事件回掉在Listener内部处理。至于MainThreadDisposable类则是主要处理取消订阅的操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">public abstract class MainThreadDisposable implements Disposable &#123;</div><div class="line">    /**</div><div class="line">     * Verify that the calling thread is the Android main thread.</div><div class="line">     * &lt;p&gt;</div><div class="line">     * Calls to this method are usually preconditions for subscription behavior which instances of</div><div class="line">     * this class later undo. See the class documentation for an example.</div><div class="line">     *</div><div class="line">     * @throws IllegalStateException when called from any other thread.</div><div class="line">     */</div><div class="line">    public static void verifyMainThread() &#123;</div><div class="line">        if (Looper.myLooper() != Looper.getMainLooper()) &#123;</div><div class="line">            throw new IllegalStateException(</div><div class="line">                &quot;Expected to be called on the main thread but was &quot; + Thread.currentThread().getName());</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private final AtomicBoolean unsubscribed = new AtomicBoolean();</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public final boolean isDisposed() &#123;</div><div class="line">        return unsubscribed.get();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public final void dispose() &#123;</div><div class="line">        if (unsubscribed.compareAndSet(false, true)) &#123;</div><div class="line">            if (Looper.myLooper() == Looper.getMainLooper()) &#123;</div><div class="line">                onDispose();</div><div class="line">            &#125; else &#123;</div><div class="line">                AndroidSchedulers.mainThread().scheduleDirect(new Runnable() &#123;</div><div class="line">                    @Override public void run() &#123;</div><div class="line">                        onDispose();</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    protected abstract void onDispose();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>几十行代码逻辑很简单，主要是为了让onDispose方法能在主线程回掉，因为需要在onDispose方法执行一些UI操作。</p>
+<p>那我们怎么封装一下我们的接口了，经过上面的分析也很简单了，我就简单举个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">public class Api &#123;</div><div class="line"></div><div class="line">    private static Handler mHandler = new Handler(Looper.getMainLooper());</div><div class="line"></div><div class="line"></div><div class="line">    public static void request(final String data, final ApiCallback callback) &#123;</div><div class="line">        new Thread() &#123;</div><div class="line">            @Override</div><div class="line">            public void run() &#123;</div><div class="line">                super.run();</div><div class="line">                SystemClock.sleep(3000);</div><div class="line"></div><div class="line">                mHandler.post(new Runnable() &#123;</div><div class="line">                    @Override</div><div class="line">                    public void run() &#123;</div><div class="line"></div><div class="line">                        if (null != callback) &#123;</div><div class="line">                            callback.onCallback(data);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;);</div><div class="line">            &#125;</div><div class="line">        &#125;.start();</div><div class="line"></div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    public interface ApiCallback &#123;</div><div class="line"></div><div class="line">        void onCallback(String data);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>一个Api类，里面有个request方法，调用之后sleep 3秒后调用callback。</p>
+<p>我们就模仿ViewClickObservable类自己写一个ApiObservable类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">public class ApiObservable extends Observable&lt;String&gt; &#123;</div><div class="line"></div><div class="line">    private String data;</div><div class="line"></div><div class="line">    public ApiObservable(String data) &#123;</div><div class="line">        this.data = data;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void subscribeActual(Observer&lt;? super String&gt; observer) &#123;</div><div class="line">        Callback callback = new Callback(observer);</div><div class="line"></div><div class="line">        observer.onSubscribe(callback);</div><div class="line">        Api.request(data, callback);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    static final class Callback extends MainThreadDisposable implements Api.ApiCallback &#123;</div><div class="line">        private final Observer&lt;? super String&gt; observer;</div><div class="line"></div><div class="line"></div><div class="line">        Callback(Observer&lt;? super String&gt; observer) &#123;</div><div class="line">            this.observer = observer;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        public void onCallback(String data) &#123;</div><div class="line">            if (!isDisposed()) &#123;</div><div class="line">                observer.onNext(data);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        @Override</div><div class="line">        protected void onDispose() &#123;</div><div class="line"></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>里面逻辑更简单了，就是在subscribeActual方法执行真正的逻辑，就是调用了Api.request()。让后再callback类发送事件，因为不需要反注册，所以onDispose方法也不许要执行什么逻辑。</p>
+<p>最后一步，自己写个类封装一下，不要直接使用ApiObservable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class RxApi &#123;</div><div class="line"></div><div class="line"></div><div class="line">    public static  Observable&lt;String&gt; request(String data) &#123;</div><div class="line">        return new ApiObservable(data);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样直接调用RxApi.request方法就可以了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/RxJava/" rel="tag"># RxJava</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Handler调试小技巧/" rel="next" title="Handler调试小技巧">
+                <i class="fa fa-chevron-left"></i> Handler调试小技巧
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步接口"><span class="nav-number">1.</span> <span class="nav-text">同步接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步接口"><span class="nav-number">2.</span> <span class="nav-text">异步接口</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
