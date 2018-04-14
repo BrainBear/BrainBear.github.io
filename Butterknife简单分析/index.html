@@ -1,0 +1,664 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Butterknife," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Butterknife是Android开发中非常常用的开源库，但是用了这么久都没有看过具体的实现，趁今天周末就简单看看Butterknife的实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Butterknife简单分析">
+<meta property="og:url" content="http://yoursite.com/Butterknife简单分析/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="Butterknife是Android开发中非常常用的开源库，但是用了这么久都没有看过具体的实现，趁今天周末就简单看看Butterknife的实现。">
+<meta property="og:updated_time" content="2018-04-14T10:23:25.984Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Butterknife简单分析">
+<meta name="twitter:description" content="Butterknife是Android开发中非常常用的开源库，但是用了这么久都没有看过具体的实现，趁今天周末就简单看看Butterknife的实现。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Butterknife简单分析/"/>
+
+
+
+
+
+  <title> Butterknife简单分析 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Butterknife简单分析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Butterknife简单分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-14T17:42:32+08:00">
+                2018-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Butterknife是Android开发中非常常用的开源库，但是用了这么久都没有看过具体的实现，趁今天周末就简单看看Butterknife的实现。<br><a id="more"></a></p>
+<h2 id="Butterknife"><a href="#Butterknife" class="headerlink" title="Butterknife"></a>Butterknife</h2><h3 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">implementation &apos;com.jakewharton:butterknife:8.8.1&apos;</div><div class="line">annotationProcessor &apos;com.jakewharton:butterknife-compiler:8.8.1&apos;</div></pre></td></tr></table></figure>
+<h3 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h3><p>新建了一个ButterknifeActivity</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">public class ButterKnifeActivity extends AppCompatActivity &#123;</div><div class="line"></div><div class="line"></div><div class="line">    @BindView(R.id.btn)</div><div class="line">    Button btn;</div><div class="line"></div><div class="line">    @BindString(R.string.app_name)</div><div class="line">    String appName;</div><div class="line"></div><div class="line"></div><div class="line">    @OnClick(R.id.btn)</div><div class="line">    void onBtnClick() &#123;</div><div class="line">        Toast.makeText(this, appName, Toast.LENGTH_SHORT).show();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_butter_knife);</div><div class="line">        ButterKnife.bind(this);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>用了常用的几个注解，BindView，BindString，OnClick。只要我们在Activity的onCreate方法里面调用ButterKnife.bind()方法，我们指定的变量就会被初始化，点击监听也会设置，非常神奇，省略了一大堆的模版代码。那么Butterknife是怎么实现的呢。</p>
+<h3 id="简单分析"><a href="#简单分析" class="headerlink" title="简单分析"></a>简单分析</h3><p>编译的时候会生成一个<strong>ButterKnifeActivity_ViewBinding</strong>类，这个类是通过APT自动生成的，具体的生成逻辑下次再说，今天只讲资源是怎么初始化的。</p>
+<p>ButterKnifeActivity类非常简单，里面直接调用ButterKnife代码的就只有一行ButterKnife.bind(this)，我们从这个方法进去。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public static Unbinder bind(@NonNull Activity target) &#123;</div><div class="line">  View sourceView = target.getWindow().getDecorView();</div><div class="line">  return createBinding(target, sourceView);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在bind方法里面获取到Activity的DecorView，把activity和view传如了createBinding方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">private static Unbinder createBinding(@NonNull Object target, @NonNull View source) &#123;</div><div class="line">  Class&lt;?&gt; targetClass = target.getClass();</div><div class="line">  if (debug) Log.d(TAG, &quot;Looking up binding for &quot; + targetClass.getName());</div><div class="line">  Constructor&lt;? extends Unbinder&gt; constructor = findBindingConstructorForClass(targetClass);</div><div class="line"></div><div class="line">  if (constructor == null) &#123;</div><div class="line">    return Unbinder.EMPTY;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  //noinspection TryWithIdenticalCatches Resolves to API 19+ only type.</div><div class="line">  try &#123;</div><div class="line">    return constructor.newInstance(target, source);</div><div class="line">  &#125; catch (IllegalAccessException e) &#123;</div><div class="line">    throw new RuntimeException(&quot;Unable to invoke &quot; + constructor, e);</div><div class="line">  &#125; catch (InstantiationException e) &#123;</div><div class="line">    throw new RuntimeException(&quot;Unable to invoke &quot; + constructor, e);</div><div class="line">  &#125; catch (InvocationTargetException e) &#123;</div><div class="line">    Throwable cause = e.getCause();</div><div class="line">    if (cause instanceof RuntimeException) &#123;</div><div class="line">      throw (RuntimeException) cause;</div><div class="line">    &#125;</div><div class="line">    if (cause instanceof Error) &#123;</div><div class="line">      throw (Error) cause;</div><div class="line">    &#125;</div><div class="line">    throw new RuntimeException(&quot;Unable to create binding instance.&quot;, cause);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Nullable @CheckResult @UiThread</div><div class="line">private static Constructor&lt;? extends Unbinder&gt; findBindingConstructorForClass(Class&lt;?&gt; cls) &#123;</div><div class="line">    //先从缓存查找是否有对应的Constructor</div><div class="line">  Constructor&lt;? extends Unbinder&gt; bindingCtor = BINDINGS.get(cls);</div><div class="line">  if (bindingCtor != null) &#123;</div><div class="line">    if (debug) Log.d(TAG, &quot;HIT: Cached in binding map.&quot;);</div><div class="line">    return bindingCtor;</div><div class="line">  &#125;</div><div class="line">  //判断是否是系统类，不绑定系统类</div><div class="line">  String clsName = cls.getName();</div><div class="line">  if (clsName.startsWith(&quot;android.&quot;) || clsName.startsWith(&quot;java.&quot;)) &#123;</div><div class="line">    if (debug) Log.d(TAG, &quot;MISS: Reached framework class. Abandoning search.&quot;);</div><div class="line">    return null;</div><div class="line">  &#125;</div><div class="line">  try &#123;</div><div class="line">      //根据target类的类名拼出对应ViewBinding类的类名</div><div class="line">    Class&lt;?&gt; bindingClass = cls.getClassLoader().loadClass(clsName + &quot;_ViewBinding&quot;);</div><div class="line">    //noinspection unchecked</div><div class="line">    bindingCtor = (Constructor&lt;? extends Unbinder&gt;) bindingClass.getConstructor(cls, View.class);</div><div class="line">    if (debug) Log.d(TAG, &quot;HIT: Loaded binding class and constructor.&quot;);</div><div class="line">  &#125; catch (ClassNotFoundException e) &#123;</div><div class="line">    if (debug) Log.d(TAG, &quot;Not found. Trying superclass &quot; + cls.getSuperclass().getName());</div><div class="line">    bindingCtor = findBindingConstructorForClass(cls.getSuperclass());</div><div class="line">  &#125; catch (NoSuchMethodException e) &#123;</div><div class="line">    throw new RuntimeException(&quot;Unable to find binding constructor for &quot; + clsName, e);</div><div class="line">  &#125;</div><div class="line">  //缓存Constructor</div><div class="line">  BINDINGS.put(cls, bindingCtor);</div><div class="line">  return bindingCtor;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码有点长，但是大部分都是异常处理的代码（java的缺点之一，模版代码太多了…），核心逻辑就是找到对应的ViewBinding类，创建对象返回。需要注意的是，这个过程是通过反射实现的，先通过target类拼出对应ViewBinding类的类名，然后找到对应参数的构造函数返回。</p>
+<p>因为是反射实现的，为了提高效率，Butterknife用了一个map缓存这些构造器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">static final Map&lt;Class&lt;?&gt;, Constructor&lt;? extends Unbinder&gt;&gt; BINDINGS = new LinkedHashMap&lt;&gt;();</div></pre></td></tr></table></figure>
+<p>然后我们看ButterKnifeActivity_ViewBinding类干了什么事情</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">public class ButterKnifeActivity_ViewBinding implements Unbinder &#123;</div><div class="line">  private ButterKnifeActivity target;</div><div class="line"></div><div class="line">  private View view2131165219;</div><div class="line"></div><div class="line">  @UiThread</div><div class="line">  public ButterKnifeActivity_ViewBinding(ButterKnifeActivity target) &#123;</div><div class="line">    this(target, target.getWindow().getDecorView());</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  @UiThread</div><div class="line">  public ButterKnifeActivity_ViewBinding(final ButterKnifeActivity target, View source) &#123;</div><div class="line">    this.target = target;</div><div class="line"></div><div class="line">    View view;</div><div class="line">    view = Utils.findRequiredView(source, R.id.btn, &quot;field &apos;btn&apos; and method &apos;onBtnClick&apos;&quot;);</div><div class="line">    target.btn = Utils.castView(view, R.id.btn, &quot;field &apos;btn&apos;&quot;, Button.class);</div><div class="line">    view2131165219 = view;</div><div class="line">    view.setOnClickListener(new DebouncingOnClickListener() &#123;</div><div class="line">      @Override</div><div class="line">      public void doClick(View p0) &#123;</div><div class="line">        target.onBtnClick();</div><div class="line">      &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">    Context context = source.getContext();</div><div class="line">    Resources res = context.getResources();</div><div class="line">    target.appName = res.getString(R.string.app_name);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  @Override</div><div class="line">  @CallSuper</div><div class="line">  public void unbind() &#123;</div><div class="line">    ButterKnifeActivity target = this.target;</div><div class="line">    if (target == null) throw new IllegalStateException(&quot;Bindings already cleared.&quot;);</div><div class="line">    this.target = null;</div><div class="line"></div><div class="line">    target.btn = null;</div><div class="line"></div><div class="line">    view2131165219.setOnClickListener(null);</div><div class="line">    view2131165219 = null;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码很简单了，就是在构造函数里面初始化数据，调用了Utils.findRequiredView()方法，把对应的id（R.id.btn）传入<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">public static View findRequiredView(View source, @IdRes int id, String who) &#123;</div><div class="line">  View view = source.findViewById(id);</div><div class="line">  if (view != null) &#123;</div><div class="line">    return view;</div><div class="line">  &#125;</div><div class="line">  String name = getResourceEntryName(source, id);</div><div class="line">  throw new IllegalStateException(&quot;Required view &apos;&quot;</div><div class="line">      + name</div><div class="line">      + &quot;&apos; with ID &quot;</div><div class="line">      + id</div><div class="line">      + &quot; for &quot;</div><div class="line">      + who</div><div class="line">      + &quot; was not found. If this view is optional add &apos;@Nullable&apos; (fields) or &apos;@Optional&apos;&quot;</div><div class="line">      + &quot; (methods) annotation.&quot;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>里面就是调用了我们之前手动调用的findViewById…</p>
+<p>点击监听也只是帮我们调用了setOnClickListener方法而已，这里有一个需要注意的地方，在ViewBinding类中初始化activity类中的变量或者调用点击回调方法，都是用过target.成员变量或者target.方法名来初始化的，所以BindView等注解修饰的变量或方法不能用private修饰，否则在对应的ViewBinding类就获取不到了。</p>
+<p>Butterknife的简单分析就到这里结束了，下次再分析一下ViewBinding类的生成。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Butterknife/" rel="tag"># Butterknife</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/用RxJava封装接口/" rel="next" title="用RxJava封装接口">
+                <i class="fa fa-chevron-left"></i> 用RxJava封装接口
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Butterknife"><span class="nav-number">1.</span> <span class="nav-text">Butterknife</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入依赖"><span class="nav-number">1.1.</span> <span class="nav-text">导入依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单使用"><span class="nav-number">1.2.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单分析"><span class="nav-number">1.3.</span> <span class="nav-text">简单分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
