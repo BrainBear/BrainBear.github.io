@@ -1,0 +1,779 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,View,Measure," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近开发中，用到了不少自定义的View，但是开发过程中遇到不少的问题，虽然磕磕碰碰还是解决了，这种不知所以然的感觉还是很不爽，所以准备花点时间从源码学习一下View的流程还有其他自定义View比较常用的知识，大概会有以下几个东东：
+
+View的measure流程
+View的layout流程
+View的draw流程
+万年滑动冲突
+scroller
+
+坑是挖好了，什么时候填就不知道了，今天先解决掉第一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View源码了解一下，Measure过程">
+<meta property="og:url" content="http://yoursite.com/View源码了解一下，Measure过程/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="最近开发中，用到了不少自定义的View，但是开发过程中遇到不少的问题，虽然磕磕碰碰还是解决了，这种不知所以然的感觉还是很不爽，所以准备花点时间从源码学习一下View的流程还有其他自定义View比较常用的知识，大概会有以下几个东东：
+
+View的measure流程
+View的layout流程
+View的draw流程
+万年滑动冲突
+scroller
+
+坑是挖好了，什么时候填就不知道了，今天先解决掉第一">
+<meta property="og:updated_time" content="2018-05-12T14:29:33.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="View源码了解一下，Measure过程">
+<meta name="twitter:description" content="最近开发中，用到了不少自定义的View，但是开发过程中遇到不少的问题，虽然磕磕碰碰还是解决了，这种不知所以然的感觉还是很不爽，所以准备花点时间从源码学习一下View的流程还有其他自定义View比较常用的知识，大概会有以下几个东东：
+
+View的measure流程
+View的layout流程
+View的draw流程
+万年滑动冲突
+scroller
+
+坑是挖好了，什么时候填就不知道了，今天先解决掉第一">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/View源码了解一下，Measure过程/"/>
+
+
+
+
+
+  <title> View源码了解一下，Measure过程 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/View源码了解一下，Measure过程/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                View源码了解一下，Measure过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-12T17:02:32+08:00">
+                2018-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近开发中，用到了不少自定义的View，但是开发过程中遇到不少的问题，虽然磕磕碰碰还是解决了，这种不知所以然的感觉还是很不爽，所以准备花点时间从源码学习一下View的流程还有其他自定义View比较常用的知识，大概会有以下几个东东：</p>
+<ul>
+<li>View的measure流程</li>
+<li>View的layout流程</li>
+<li>View的draw流程</li>
+<li>万年滑动冲突</li>
+<li>scroller</li>
+</ul>
+<p>坑是挖好了，什么时候填就不知道了，今天先解决掉第一个：View的measure流程。<br><a id="more"></a></p>
+<h2 id="代码调用流程"><a href="#代码调用流程" class="headerlink" title="代码调用流程"></a>代码调用流程</h2><p>自定义View中，我们一般都会重写View的onMeasure方法来设置view的大小，那么onMeasure方法是谁调用的呢？<br>ViewGroup中的measureChildren方法就是遍历全部的子View，调用measureChild方法测量具体一个子View的大小，在measureChild中调用的子View的measure方法，子View的measure方法最终会调用onMeasure方法。</p>
+<p><strong>注：本篇文章所有代码都是基于API-26</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">st=&gt;start: Start</div><div class="line"></div><div class="line">e=&gt;end: End</div><div class="line"></div><div class="line">measureChildren=&gt;operation: ViewGroup-measureChildren</div><div class="line"></div><div class="line">measureChild=&gt;operation: ViewGroup-measureChild</div><div class="line"></div><div class="line">measure=&gt;operation: View-measure</div><div class="line"></div><div class="line">onMeasure=&gt;operation: View-onMeasure</div><div class="line"></div><div class="line">st-&gt;measureChildren-&gt;measureChild-&gt;measure-&gt;onMeasure-&gt;e</div></pre></td></tr></table></figure>
+<h2 id="MeasureSpec"><a href="#MeasureSpec" class="headerlink" title="MeasureSpec"></a>MeasureSpec</h2><p>在看源码前，我们要先了解一个贯穿Measure整个流程中一个非常关键的一个类：MeasureSpec。MeasureSpec简单来说就是一个封装过的int值，高2位表示三种测量模式，低30位表示测量大小。<strong>需要注意的是，MeasureSpec是父View生成给子View的</strong>，帮助子View确定自己的大小。</p>
+<p>三种测量模式分别是：</p>
+<ul>
+<li>UNSPECIFIED<br>The parent has not imposed any constraint on the child. It can be whatever size it wants.<br>该模式表示父View不限制子View的大小。这个模式用比较少，了解不多，就不多说了。</li>
+<li>EXACTLY<br>The parent has determined an exact size for the child. The child is going to be given those bounds regardless of how big it wants to be.<br>该模式表示父View已经确切的知道子View到底多大了。</li>
+<li>AT_MOST<br>The child can be as large as it wants up to the specified size.<br>该模式表示父View不知道子View的大小，但是给子View一个限制的大小，子View不能超过这个限制。</li>
+</ul>
+<p>MeasureSpec提供了几个方便的静态方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">//获取传入的MeasureSpec的测量模式</div><div class="line">public static int getMode(int measureSpec)</div><div class="line"></div><div class="line">//获取传入的MeasureSpec的测量大小</div><div class="line">public static int getSize(int measureSpec)</div><div class="line"></div><div class="line">//根据传入的size和mode生成MeasureSpec</div><div class="line">public static int makeMeasureSpec(int size, int mode)</div></pre></td></tr></table></figure></p>
+<h2 id="代码解析"><a href="#代码解析" class="headerlink" title="代码解析"></a>代码解析</h2><h3 id="measureChildren"><a href="#measureChildren" class="headerlink" title="measureChildren"></a>measureChildren</h3><p>我们先从ViewGroup的measureChildren方法开始看<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Ask all of the children of this view to measure themselves, taking into</div><div class="line"> * account both the MeasureSpec requirements for this view and its padding.</div><div class="line"> * We skip children that are in the GONE state The heavy lifting is done in</div><div class="line"> * getChildMeasureSpec.</div><div class="line"> *</div><div class="line"> * @param widthMeasureSpec The width requirements for this view</div><div class="line"> * @param heightMeasureSpec The height requirements for this view</div><div class="line"> */</div><div class="line">protected void measureChildren(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">    final int size = mChildrenCount;</div><div class="line">    final View[] children = mChildren;</div><div class="line">    for (int i = 0; i &lt; size; ++i) &#123;</div><div class="line">        final View child = children[i];</div><div class="line">        if ((child.mViewFlags &amp; VISIBILITY_MASK) != GONE) &#123;</div><div class="line">            measureChild(child, widthMeasureSpec, heightMeasureSpec);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这个代码比较简单，就是遍历全部的子View，然后调用了measureChild方法，需要注意的是measureChild的参数，第一个是子View对象，第二和第三个参数是宽度和高度的MeasureSpec，注释上也写了，这个MeasureSpace是这个ViewGroup的MeasureSpec。从我们上面的分析可以知道，这个ViewGroup的MeasureSpec是它的父控件生成给它的，至于最顶层的View的MeasureSpec是怎么处理，我还了解那么深入，还不知道(┬＿┬)</p>
+<h3 id="measureChild"><a href="#measureChild" class="headerlink" title="measureChild"></a>measureChild</h3><p>上面我们根据代码得知，measureChildren会调用measureChild方法，但是我在看源码的时候发现，还有另外一个类似的方法measureChildWithMargins，我们先看看measureChildWithMargins的源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Ask one of the children of this view to measure itself, taking into</div><div class="line"> * account both the MeasureSpec requirements for this view and its padding</div><div class="line"> * and margins. The child must have MarginLayoutParams The heavy lifting is</div><div class="line"> * done in getChildMeasureSpec.</div><div class="line"> *</div><div class="line"> * @param child The child to measure</div><div class="line"> * @param parentWidthMeasureSpec The width requirements for this view</div><div class="line"> * @param widthUsed Extra space that has been used up by the parent</div><div class="line"> *        horizontally (possibly by other children of the parent)</div><div class="line"> * @param parentHeightMeasureSpec The height requirements for this view</div><div class="line"> * @param heightUsed Extra space that has been used up by the parent</div><div class="line"> *        vertically (possibly by other children of the parent)</div><div class="line"> */</div><div class="line">protected void measureChildWithMargins(View child,</div><div class="line">        int parentWidthMeasureSpec, int widthUsed,</div><div class="line">        int parentHeightMeasureSpec, int heightUsed) &#123;</div><div class="line">    //获取子View的LayoutParams</div><div class="line">    final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();</div><div class="line"></div><div class="line">    //根据父View的MeasureSpec和父View的剩余空间，还有子View中LayoutParams指定的宽度或者高度去生成子View的MeasureSpec</div><div class="line">    final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,</div><div class="line">            mPaddingLeft + mPaddingRight + lp.leftMargin + lp.rightMargin</div><div class="line">                    + widthUsed, lp.width);</div><div class="line">    final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,</div><div class="line">            mPaddingTop + mPaddingBottom + lp.topMargin + lp.bottomMargin</div><div class="line">                    + heightUsed, lp.height);</div><div class="line"></div><div class="line">    child.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码的逻辑也比较简单，先是获取到子View的LayoutParams，根据父View的MeasureSpec和父View的剩余空间，还有子View中LayoutParams指定的宽度或者高度去生成子View的MeasureSpec。<br>需要注意的是这个父View的剩余空间，以生成子View的宽度的MeasureSpec为例，先获取到自己的横向的padding(mPaddingLeft + mPaddingRight)，然后获取子View横向的margin(leftMargin + rightMargin)，还有最后传入的widthUsed(这个表示父View已经使用了多少宽度)，全部加起来就是父View在水平方向上占用的空间了。</p>
+<h4 id="getChildMesureSpec"><a href="#getChildMesureSpec" class="headerlink" title="getChildMesureSpec"></a>getChildMesureSpec</h4><p>我们再看看getChildMesureSpec的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Does the hard part of measureChildren: figuring out the MeasureSpec to</div><div class="line"> * pass to a particular child. This method figures out the right MeasureSpec</div><div class="line"> * for one dimension (height or width) of one child view.</div><div class="line"> *</div><div class="line"> * The goal is to combine information from our MeasureSpec with the</div><div class="line"> * LayoutParams of the child to get the best possible results. For example,</div><div class="line"> * if the this view knows its size (because its MeasureSpec has a mode of</div><div class="line"> * EXACTLY), and the child has indicated in its LayoutParams that it wants</div><div class="line"> * to be the same size as the parent, the parent should ask the child to</div><div class="line"> * layout given an exact size.</div><div class="line"> *</div><div class="line"> * @param spec The requirements for this view</div><div class="line"> * @param padding The padding of this view for the current dimension and</div><div class="line"> *        margins, if applicable</div><div class="line"> * @param childDimension How big the child wants to be in the current</div><div class="line"> *        dimension</div><div class="line"> * @return a MeasureSpec integer for the child</div><div class="line"> */</div><div class="line">public static int getChildMeasureSpec(int spec, int padding, int childDimension) &#123;</div><div class="line">    //父View的测量模式</div><div class="line">    int specMode = MeasureSpec.getMode(spec);</div><div class="line">    //父View的测量大小</div><div class="line">    int specSize = MeasureSpec.getSize(spec);</div><div class="line"></div><div class="line">    //padding是上面我们分析出来父View已经占用的大小</div><div class="line">    int size = Math.max(0, specSize - padding);</div><div class="line"></div><div class="line">    //子View的测量大小</div><div class="line">    int resultSize = 0;</div><div class="line">    //子View的测量模式</div><div class="line">    int resultMode = 0;</div><div class="line"></div><div class="line">    switch (specMode) &#123;</div><div class="line">    // Parent has imposed an exact size on us</div><div class="line">    case MeasureSpec.EXACTLY:</div><div class="line">        //childDimension是子View的LayoutParams的width或者height</div><div class="line">        if (childDimension &gt;= 0) &#123;</div><div class="line">            resultSize = childDimension;</div><div class="line">            resultMode = MeasureSpec.EXACTLY;</div><div class="line">        &#125; else if (childDimension == LayoutParams.MATCH_PARENT) &#123;</div><div class="line">            // Child wants to be our size. So be it.</div><div class="line">            resultSize = size;</div><div class="line">            resultMode = MeasureSpec.EXACTLY;</div><div class="line">        &#125; else if (childDimension == LayoutParams.WRAP_CONTENT) &#123;</div><div class="line">            // Child wants to determine its own size. It can&apos;t be</div><div class="line">            // bigger than us.</div><div class="line">            resultSize = size;</div><div class="line">            resultMode = MeasureSpec.AT_MOST;</div><div class="line">        &#125;</div><div class="line">        break;</div><div class="line"></div><div class="line">    // Parent has imposed a maximum size on us</div><div class="line">    case MeasureSpec.AT_MOST:</div><div class="line">        if (childDimension &gt;= 0) &#123;</div><div class="line">            // Child wants a specific size... so be it</div><div class="line">            resultSize = childDimension;</div><div class="line">            resultMode = MeasureSpec.EXACTLY;</div><div class="line">        &#125; else if (childDimension == LayoutParams.MATCH_PARENT) &#123;</div><div class="line">            // Child wants to be our size, but our size is not fixed.</div><div class="line">            // Constrain child to not be bigger than us.</div><div class="line">            resultSize = size;</div><div class="line">            resultMode = MeasureSpec.AT_MOST;</div><div class="line">        &#125; else if (childDimension == LayoutParams.WRAP_CONTENT) &#123;</div><div class="line">            // Child wants to determine its own size. It can&apos;t be</div><div class="line">            // bigger than us.</div><div class="line">            resultSize = size;</div><div class="line">            resultMode = MeasureSpec.AT_MOST;</div><div class="line">        &#125;</div><div class="line">        break;</div><div class="line"></div><div class="line">    // Parent asked to see how big we want to be</div><div class="line">    case MeasureSpec.UNSPECIFIED:</div><div class="line">        if (childDimension &gt;= 0) &#123;</div><div class="line">            // Child wants a specific size... let him have it</div><div class="line">            resultSize = childDimension;</div><div class="line">            resultMode = MeasureSpec.EXACTLY;</div><div class="line">        &#125; else if (childDimension == LayoutParams.MATCH_PARENT) &#123;</div><div class="line">            // Child wants to be our size... find out how big it should</div><div class="line">            // be</div><div class="line">            resultSize = View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;</div><div class="line">            resultMode = MeasureSpec.UNSPECIFIED;</div><div class="line">        &#125; else if (childDimension == LayoutParams.WRAP_CONTENT) &#123;</div><div class="line">            // Child wants to determine its own size.... find out how</div><div class="line">            // big it should be</div><div class="line">            resultSize = View.sUseZeroUnspecifiedMeasureSpec ? 0 : size;</div><div class="line">            resultMode = MeasureSpec.UNSPECIFIED;</div><div class="line">        &#125;</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    //noinspection ResourceType</div><div class="line">    return MeasureSpec.makeMeasureSpec(resultSize, resultMode);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码比较长，简单来说就是根据父View的MeasureSpec和子View的childDimension来生成子View的MeasureSpec，childDimension是子View的LayoutParams的width或者height。需要注意的是childDimension如果大于等于0则表示明确的大小，但是也有小于0的情况：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public static final int MATCH_PARENT = -1;</div><div class="line"></div><div class="line">public static final int WRAP_CONTENT = -2;</div></pre></td></tr></table></figure>
+<p>如果在xml中声明一个控件的宽度和高度是MATCH_PARENT或者WRAP_CONTENT，这个view的LayoutParams的width或者height的值就是对应的-1或-2。</p>
+<ul>
+<li><p>如果父View的MeasureSpec是MeasureSpec.EXACTLY</p>
+<ul>
+<li>如果childDimension是大于等于0，子View的mode是MeasureSpec.EXACTLY，size是childDimension</li>
+<li>如果ChildDimension是MATCH_PARENT，子view的mode是MeasureSpec.EXACTLY，size是父View的剩余大小</li>
+<li>如果childDimension是WRAP_CONTENT，子View的mode是MeasureSpec.AT_MOST，size是父View的剩余大小</li>
+</ul>
+</li>
+<li><p>如果父View的MeasureSpec是MeasureSpec.AT_MOST</p>
+<ul>
+<li>如果childDimension是大于等于0，子View的mode是MeasureSpec.EXACTLY，size是childDimension</li>
+<li>如果ChildDimension是MATCH_PARENT，子view的mode是MeasureSpec.AT_MOST，size是父View的剩余大小</li>
+<li>如果childDimension是WRAP_CONTENT，子View的mode是MeasureSpec.AT_MOST，size是父View的剩余大小</li>
+</ul>
+</li>
+<li><p>如果父View的MeasureSpec是MeasureSpec.UNSPECIFIED</p>
+<ul>
+<li>如果childDimension是大于等于0，子View的mode是MeasureSpec.EXACTLY，size是childDimension</li>
+<li>如果ChildDimension是MATCH_PARENT，子view的mode是MeasureSpec.UNSPECIFIED，size是0或父View的剩余大小</li>
+<li>如果childDimension是WRAP_CONTENT，子View的mode是MeasureSpec.UNSPECIFIED，size是0或父View的剩余大小</li>
+</ul>
+</li>
+</ul>
+<p>当父View的specMode是MeasureSpec.UNSPECIFIED，如果childDimension小于0的时候，子View的size会是0或父View的剩余大小，这取决于sUseZeroUnspecifiedMeasureSpecz这个静态变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Always return a size of 0 for MeasureSpec values with a mode of UNSPECIFIED</div><div class="line"> */</div><div class="line">static boolean sUseZeroUnspecifiedMeasureSpec = false;</div></pre></td></tr></table></figure></p>
+<p>sUseZeroUnspecifiedMeasureSpec默认为0，在View的构造方法中会初始化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">// In M and newer, our widgets can pass a &quot;hint&quot; value in the size</div><div class="line">// for UNSPECIFIED MeasureSpecs. This lets child views of scrolling containers</div><div class="line">// know what the expected parent size is going to be, so e.g. list items can size</div><div class="line">// themselves at 1/3 the size of their container. It breaks older apps though,</div><div class="line">// specifically apps that use some popular open source libraries.</div><div class="line">sUseZeroUnspecifiedMeasureSpec = targetSdkVersion &lt; Build.VERSION_CODES.M;</div></pre></td></tr></table></figure></p>
+<p>也就是说如果应用的targetSDKVersion小于6.0的话，size就是为0，由于UNSPECIFIED这个我们很少用，暂时可以先认为如果父View的specMode为UNSPECIFIED，子View的childDimension小于0的时候，生成的MeasureSpec的size为0。</p>
+<p>为了方便，制作成表格就是下面这样：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>childDimension &gt;= 0</th>
+<th>MATCH_PARENT</th>
+<th>WRAP_CONTENT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MeasureSpec.EXACTLY</td>
+<td>size = chidlDimension <br> mode = MeasureSpec.EXACTLY</td>
+<td>size = 父View的剩余空间 <br> mode = MeasureSpec.EXACTLY</td>
+<td>size = 父View的剩余空间 <br> mode = MeasureSpec.AT_MOST</td>
+</tr>
+<tr>
+<td>MeasureSpec.AT_MOST</td>
+<td>size = chidlDimension <br> mode = MeasureSpec.EXACTLY</td>
+<td>size = 父View的剩余空间 <br> mode = MeasureSpec.AT_MOST</td>
+<td>size = 父View的剩余空间 <br> mode = MeasureSpec.AT_MOST</td>
+</tr>
+<tr>
+<td>MeasureSpec.UNSPECIFIED</td>
+<td>size = chidlDimension <br> mode = MeasureSpec.EXACTLY</td>
+<td>size = 0 <br> mode = MeasureSpec.UNSPECIFIED</td>
+<td>size = 0 <br> mode = MeasureSpec.UNSPECIFIED</td>
+</tr>
+</tbody>
+</table>
+<h4 id="measureChildWithMargins和measureChild的区别"><a href="#measureChildWithMargins和measureChild的区别" class="headerlink" title="measureChildWithMargins和measureChild的区别"></a>measureChildWithMargins和measureChild的区别</h4><p>measureChildWithMargins和measureChild都是用来测量子View的，我把他们的源码贴出来：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">protected void measureChild(View child, int parentWidthMeasureSpec,</div><div class="line">        int parentHeightMeasureSpec) &#123;</div><div class="line">    final LayoutParams lp = child.getLayoutParams();</div><div class="line"></div><div class="line">    final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,</div><div class="line">            mPaddingLeft + mPaddingRight, lp.width);</div><div class="line">    final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,</div><div class="line">            mPaddingTop + mPaddingBottom, lp.height);</div><div class="line"></div><div class="line">    child.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">&#125;</div><div class="line"></div><div class="line">protected void measureChildWithMargins(View child,</div><div class="line">        int parentWidthMeasureSpec, int widthUsed,</div><div class="line">        int parentHeightMeasureSpec, int heightUsed) &#123;</div><div class="line">    final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();</div><div class="line"></div><div class="line">    final int childWidthMeasureSpec = getChildMeasureSpec(parentWidthMeasureSpec,</div><div class="line">            mPaddingLeft + mPaddingRight + lp.leftMargin + lp.rightMargin</div><div class="line">                    + widthUsed, lp.width);</div><div class="line">    final int childHeightMeasureSpec = getChildMeasureSpec(parentHeightMeasureSpec,</div><div class="line">            mPaddingTop + mPaddingBottom + lp.topMargin + lp.bottomMargin</div><div class="line">                    + heightUsed, lp.height);</div><div class="line"></div><div class="line">    child.measure(childWidthMeasureSpec, childHeightMeasureSpec);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码逻辑是类似的，但是measureChildWithMargins就和它的名字一样，它考虑了自身剩余空间和子View的margin的影响。我们前面分析ViewGroup的measureChildren方法的时候也发现了，ViewGroup默认是调用measureChild来测量的，但是正常来说我们是需要考虑margin的影响，所以我们常用的ViewGroup，例如LinearLayout会在onMeasure的时候调用measureChildWithMargins来测量子View，对于日常的应用开发来说，measureChildWithMargins方法更常用。</p>
+<h3 id="measure"><a href="#measure" class="headerlink" title="measure"></a>measure</h3><p>生成了子View的宽度和高度的MeasureSpec后，会调用子View的measure方法，把刚刚生成的宽度和高度的MeasureSpec传入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line">//measure方法是final的，即子类不能重写measure方法</div><div class="line">    public final void measure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">        boolean optical = isLayoutModeOptical(this);</div><div class="line">        if (optical != isLayoutModeOptical(mParent)) &#123;</div><div class="line">            Insets insets = getOpticalInsets();</div><div class="line">            int oWidth  = insets.left + insets.right;</div><div class="line">            int oHeight = insets.top  + insets.bottom;</div><div class="line">            widthMeasureSpec  = MeasureSpec.adjust(widthMeasureSpec,  optical ? -oWidth  : oWidth);</div><div class="line">            heightMeasureSpec = MeasureSpec.adjust(heightMeasureSpec, optical ? -oHeight : oHeight);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //用宽度和高度的MeasureSpec生成key</div><div class="line">        // Suppress sign extension for the low bytes</div><div class="line">        long key = (long) widthMeasureSpec &lt;&lt; 32 | (long) heightMeasureSpec &amp; 0xffffffffL;</div><div class="line">        if (mMeasureCache == null) mMeasureCache = new LongSparseLongArray(2);</div><div class="line"></div><div class="line">        //是否强制布局</div><div class="line">        final boolean forceLayout = (mPrivateFlags &amp; PFLAG_FORCE_LAYOUT) == PFLAG_FORCE_LAYOUT;</div><div class="line"></div><div class="line">        // Optimize layout by avoiding an extra EXACTLY pass when the view is</div><div class="line">        // already measured as the correct size. In API 23 and below, this</div><div class="line">        // extra pass is required to make LinearLayout re-distribute weight.</div><div class="line">        final boolean specChanged = widthMeasureSpec != mOldWidthMeasureSpec</div><div class="line">                || heightMeasureSpec != mOldHeightMeasureSpec;</div><div class="line">        final boolean isSpecExactly = MeasureSpec.getMode(widthMeasureSpec) == MeasureSpec.EXACTLY</div><div class="line">                &amp;&amp; MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY;</div><div class="line">        final boolean matchesSpecSize = getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)</div><div class="line">                &amp;&amp; getMeasuredHeight() == MeasureSpec.getSize(heightMeasureSpec);</div><div class="line">        final boolean needsLayout = specChanged</div><div class="line">                &amp;&amp; (sAlwaysRemeasureExactly || !isSpecExactly || !matchesSpecSize);</div><div class="line"></div><div class="line">        if (forceLayout || needsLayout) &#123;</div><div class="line">            // first clears the measured dimension flag</div><div class="line">            mPrivateFlags &amp;= ~PFLAG_MEASURED_DIMENSION_SET;</div><div class="line"></div><div class="line">            resolveRtlPropertiesIfNeeded();</div><div class="line"></div><div class="line">            int cacheIndex = forceLayout ? -1 : mMeasureCache.indexOfKey(key);</div><div class="line">            if (cacheIndex &lt; 0 || sIgnoreMeasureCache) &#123;</div><div class="line">                // measure ourselves, this should set the measured dimension flag back</div><div class="line">                onMeasure(widthMeasureSpec, heightMeasureSpec);</div><div class="line">                mPrivateFlags3 &amp;= ~PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</div><div class="line">            &#125; else &#123;</div><div class="line">                long value = mMeasureCache.valueAt(cacheIndex);</div><div class="line">                // Casting a long to int drops the high 32 bits, no mask needed</div><div class="line">                setMeasuredDimensionRaw((int) (value &gt;&gt; 32), (int) value);</div><div class="line">                mPrivateFlags3 |= PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            // flag not set, setMeasuredDimension() was not invoked, we raise</div><div class="line">            // an exception to warn the developer</div><div class="line">            if ((mPrivateFlags &amp; PFLAG_MEASURED_DIMENSION_SET) != PFLAG_MEASURED_DIMENSION_SET) &#123;</div><div class="line">                throw new IllegalStateException(&quot;View with id &quot; + getId() + &quot;: &quot;</div><div class="line">                        + getClass().getName() + &quot;#onMeasure() did not set the&quot;</div><div class="line">                        + &quot; measured dimension by calling&quot;</div><div class="line">                        + &quot; setMeasuredDimension()&quot;);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            mPrivateFlags |= PFLAG_LAYOUT_REQUIRED;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //缓存MeasureSpec</div><div class="line">        mOldWidthMeasureSpec = widthMeasureSpec;</div><div class="line">        mOldHeightMeasureSpec = heightMeasureSpec;</div><div class="line"></div><div class="line">        //缓存测量出来的宽度和高度</div><div class="line">        mMeasureCache.put(key, ((long) mMeasuredWidth) &lt;&lt; 32 |</div><div class="line">                (long) mMeasuredHeight &amp; 0xffffffffL); // suppress sign extension</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>measure方法中对标志位的判断比较多，就不一一分析了（主要是我也不了解(┬＿┬)），measure方法是final的，子类不能重写measure方法，所以measure的流程是固定的，其中的重点就是onMeasure方法了</p>
+<h3 id="onMeasure"><a href="#onMeasure" class="headerlink" title="onMeasure"></a>onMeasure</h3><p>我们先看看View中onMeasure方法的默认实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">    setMeasuredDimension(getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec),</div><div class="line">            getDefaultSize(getSuggestedMinimumHeight(), heightMeasureSpec));</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>里面调用了几个方法：</p>
+<ul>
+<li>setMeasuredDimension</li>
+<li>getDefaultSize</li>
+<li>getSuggestedMinimumWidth和getSuggestedMinimumHeight</li>
+</ul>
+<p>我们从内到外看：</p>
+<h4 id="getSuggestedMinimumWidth和getSuggestedMinimumHeight"><a href="#getSuggestedMinimumWidth和getSuggestedMinimumHeight" class="headerlink" title="getSuggestedMinimumWidth和getSuggestedMinimumHeight"></a>getSuggestedMinimumWidth和getSuggestedMinimumHeight</h4><p>以getSuggestedMinimumWidth为例说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Returns the suggested minimum width that the view should use. This</div><div class="line"> * returns the maximum of the view&apos;s minimum width</div><div class="line"> * and the background&apos;s minimum width</div><div class="line"> *  (&#123;@link android.graphics.drawable.Drawable#getMinimumWidth()&#125;).</div><div class="line"> * &lt;p&gt;</div><div class="line"> * When being used in &#123;@link #onMeasure(int, int)&#125;, the caller should still</div><div class="line"> * ensure the returned width is within the requirements of the parent.</div><div class="line"> *</div><div class="line"> * @return The suggested minimum width of the view.</div><div class="line"> */</div><div class="line">protected int getSuggestedMinimumWidth() &#123;</div><div class="line">    return (mBackground == null) ? mMinWidth : max(mMinWidth, mBackground.getMinimumWidth());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该方法返回这个View的最小宽度，逻辑也比较简单，如果没有设置背景的话，返回值就是mMinWidth，如果有有设置背景的话，返回值是mMinWidth和背景的最小宽度中的最大值。其中mMinWidth可能是xml中定义的minWidth或者外部通过调用setMinimumWidth()方法设置的。</p>
+<h4 id="getDefaultSize"><a href="#getDefaultSize" class="headerlink" title="getDefaultSize"></a>getDefaultSize</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Utility to return a default size. Uses the supplied size if the</div><div class="line"> * MeasureSpec imposed no constraints. Will get larger if allowed</div><div class="line"> * by the MeasureSpec.</div><div class="line"> *</div><div class="line"> * @param size Default size for this view</div><div class="line"> * @param measureSpec Constraints imposed by the parent</div><div class="line"> * @return The size this view should be.</div><div class="line"> */</div><div class="line">public static int getDefaultSize(int size, int measureSpec) &#123;</div><div class="line">    int result = size;</div><div class="line">    int specMode = MeasureSpec.getMode(measureSpec);</div><div class="line">    int specSize = MeasureSpec.getSize(measureSpec);</div><div class="line"></div><div class="line">    switch (specMode) &#123;</div><div class="line">    case MeasureSpec.UNSPECIFIED:</div><div class="line">        result = size;</div><div class="line">        break;</div><div class="line">    case MeasureSpec.AT_MOST:</div><div class="line">    case MeasureSpec.EXACTLY:</div><div class="line">        result = specSize;</div><div class="line">        break;</div><div class="line">    &#125;</div><div class="line">    return result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>getDefaultSize内部判断MeasureSpec的SpecMode，如果SpecMode是MeasureSpec.UNSPECIFIED，返回值就是前面获取到的最小值，否则就是MeasureSpec中的specSize。那么问题就来了，如果一个自定义View在xml中声明width或者height是wrap_content，除非父View的specMode是UNSPECIFIED，否则子View的specMode就是AT_MOST，specSize就是父View的剩余大小。也就是说如果不重写onMeasure方法处理wrap_content的情况，wrap_content表现就和match_parent一样充满父View的剩余空间。</p>
+<h4 id="setMeasuredDimension"><a href="#setMeasuredDimension" class="headerlink" title="setMeasuredDimension"></a>setMeasuredDimension</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">protected final void setMeasuredDimension(int measuredWidth, int measuredHeight) &#123;</div><div class="line">    boolean optical = isLayoutModeOptical(this);</div><div class="line">    if (optical != isLayoutModeOptical(mParent)) &#123;</div><div class="line">        Insets insets = getOpticalInsets();</div><div class="line">        int opticalWidth  = insets.left + insets.right;</div><div class="line">        int opticalHeight = insets.top  + insets.bottom;</div><div class="line"></div><div class="line">        measuredWidth  += optical ? opticalWidth  : -opticalWidth;</div><div class="line">        measuredHeight += optical ? opticalHeight : -opticalHeight;</div><div class="line">    &#125;</div><div class="line">    setMeasuredDimensionRaw(measuredWidth, measuredHeight);</div><div class="line">&#125;</div><div class="line"></div><div class="line">private void setMeasuredDimensionRaw(int measuredWidth, int measuredHeight) &#123;</div><div class="line">    mMeasuredWidth = measuredWidth;</div><div class="line">    mMeasuredHeight = measuredHeight;</div><div class="line"></div><div class="line">    mPrivateFlags |= PFLAG_MEASURED_DIMENSION_SET;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后的就是简单设置测量宽度和测量高度了</p>
+<h4 id="onMeasure处理wrap-content的情况"><a href="#onMeasure处理wrap-content的情况" class="headerlink" title="onMeasure处理wrap_content的情况"></a>onMeasure处理wrap_content的情况</h4><p>前面分析了自定义的View需要处理wrap_content的情况，其实套路都是通用的<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) &#123;</div><div class="line">    super.onMeasure(widthMeasureSpec , heightMeasureSpec);  </div><div class="line">    int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);  </div><div class="line">    int widthSpceSize = MeasureSpec.getSize(widthMeasureSpec);  </div><div class="line">    int heightSpecMode=MeasureSpec.getMode(heightMeasureSpec);  </div><div class="line">    int heightSpceSize=MeasureSpec.getSize(heightMeasureSpec);  </div><div class="line"></div><div class="line">    if(widthSpecMode==MeasureSpec.AT_MOST&amp;&amp;heightSpecMode==MeasureSpec.AT_MOST)&#123;  </div><div class="line">        setMeasuredDimension(getDefaultWidth(), getDefaultHeight());  </div><div class="line">    &#125;else if(widthSpecMode==MeasureSpec.AT_MOST)&#123;  </div><div class="line">        setMeasuredDimension(getDefaultWidth(), heightSpceSize);  </div><div class="line">    &#125;else if(heightSpecMode==MeasureSpec.AT_MOST)&#123;  </div><div class="line">        setMeasuredDimension(widthSpceSize, getDefaultHeight());  </div><div class="line">    &#125;  </div><div class="line"></div><div class="line"> &#125;  </div><div class="line"></div><div class="line"></div><div class="line"> private int getDefaultWidth() &#123;</div><div class="line">     //计算默认的宽度</div><div class="line"> &#125;</div><div class="line"></div><div class="line"> private int getDefaultHeight() &#123;</div><div class="line">     //计算默认的高度</div><div class="line"> &#125;</div></pre></td></tr></table></figure></p>
+<p> 判断SpecMode是AT_MOST的情况下，设置对应的默认大小就可以了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/View/" rel="tag"># View</a>
+          
+            <a href="/tags/Measure/" rel="tag"># Measure</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/用Fragment分发Activity的回调/" rel="next" title="用Fragment分发Activity的回调">
+                <i class="fa fa-chevron-left"></i> 用Fragment分发Activity的回调
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码调用流程"><span class="nav-number">1.</span> <span class="nav-text">代码调用流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MeasureSpec"><span class="nav-number">2.</span> <span class="nav-text">MeasureSpec</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码解析"><span class="nav-number">3.</span> <span class="nav-text">代码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#measureChildren"><span class="nav-number">3.1.</span> <span class="nav-text">measureChildren</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#measureChild"><span class="nav-number">3.2.</span> <span class="nav-text">measureChild</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getChildMesureSpec"><span class="nav-number">3.2.1.</span> <span class="nav-text">getChildMesureSpec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#measureChildWithMargins和measureChild的区别"><span class="nav-number">3.2.2.</span> <span class="nav-text">measureChildWithMargins和measureChild的区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#measure"><span class="nav-number">3.3.</span> <span class="nav-text">measure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#onMeasure"><span class="nav-number">3.4.</span> <span class="nav-text">onMeasure</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#getSuggestedMinimumWidth和getSuggestedMinimumHeight"><span class="nav-number">3.4.1.</span> <span class="nav-text">getSuggestedMinimumWidth和getSuggestedMinimumHeight</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getDefaultSize"><span class="nav-number">3.4.2.</span> <span class="nav-text">getDefaultSize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setMeasuredDimension"><span class="nav-number">3.4.3.</span> <span class="nav-text">setMeasuredDimension</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#onMeasure处理wrap-content的情况"><span class="nav-number">3.4.4.</span> <span class="nav-text">onMeasure处理wrap_content的情况</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
