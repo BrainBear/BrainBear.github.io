@@ -1,0 +1,670 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,View,Draw," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前面我们分析了measure过程和layout过程，measure过程是大概确定View的宽高大小，layout过程是确定View位于屏幕的哪个位置，但是View具体长什么样是不知道到，我们今天就来了解一下View绘制的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View源码了解一下，Draw过程">
+<meta property="og:url" content="http://yoursite.com/View源码了解一下，Draw过程/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="前面我们分析了measure过程和layout过程，measure过程是大概确定View的宽高大小，layout过程是确定View位于屏幕的哪个位置，但是View具体长什么样是不知道到，我们今天就来了解一下View绘制的过程。">
+<meta property="og:updated_time" content="2018-05-21T15:50:04.708Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="View源码了解一下，Draw过程">
+<meta name="twitter:description" content="前面我们分析了measure过程和layout过程，measure过程是大概确定View的宽高大小，layout过程是确定View位于屏幕的哪个位置，但是View具体长什么样是不知道到，我们今天就来了解一下View绘制的过程。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/View源码了解一下，Draw过程/"/>
+
+
+
+
+
+  <title> View源码了解一下，Draw过程 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/View源码了解一下，Draw过程/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                View源码了解一下，Draw过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T22:02:32+08:00">
+                2018-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面我们分析了measure过程和layout过程，measure过程是大概确定View的宽高大小，layout过程是确定View位于屏幕的哪个位置，但是View具体长什么样是不知道到，我们今天就来了解一下View绘制的过程。<br><a id="more"></a></p>
+<h2 id="View-draw"><a href="#View-draw" class="headerlink" title="View#draw"></a>View#draw</h2><p>我们先看看View中draw方法的实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">public void draw(Canvas canvas) &#123;</div><div class="line">    final int privateFlags = mPrivateFlags;</div><div class="line">    final boolean dirtyOpaque = (privateFlags &amp; PFLAG_DIRTY_MASK) == PFLAG_DIRTY_OPAQUE &amp;&amp;</div><div class="line">            (mAttachInfo == null || !mAttachInfo.mIgnoreDirtyState);</div><div class="line">    mPrivateFlags = (privateFlags &amp; ~PFLAG_DIRTY_MASK) | PFLAG_DRAWN;</div><div class="line"></div><div class="line">    /*</div><div class="line">     * Draw traversal performs several drawing steps which must be executed</div><div class="line">     * in the appropriate order:</div><div class="line">     *</div><div class="line">     *      1. Draw the background 绘制背景</div><div class="line">     *      2. If necessary, save the canvas&apos; layers to prepare for fading  如果有需要的话，保存canvas的layer用于绘制渐变的效果</div><div class="line">     *      3. Draw view&apos;s content 绘制当前view的内容</div><div class="line">     *      4. Draw children 绘制子View</div><div class="line">     *      5. If necessary, draw the fading edges and restore layers 有必要的话绘制边缘的渐变效果</div><div class="line">     *      6. Draw decorations (scrollbars for instance) 绘制装饰，例如滚动条</div><div class="line">     */</div><div class="line"></div><div class="line">    // Step 1, draw the background, if needed</div><div class="line">    int saveCount;</div><div class="line"></div><div class="line">    if (!dirtyOpaque) &#123;</div><div class="line">        //绘制背景</div><div class="line">        drawBackground(canvas);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //一般情况下都可以跳过第二和第五步</div><div class="line">    // skip step 2 &amp; 5 if possible (common case)</div><div class="line">    final int viewFlags = mViewFlags;</div><div class="line">    boolean horizontalEdges = (viewFlags &amp; FADING_EDGE_HORIZONTAL) != 0;</div><div class="line">    boolean verticalEdges = (viewFlags &amp; FADING_EDGE_VERTICAL) != 0;</div><div class="line">    if (!verticalEdges &amp;&amp; !horizontalEdges) &#123;</div><div class="line">        //绘制当前View的内容</div><div class="line">        // Step 3, draw the content</div><div class="line">        if (!dirtyOpaque) onDraw(canvas);</div><div class="line"></div><div class="line">        //绘制子View</div><div class="line">        // Step 4, draw the children</div><div class="line">        dispatchDraw(canvas);</div><div class="line"></div><div class="line">        drawAutofilledHighlight(canvas);</div><div class="line"></div><div class="line">        // Overlay is part of the content and draws beneath Foreground</div><div class="line">        if (mOverlay != null &amp;&amp; !mOverlay.isEmpty()) &#123;</div><div class="line">            mOverlay.getOverlayView().dispatchDraw(canvas);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        //绘制装饰，例如滚动条之类的</div><div class="line">        // Step 6, draw decorations (foreground, scrollbars)</div><div class="line">        onDrawForeground(canvas);</div><div class="line"></div><div class="line">        //绘制默认焦点的高亮</div><div class="line">        // Step 7, draw the default focus highlight</div><div class="line">        drawDefaultFocusHighlight(canvas);</div><div class="line"></div><div class="line">        if (debugDraw()) &#123;</div><div class="line">            debugDrawFocus(canvas);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        // we&apos;re done...</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">   //省略部分代码，后面的代码就是全部流程都跑一边</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>View的draw逻辑还是比较简单的，源码上给出的注释已经很详细了，主要的流程是</p>
+<ol>
+<li>绘制背景</li>
+<li>如果有需要的话，保存canvas的layer用于绘制渐变的效果（一般不需要）</li>
+<li>绘制当前View的内容</li>
+<li>绘制子View</li>
+<li>绘制View边缘的渐变效果（一般不需要）</li>
+<li>绘制前景的装饰，例如滚动条等等</li>
+</ol>
+<p>源码上也注释了，一般第二步和第五步是跳过的，我们就分析第一，第二，和第三步。</p>
+<h3 id="绘制背景"><a href="#绘制背景" class="headerlink" title="绘制背景"></a>绘制背景</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Draws the background onto the specified canvas.</div><div class="line"> *</div><div class="line"> * @param canvas Canvas on which to draw the background</div><div class="line"> */</div><div class="line">private void drawBackground(Canvas canvas) &#123;</div><div class="line">    //先获取到背景的drawable，如果是null就不需要绘制了</div><div class="line">    final Drawable background = mBackground;</div><div class="line">    if (background == null) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //设置背景的边界</div><div class="line">    setBackgroundBounds();</div><div class="line"></div><div class="line">    // Attempt to use a display list if requested.</div><div class="line">    if (canvas.isHardwareAccelerated() &amp;&amp; mAttachInfo != null</div><div class="line">            &amp;&amp; mAttachInfo.mThreadedRenderer != null) &#123;</div><div class="line">        mBackgroundRenderNode = getDrawableRenderNode(background, mBackgroundRenderNode);</div><div class="line"></div><div class="line">        final RenderNode renderNode = mBackgroundRenderNode;</div><div class="line">        if (renderNode != null &amp;&amp; renderNode.isValid()) &#123;</div><div class="line">            setBackgroundRenderNodeProperties(renderNode);</div><div class="line">            ((DisplayListCanvas) canvas).drawRenderNode(renderNode);</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //绘制背景</div><div class="line">    final int scrollX = mScrollX;</div><div class="line">    final int scrollY = mScrollY;</div><div class="line">    if ((scrollX | scrollY) == 0) &#123;</div><div class="line">        background.draw(canvas);</div><div class="line">    &#125; else &#123;</div><div class="line">        canvas.translate(scrollX, scrollY);</div><div class="line">        background.draw(canvas);</div><div class="line">        canvas.translate(-scrollX, -scrollY);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>代码逻辑也比较简单，先获取一下背景的drawable，如果是null就证明不需要绘制背景，最后就是调用drawable的draw方法来绘制。</p>
+<h3 id="绘制当前View的内容"><a href="#绘制当前View的内容" class="headerlink" title="绘制当前View的内容"></a>绘制当前View的内容</h3><p>View的onDraw方法默认是空实现的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Implement this to do your drawing.</div><div class="line"> *</div><div class="line"> * @param canvas the canvas on which the background will be drawn</div><div class="line"> */</div><div class="line">protected void onDraw(Canvas canvas) &#123;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>不同功能的控件都继承的View，然后自己在onDraw方法中绘制自己的内容。如果对内容绘制有兴趣的话建议看看<a href="http://hencoder.com/" target="_blank" rel="external">HenCoder</a>的内容，写得非常好，这里就不多说了。</p>
+<h3 id="绘制子View"><a href="#绘制子View" class="headerlink" title="绘制子View"></a>绘制子View</h3><p>View中的dispatchDraw方法也是空实现的，具体的实现是在ViewGroup中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">protected void dispatchDraw(Canvas canvas) &#123;</div><div class="line">    ///省略代码</div><div class="line"></div><div class="line">     for (int i = 0; i &lt; childrenCount; i++) &#123;</div><div class="line">        while (transientIndex &gt;= 0 &amp;&amp; mTransientIndices.get(transientIndex) == i) &#123;</div><div class="line">            final View transientChild = mTransientViews.get(transientIndex);</div><div class="line">            if ((transientChild.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE ||</div><div class="line">                    transientChild.getAnimation() != null) &#123;</div><div class="line">                more |= drawChild(canvas, transientChild, drawingTime);</div><div class="line">            &#125;</div><div class="line">            transientIndex++;</div><div class="line">            if (transientIndex &gt;= transientCount) &#123;</div><div class="line">                transientIndex = -1;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        final int childIndex = getAndVerifyPreorderedIndex(childrenCount, i, customOrder);</div><div class="line">        final View child = getAndVerifyPreorderedView(preorderedList, children, childIndex);</div><div class="line">        if ((child.mViewFlags &amp; VISIBILITY_MASK) == VISIBLE || child.getAnimation() != null) &#123;</div><div class="line">            more |= drawChild(canvas, child, drawingTime);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    ///省略代码</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ViewGroup的dispatchDraw方法还是比较复杂的，处理了一些回调，还有动画的逻辑，我们看最核心的代码，就是遍历全部的子View，调用drawChild方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">protected boolean drawChild(Canvas canvas, View child, long drawingTime) &#123;</div><div class="line">    return child.draw(canvas, this, drawingTime);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果drawChild方法就是调用了子View的draw方法而已。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这篇文章只是简单过一下draw的流程，具体View是怎么画出各种酷炫的效果的并没有涉及，再次安利一下<a href="http://hencoder.com/" target="_blank" rel="external">HenCoder</a>，相信会有更多的收获的。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/View/" rel="tag"># View</a>
+          
+            <a href="/tags/Draw/" rel="tag"># Draw</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/View源码了解一下，Layout过程/" rel="next" title="View源码了解一下，Layout过程">
+                <i class="fa fa-chevron-left"></i> View源码了解一下，Layout过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#View-draw"><span class="nav-number">1.</span> <span class="nav-text">View#draw</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制背景"><span class="nav-number">1.1.</span> <span class="nav-text">绘制背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制当前View的内容"><span class="nav-number">1.2.</span> <span class="nav-text">绘制当前View的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#绘制子View"><span class="nav-number">1.3.</span> <span class="nav-text">绘制子View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
