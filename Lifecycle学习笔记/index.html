@@ -1,0 +1,673 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Lifecycle,Architecture Components," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Lifecycle是Android官方发布的架构组件中的一部分，其实已经发布了很长时间了，但是之前只是简单浏览了一下，并没有使用，最近看到很多优秀的开源项目的时候使用了Lifecycle，于是花了点时间认真了解一下它的逻辑，所以有了这篇文章。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lifecycle学习笔记">
+<meta property="og:url" content="http://yoursite.com/Lifecycle学习笔记/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="Lifecycle是Android官方发布的架构组件中的一部分，其实已经发布了很长时间了，但是之前只是简单浏览了一下，并没有使用，最近看到很多优秀的开源项目的时候使用了Lifecycle，于是花了点时间认真了解一下它的逻辑，所以有了这篇文章。">
+<meta property="og:updated_time" content="2018-06-26T16:58:14.172Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lifecycle学习笔记">
+<meta name="twitter:description" content="Lifecycle是Android官方发布的架构组件中的一部分，其实已经发布了很长时间了，但是之前只是简单浏览了一下，并没有使用，最近看到很多优秀的开源项目的时候使用了Lifecycle，于是花了点时间认真了解一下它的逻辑，所以有了这篇文章。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Lifecycle学习笔记/"/>
+
+
+
+
+
+  <title> Lifecycle学习笔记 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Lifecycle学习笔记/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Lifecycle学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-26T22:02:32+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Lifecycle是Android官方发布的架构组件中的一部分，其实已经发布了很长时间了，但是之前只是简单浏览了一下，并没有使用，最近看到很多优秀的开源项目的时候使用了Lifecycle，于是花了点时间认真了解一下它的逻辑，所以有了这篇文章。<br><a id="more"></a></p>
+<h2 id="Lifecycle"><a href="#Lifecycle" class="headerlink" title="Lifecycle"></a>Lifecycle</h2><h3 id="什么是Lifecycle"><a href="#什么是Lifecycle" class="headerlink" title="什么是Lifecycle"></a>什么是Lifecycle</h3><p>Lifecycle是Android发布的架构组件（Architecture Components）之一。顾名思义，Lifecycle就是用于管理生命周期的，Lifecycle可以让开发者更方便地感知目标（不仅仅是Activity和Fragment）的生命周期。</p>
+<h3 id="为什么要用Lifecycle-？"><a href="#为什么要用Lifecycle-？" class="headerlink" title="为什么要用Lifecycle ？"></a>为什么要用Lifecycle ？</h3><p>为什么要用Lifecycle呢？如果只是一个简单的项目，我们可以直接在Activity或者Fragment中写完全部的业务逻辑，但是一旦项目复杂起来，一个项目由多人开发维护，代码的可维护性是一个非常关键的点。现在流行的各种项目代码架构，如经典的MVC，后来火起来的MVP、MVVM，前端流行的Flow。就我个人理解，其最大的目的就是为了解耦，如果代码耦合严重，业务迭代快一点就没法开发了。</p>
+<p>但是解耦存在一个问题，有些逻辑就是耦合在一起的，举一个例子：在一个MVP架构的项目中，Activity调用Presenter执行一个异步的逻辑，逻辑没有执行完之前用户退出了这个Activity，应该要执行一些释放资源的操作，例如取消这个逻辑。如果Presenter无法感知Activity的生命周期，那么Presenter就不知道什么时候该释放资源了。为了解决这个问题，我们一般把Activity的生命周期代理给Presenter。</p>
+<p>先定义一个IPresenter<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">//简单举个例子，只定义了两个生命周期方法</div><div class="line">public interface IPresneter &#123;</div><div class="line"></div><div class="line">    void onCreate();</div><div class="line"></div><div class="line">    void onDestroy();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>具体的业务Presenter实现这个IPresenter，在Activity对应的生命周期回调中主动调用Presenter的生命周期方法。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">IPresenter mPresenter;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    super.onCreate(savedInstanceState);</div><div class="line">    setContentView(R.layout.activity_lifecycle);</div><div class="line"></div><div class="line">    mPresenter.onCreate();</div><div class="line">&#125;</div><div class="line"></div><div class="line">@Override</div><div class="line">protected void onDestroy() &#123;</div><div class="line">    mPresenter.onDestroy();</div><div class="line">    super.onDestroy();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们一般会封装一下，把这些逻辑写在Activity的基类，这样就让Presenter感知到Activity的生命周期了。我们这里只是简单定义了两个生命周期，如果完整的create、start、resume、pause、stop、destroy都写一遍，会增加很多模版代码，而且Activity写一遍之后Fragment还要写一遍，太麻烦！</p>
+<h3 id="Lifecycle的使用"><a href="#Lifecycle的使用" class="headerlink" title="Lifecycle的使用"></a>Lifecycle的使用</h3><p>Lifecycle已经集成在support包中，更新support包到最新的版本即可使用。Lifecycle的使用非常简单，但是有两种实现方式，和你使用的JDK版本有关。</p>
+<h4 id="JDK1-7或以下"><a href="#JDK1-7或以下" class="headerlink" title="JDK1.7或以下"></a>JDK1.7或以下</h4><p>定义一个IPresenter接口，继承官方提供的LifecycleObserver接口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public interface IPresenter extends LifecycleObserver&#123;</div><div class="line"></div><div class="line"></div><div class="line">    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)</div><div class="line">    void onCreate(LifecycleOwner owner);</div><div class="line"></div><div class="line">    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)</div><div class="line">    void onDestroy(LifecycleOwner owner);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>LifecycleObserver是一个空接口，只是为了用于标识：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface LifecycleObserver &#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>OnLifecycleEvent是Lifecycle组件提供的注解，用于绑定和Event参数对应的生命周期方法。</p>
+<p>Lifecycle.Event是一个枚举类，定义了全部的生命周期：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public enum Event &#123;</div><div class="line">    ON_CREATE,</div><div class="line">    ON_START,</div><div class="line">    ON_RESUME,</div><div class="line">    ON_PAUSE,</div><div class="line">    ON_STOP,</div><div class="line">    ON_DESTROY,</div><div class="line">    ON_ANY</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>需要注意的是ON_ANY，他代表全部生命周期。如果使用ON_ANY的话，任何生命周期回调的时候都会回调给它。</p>
+<p>使用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">@OnLifecycleEvent(Lifecycle.Event.ON_ANY)</div><div class="line">void onLifecycleChanged(@NotNull LifecycleOwner owner, @NotNull Lifecycle.Event event);</div></pre></td></tr></table></figure></p>
+<p>LifecycleOwner代表着有生命周期的对象，像Activity、Fragment之类的就是LifecycleOwner的一个实现类。</p>
+<p><strong>注意</strong>:生命周期回调方法的参数并不是乱定义的，可以是无参，如果只有一个参数，那这个参数必须是LifecycleOwner类型，如果有两个参数，第一个参数是LifecycleOwner类型，第二个参数是Lifecycle.Event类型。</p>
+<p>定义一个业务逻辑相关的Presenter，实现IPresenter接口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public class LifecycleDemoPresenter implements IPresenter &#123;</div><div class="line"></div><div class="line">    private static final String TAG = &quot;LifecycleDemoPresenter&quot;;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(LifecycleOwner owner) &#123;</div><div class="line">        Log.d(TAG, &quot;onCreate&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onDestroy(LifecycleOwner owner) &#123;</div><div class="line">        Log.d(TAG, &quot;onDestroy&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在Activity中添加Lifecycle的监听：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Override</div><div class="line">protected void onCreate(Bundle savedInstanceState) &#123;</div><div class="line">    ...</div><div class="line">    LifecycleDemoPresenter lifecycleDemoPresenter = new LifecycleDemoPresenter();</div><div class="line">    getLifecycle().addObserver(lifecycleDemoPresenter);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>只需要在Activity中调用一个方法就可以让Presenter感知全部的生命周期了，是不是很神奇~</p>
+<p><strong>注意</strong>：这里使用了注解来绑定对应的生命周期，应该都知道Android中有运行时注解和编译时注解，运行时注解是通过反射来实现的，编译时注解是通过注解处理器来生成代码来直接调用（也会有少量的反射）。从性能上讲编译时注解要比运行时注解要高，但是support包默认的实现是运行时注解。如果想使用编译时注解需要引入依赖：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">annotationProcessor &quot;android.arch.lifecycle:compiler:1.1.1&quot;</div></pre></td></tr></table></figure></p>
+<h3 id="JDK1-8或以上"><a href="#JDK1-8或以上" class="headerlink" title="JDK1.8或以上"></a>JDK1.8或以上</h3><p>Android针对使用JDK1.8的开发者特意增加了一个类：DefaultLifecycleObserver：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">public interface DefaultLifecycleObserver extends FullLifecycleObserver &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    default void onCreate(@NonNull LifecycleOwner owner) &#123;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /*</div><div class="line">    省略了其他的生命周期方法</div><div class="line">    */</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">interface FullLifecycleObserver extends LifecycleObserver &#123;</div><div class="line"></div><div class="line">    void onCreate(LifecycleOwner owner);</div><div class="line"></div><div class="line">    void onStart(LifecycleOwner owner);</div><div class="line"></div><div class="line">    void onResume(LifecycleOwner owner);</div><div class="line"></div><div class="line">    void onPause(LifecycleOwner owner);</div><div class="line"></div><div class="line">    void onStop(LifecycleOwner owner);</div><div class="line"></div><div class="line">    void onDestroy(LifecycleOwner owner);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>利用的是JDK1.8提供的新特性：接口方法的默认实现。DefaultLifecycleObserver继承于FullLifecycleObserver，FullLifecycleObserver定义了全部的生命周期方法，而DefaultLifecycleObserver中全部都空实现了。</p>
+<p>如果使用的JDK1.8或以上，我们只需要修改IPresenter继承于DefaultLifecycleObserver这个接口就可以了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface IPresenter extends DefaultLifecycleObserver&#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>是的，你没有看错，因为DefaultLifecycleObserver已经默认空实现了全部的生命周期方法，IPresenter这个接口不需要再定义其他的生命周期方法。(≧▽≦)</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这篇文章只是简单介绍了一下Lifecycle的用法，还想分析一下Lifecycle的代码，看了一下时间快凌晨1点了。。。我们下次再见~</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Lifecycle/" rel="tag"># Lifecycle</a>
+          
+            <a href="/tags/Architecture-Components/" rel="tag"># Architecture Components</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Parcelable持久化/" rel="next" title="Parcelable持久化">
+                <i class="fa fa-chevron-left"></i> Parcelable持久化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lifecycle"><span class="nav-number">1.</span> <span class="nav-text">Lifecycle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是Lifecycle"><span class="nav-number">1.1.</span> <span class="nav-text">什么是Lifecycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要用Lifecycle-？"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要用Lifecycle ？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lifecycle的使用"><span class="nav-number">1.3.</span> <span class="nav-text">Lifecycle的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JDK1-7或以下"><span class="nav-number">1.3.1.</span> <span class="nav-text">JDK1.7或以下</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK1-8或以上"><span class="nav-number">1.4.</span> <span class="nav-text">JDK1.8或以上</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.5.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
