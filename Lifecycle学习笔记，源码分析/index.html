@@ -1,0 +1,692 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Lifecycle,Architecture Components," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lifecycle学习笔记，源码分析">
+<meta property="og:url" content="http://yoursite.com/Lifecycle学习笔记，源码分析/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。">
+<meta property="og:image" content="https://developer.android.com/images/topic/libraries/architecture/lifecycle-states.png">
+<meta property="og:updated_time" content="2018-06-27T16:15:11.095Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lifecycle学习笔记，源码分析">
+<meta name="twitter:description" content="在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。">
+<meta name="twitter:image" content="https://developer.android.com/images/topic/libraries/architecture/lifecycle-states.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Lifecycle学习笔记，源码分析/"/>
+
+
+
+
+
+  <title> Lifecycle学习笔记，源码分析 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Lifecycle学习笔记，源码分析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Lifecycle学习笔记，源码分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-26T22:02:32+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。<br><a id="more"></a></p>
+<h2 id="Lifecycle源码分析"><a href="#Lifecycle源码分析" class="headerlink" title="Lifecycle源码分析"></a>Lifecycle源码分析</h2><h3 id="重要的类"><a href="#重要的类" class="headerlink" title="重要的类"></a>重要的类</h3><h4 id="Lifecycle"><a href="#Lifecycle" class="headerlink" title="Lifecycle"></a>Lifecycle</h4><p>Lifecycle类代表生命周期，是一个抽象类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public abstract class Lifecycle &#123;</div><div class="line"></div><div class="line">    public abstract void addObserver(@NonNull LifecycleObserver observer);</div><div class="line"></div><div class="line">    public abstract void removeObserver(@NonNull LifecycleObserver observer);</div><div class="line"></div><div class="line">    public abstract State getCurrentState();</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>它提供了addObserver方法让外部可以感知它的生命周期变化。</p>
+<h4 id="LifecycleOwner"><a href="#LifecycleOwner" class="headerlink" title="LifecycleOwner"></a>LifecycleOwner</h4><p>LifecycleOwner，顾名思义就是拥有生命周期的类，它是一个接口，只有一个getLifecycle方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">public interface LifecycleOwner &#123;</div><div class="line"></div><div class="line">    Lifecycle getLifecycle();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Event"><a href="#Event" class="headerlink" title="Event"></a>Event</h4><p>Event代表让生命周期发生改变的事件，是一个枚举类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">public enum Event &#123;</div><div class="line">       </div><div class="line">        ON_CREATE,</div><div class="line">        ON_START,</div><div class="line">        ON_RESUME,</div><div class="line">        ON_PAUSE,</div><div class="line">        ON_STOP,</div><div class="line">        ON_DESTROY,</div><div class="line">        /**</div><div class="line">         * An &#123;@link Event Event&#125; constant that can be used to match all events.</div><div class="line">         */</div><div class="line">        ON_ANY</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>需要注意的是ON_ANY，代表任意事件。</p>
+<h4 id="State"><a href="#State" class="headerlink" title="State"></a>State</h4><p>State代表Lifecycle当前的生命周期状态，也是一个枚举类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public enum State &#123;</div><div class="line">    DESTROYED,</div><div class="line">    INITIALIZED,</div><div class="line">    CREATED,</div><div class="line">    STARTED,</div><div class="line">    RESUMED;</div><div class="line">		</div><div class="line">    public boolean isAtLeast(@NonNull State state) &#123;</div><div class="line">        return compareTo(state) &gt;= 0;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>LifecycleOwner发出Event引起State改变，他们的关系引用官方的图就可以很清楚了。</p>
+<p><img src="https://developer.android.com/images/topic/libraries/architecture/lifecycle-states.png" alt=""></p>
+<h4 id="LifecycleObserver"><a href="#LifecycleObserver" class="headerlink" title="LifecycleObserver"></a>LifecycleObserver</h4><p>LifecycleObserver代表着观察者，LifecycleObserver监听着LifecycleOwner的Lifecycle。它是一个空接口。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface LifecycleObserver &#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="LifecycleRegistry"><a href="#LifecycleRegistry" class="headerlink" title="LifecycleRegistry"></a>LifecycleRegistry</h4><p>LifecycleRegistry是Lifecycle的实现类。support包中的Activity和Fragment中持有的Lifecycle都是LifecycleRegistry。</p>
+<h3 id="流程分析"><a href="#流程分析" class="headerlink" title="流程分析"></a>流程分析</h3><p>我们以v4 support包中的Fragment来分析一波。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class LifecycleFragment extends android.support.v4.app.Fragment &#123;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void onCreate(@Nullable Bundle savedInstanceState) &#123;</div><div class="line">        super.onCreate(savedInstanceState);</div><div class="line">        getLifecycle().addObserver(new LifecycleDemoPresenter());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>先看getLifecycle方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);</div><div class="line"></div><div class="line">@Override</div><div class="line">public Lifecycle getLifecycle() &#123;</div><div class="line">    return mLifecycleRegistry;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>可以看到Fragment中持有的Lifecycle对象是LifecycleRegistry。</p>
+<p>再看addObserver方法，走到LifecycleRegistery的addObserver实现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">public void addObserver(LifecycleObserver observer) &#123;</div><div class="line">    //初始化当前状态</div><div class="line">    State initialState = mState == DESTROYED ? DESTROYED : INITIALIZED;</div><div class="line">    ObserverWithState statefulObserver = new ObserverWithState(observer, initialState);</div><div class="line">    //将Observer和ObserverWithState缓存下来</div><div class="line">    ObserverWithState previous = mObserverMap.putIfAbsent(observer, statefulObserver);</div><div class="line"></div><div class="line">    if (previous != null) &#123;</div><div class="line">        return;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //Lifecycle没有用锁，为了线程安全加了好多逻辑</div><div class="line">    boolean isReentrance = mAddingObserverCounter != 0 || mHandlingEvent;</div><div class="line"></div><div class="line">    State targetState = calculateTargetState(observer);</div><div class="line">    mAddingObserverCounter++;</div><div class="line">    while ((statefulObserver.mState.compareTo(targetState) &lt; 0</div><div class="line">            &amp;&amp; mObserverMap.contains(observer))) &#123;</div><div class="line">        pushParentState(statefulObserver.mState);</div><div class="line">        //核心：分发事件</div><div class="line">        statefulObserver.dispatchEvent(mLifecycleOwner, upEvent(statefulObserver.mState));</div><div class="line">        popParentState();</div><div class="line">        // mState / subling may have been changed recalculate</div><div class="line">        targetState = calculateTargetState(observer);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (!isReentrance) &#123;</div><div class="line">        // we do sync only on the top level.</div><div class="line">        sync();</div><div class="line">    &#125;</div><div class="line">    mAddingObserverCounter--;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>大部分的逻辑都是为了多线程情况下能正常分发事件，核心的逻辑其实就是调用了ObserverWithState的dispatchEvent方法。所以我们看看ObserverWithState：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">static class ObserverWithState &#123;</div><div class="line">    State mState;</div><div class="line">    GenericLifecycleObserver mLifecycleObserver;</div><div class="line"></div><div class="line">    ObserverWithState(LifecycleObserver observer, State initialState) &#123;</div><div class="line">        //根据传进来的LifecycleObserver构建出GenericLifecycleObserver对象</div><div class="line">        mLifecycleObserver = Lifecycling.getCallback(observer);</div><div class="line">        mState = initialState;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    void dispatchEvent(LifecycleOwner owner, Event event) &#123;</div><div class="line">        State newState = getStateAfter(event);</div><div class="line">        mState = min(mState, newState);</div><div class="line">        //调用GenericLifecycleObserver对象的onStateChanged方法来分发事件</div><div class="line">        mLifecycleObserver.onStateChanged(owner, event);</div><div class="line">        mState = newState;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>ObserverWithState是LifecycleRegistry的一个静态内部类。ObserverWithState在构造函数中根据传进来的LifecycleObserver对象构建出GenericLifeCycleObserver对象。在dispatchEvent方法中只是调用了ObserverWithState对象的onStateChanged方法而已。</p>
+<p>那我们看看GenericLifecycleObserver类<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public interface GenericLifecycleObserver extends LifecycleObserver &#123;</div><div class="line">    /**</div><div class="line">     * Called when a state transition event happens.</div><div class="line">     *</div><div class="line">     * @param source The source of the event</div><div class="line">     * @param event The event</div><div class="line">     */</div><div class="line">    void onStateChanged(LifecycleOwner source, Lifecycle.Event event);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>GenericLifecycleObserver只是一个接口，真正的逻辑在它的实现类中，我们看看GenericLifecycleObserver的实现类：</p>
+<ul>
+<li><p>GenericLifecycleObserver </p>
+<ul>
+<li>SingleGeneratedAdapterObserver </li>
+<li>FullLifecycleObserverAdapter </li>
+<li>ReflectiveGenericLifecycleObserver </li>
+<li>CompositeGeneratedAdaptersObserver </li>
+</ul>
+</li>
+</ul>
+<p>我们刚刚知道了ObserverWithState在构造方法中通过Lifecycling.getCallback来构建GenericLifecycleObserver对象，所以乾坤就藏在了Lifecycling.getCallback方法中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">static GenericLifecycleObserver getCallback(Object object) &#123;</div><div class="line">    if (object instanceof FullLifecycleObserver) &#123;</div><div class="line">        return new FullLifecycleObserverAdapter((FullLifecycleObserver) object);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    if (object instanceof GenericLifecycleObserver) &#123;</div><div class="line">        return (GenericLifecycleObserver) object;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    final Class&lt;?&gt; klass = object.getClass();</div><div class="line">    int type = getObserverConstructorType(klass);</div><div class="line">    if (type == GENERATED_CALLBACK) &#123;</div><div class="line">        List&lt;Constructor&lt;? extends GeneratedAdapter&gt;&gt; constructors =</div><div class="line">                sClassToAdapters.get(klass);</div><div class="line">        if (constructors.size() == 1) &#123;</div><div class="line">            GeneratedAdapter generatedAdapter = createGeneratedAdapter(</div><div class="line">                    constructors.get(0), object);</div><div class="line">            return new SingleGeneratedAdapterObserver(generatedAdapter);</div><div class="line">        &#125;</div><div class="line">        GeneratedAdapter[] adapters = new GeneratedAdapter[constructors.size()];</div><div class="line">        for (int i = 0; i &lt; constructors.size(); i++) &#123;</div><div class="line">            adapters[i] = createGeneratedAdapter(constructors.get(i), object);</div><div class="line">        &#125;</div><div class="line">        return new CompositeGeneratedAdaptersObserver(adapters);</div><div class="line">    &#125;</div><div class="line">    return new ReflectiveGenericLifecycleObserver(object);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个方法中就是通过传入的LifecycleObserver的类型来构建对应的<strong>真正执行逻辑的</strong>Observer。为什么要这么绕呢？前面一篇文章我们知道了Android提供了很多种方法来绑定生命周期的回调。getCallback这个方法就是对不同绑定方法构建合适的Observer。举个例子，Android默认提供的是运行时注解绑定，在这个方法中就会构建出ReflectiveGenericLifecycleObserver。在ReflectiveGenericLifecycleObserver内部就会通过反射去调用对应的方法。而如果是通过实现DefaultLifecycleObserver接口，在这个方法中就会构建出FullLifecycleObserverAdapter对象。具体的逻辑大家可以自己去看看，我就不再深入的分析了。</p>
+<p>上面的是addObserver方法导致的后续流程，那在Fragment中生命周期Lifecycle又是怎么分发的呢？</p>
+<p>其实大部分的逻辑是一样的，我们看看Fragment的源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">  void performCreate(Bundle savedInstanceState) &#123;</div><div class="line">      //....</div><div class="line">      onCreate(savedInstanceState);</div><div class="line">      //....</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  void performStart() &#123;</div><div class="line">      //....</div><div class="line">      onStart();</div><div class="line">      //....</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  void performResume() &#123;</div><div class="line">     //....</div><div class="line">      onResume();</div><div class="line">      //....</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  void performPause() &#123;</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE);</div><div class="line">      //....</div><div class="line">      onPause();</div><div class="line">      //....</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  void performStop() &#123;</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP);</div><div class="line">     //....</div><div class="line">      mCalled = false;</div><div class="line">      onStop();</div><div class="line">      //....</div><div class="line">  &#125;</div><div class="line">	</div><div class="line">  void performDestroy() &#123;</div><div class="line">      mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);</div><div class="line">//....</div><div class="line">      onDestroy();</div><div class="line">//....</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
+<p>就是在回调Fragment自己的生命周期的时候，也调用了 mLifecycleRegistry.handleLifecycleEvent去分发对应的Lifecycle事件。handleLifecycleEvent我们已经分析过了，这样Fragment的全部生命周期就通过Lifecycle解耦分发出去了。</p>
+<p>这里面还有一个有趣的事情，在crate、start、resume事件中，是先调用自己的生命周期回调，然后再分发，而在pause、stop、destroy事件中是先分发，再调用自己的生命周期，大家可以想想(≧∀≦)ゞ</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Lifecycle/" rel="tag"># Lifecycle</a>
+          
+            <a href="/tags/Architecture-Components/" rel="tag"># Architecture Components</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Parcelable持久化/" rel="next" title="Parcelable持久化">
+                <i class="fa fa-chevron-left"></i> Parcelable持久化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Lifecycle学习笔记/" rel="prev" title="Lifecycle学习笔记">
+                Lifecycle学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lifecycle源码分析"><span class="nav-number">1.</span> <span class="nav-text">Lifecycle源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#重要的类"><span class="nav-number">1.1.</span> <span class="nav-text">重要的类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Lifecycle"><span class="nav-number">1.1.1.</span> <span class="nav-text">Lifecycle</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LifecycleOwner"><span class="nav-number">1.1.2.</span> <span class="nav-text">LifecycleOwner</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Event"><span class="nav-number">1.1.3.</span> <span class="nav-text">Event</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#State"><span class="nav-number">1.1.4.</span> <span class="nav-text">State</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LifecycleObserver"><span class="nav-number">1.1.5.</span> <span class="nav-text">LifecycleObserver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LifecycleRegistry"><span class="nav-number">1.1.6.</span> <span class="nav-text">LifecycleRegistry</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程分析"><span class="nav-number">1.2.</span> <span class="nav-text">流程分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
