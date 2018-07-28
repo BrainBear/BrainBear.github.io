@@ -84,23 +84,17 @@
 
 
 
-<meta name="description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。
-TimeInterpolator 插值器插值器是什么呢？这个问题暂时不能很好的解答。那么插值器有什么用呢？
-我觉得是插值器是用来控制动画的效果。举个例子：一个平移动画，将一个ImageView从A点（100，100）移动到B点（100，200）。有多少种移动的方式呢">
+<meta name="description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="属性动画中的插值器和估值器">
 <meta property="og:url" content="http://yoursite.com/属性动画中的插值器和估值器/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
-<meta property="og:description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。
-TimeInterpolator 插值器插值器是什么呢？这个问题暂时不能很好的解答。那么插值器有什么用呢？
-我觉得是插值器是用来控制动画的效果。举个例子：一个平移动画，将一个ImageView从A点（100，100）移动到B点（100，200）。有多少种移动的方式呢">
+<meta property="og:description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。">
 <meta property="og:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWE5obHI1cU5KYnlsdjdq.png">
-<meta property="og:updated_time" content="2018-07-28T13:34:47.288Z">
+<meta property="og:updated_time" content="2018-07-28T13:46:26.523Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="属性动画中的插值器和估值器">
-<meta name="twitter:description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。
-TimeInterpolator 插值器插值器是什么呢？这个问题暂时不能很好的解答。那么插值器有什么用呢？
-我觉得是插值器是用来控制动画的效果。举个例子：一个平移动画，将一个ImageView从A点（100，100）移动到B点（100，200）。有多少种移动的方式呢">
+<meta name="twitter:description" content="之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。">
 <meta name="twitter:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWE5obHI1cU5KYnlsdjdq.png">
 
 
@@ -323,7 +317,7 @@ TimeInterpolator 插值器插值器是什么呢？这个问题暂时不能很好
       
 
       
-        <p>之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。</p>
+        <p>之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。<br><a id="more"></a></p>
 <h2 id="TimeInterpolator-插值器"><a href="#TimeInterpolator-插值器" class="headerlink" title="TimeInterpolator 插值器"></a>TimeInterpolator 插值器</h2><p>插值器是什么呢？这个问题暂时不能很好的解答。那么插值器有什么用呢？</p>
 <p>我觉得是插值器是用来控制动画的效果。举个例子：一个平移动画，将一个ImageView从A点（100，100）移动到B点（100，200）。有多少种移动的方式呢？答案是无数种。你可以以一个恒定的速度从A移动到B、也可以从A移动到B点的过程中，前半段在加速，后半段再加速。甚至可以先将A点移动到C点（100，300），然后再移动回B点…</p>
 <p>从上面的描述可以知道动画的过程效果是多种多样的，而这个插值器就是用来控制这个动画的效果。</p>

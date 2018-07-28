@@ -320,42 +320,14 @@
 
       
         
-          
-            <p>之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。</p>
-<h2 id="TimeInterpolator-插值器"><a href="#TimeInterpolator-插值器" class="headerlink" title="TimeInterpolator 插值器"></a>TimeInterpolator 插值器</h2><p>插值器是什么呢？这个问题暂时不能很好的解答。那么插值器有什么用呢？</p>
-<p>我觉得是插值器是用来控制动画的效果。举个例子：一个平移动画，将一个ImageView从A点（100，100）移动到B点（100，200）。有多少种移动的方式呢？答案是无数种。你可以以一个恒定的速度从A移动到B、也可以从A移动到B点的过程中，前半段在加速，后半段再加速。甚至可以先将A点移动到C点（100，300），然后再移动回B点…</p>
-<p>从上面的描述可以知道动画的过程效果是多种多样的，而这个插值器就是用来控制这个动画的效果。</p>
-<p>我们先看看这个TimeInterpolator的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">public interface TimeInterpolator &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Maps a value representing the elapsed fraction of an animation to a value that represents</div><div class="line">     * the interpolated fraction. This interpolated value is then multiplied by the change in</div><div class="line">     * value of an animation to derive the animated value at the current elapsed animation time.</div><div class="line">     *</div><div class="line">     * @param input A value between 0 and 1.0 indicating our current point</div><div class="line">     *        in the animation where 0 represents the start and 1.0 represents</div><div class="line">     *        the end</div><div class="line">     * @return The interpolation value. This value can be more than 1.0 for</div><div class="line">     *         interpolators which overshoot their targets, or less than 0 for</div><div class="line">     *         interpolators that undershoot their targets.</div><div class="line">     */</div><div class="line">    float getInterpolation(float input);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>TimeInterpolator是一个接口，里面只有一个getInterpolation(float input)方法，通过注释可以知道，参数input的取值范围是[0, 1]，而且他是从0一直递增到1的，0代表动画开始，1代表动画结束。</p>
-<p>简单来说 input = 动画已经运行的时间 / 动画要运行的总时长</p>
-<p>而返回值代表了input输入的那一时刻，动画当前状态相对于动画整个过程的比值。举个例子：也是刚刚的从A点移动到B点，如果插值器返回0.5，说明现在打到了A和B的中点。如果插值器返回1，说明已经打到B点了，如果插值器返回1.5，说明已经越过了B点，到了（100，250）。</p>
-<p>Android系统已经提供了常用的插值器。例如说</p>
-<ul>
-<li>AccelerateDecelerateInterpolator 先加速后减速，系统默认的插值器</li>
-<li>LinearInterpolator 匀速的插值器</li>
-<li>AccelerateInterpolator 持续加速</li>
-<li>DecelerateInterpolator 持续减速</li>
-</ul>
-<p><a href="http://hencoder.com/ui-1-6/" target="_blank" rel="external">Hencoder</a>对这方面介绍得非常详细，而且附带动图，推荐去看看。</p>
-<p>我们简单介绍一下系统提供的插值器实现</p>
-<p><strong>LinearInterpolator.java</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class LinearInterpolator extends BaseInterpolator implements NativeInterpolatorFactory &#123;</div><div class="line"></div><div class="line">    public float getInterpolation(float input) &#123;</div><div class="line">        return input;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>实现非常简单，就是直接把输入返回出去了，上面说了返回值代表动画当前状态相对于动画整个过程的比值。input是从0迅速递增到1的，所以LinearInterpolator的效果就是从起始值匀速变化到终止值。</p>
-<p>然后在看一个相对复杂点的插值器：AccelerateDecelerateInterpolator</p>
-<p><strong>AccelerateDecelerateInterpolator.java</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public class AccelerateDecelerateInterpolator extends BaseInterpolator</div><div class="line">        implements NativeInterpolatorFactory &#123;</div><div class="line"></div><div class="line">    public float getInterpolation(float input) &#123;</div><div class="line">        return (float)(Math.cos((input + 1) * Math.PI) / 2.0f) + 0.5f;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>逻辑是一个余弦函数，我们把图画出来：</p>
-<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWE5obHI1cU5KYnlsdjdq.png" alt=""></p>
-<p>因为inout的取值范围是[0, 1]，返回函数值的范围就是红框部分，红框部分图像的<strong>斜率</strong>先增加，然后再减小。整体的效果就是先加速，然后减速。</p>
-<h2 id="TypeEvaluator-估值器"><a href="#TypeEvaluator-估值器" class="headerlink" title="TypeEvaluator 估值器"></a>TypeEvaluator 估值器</h2><p>前面说了插值器是控制动画的效果，那么估值器是干什么的呢？估值器简单理解就是将插值器的效果转化到物理值上。还是那个例子：A点（100，100）移动到B点（100，200），使用了LinearInterpolator，但是LinearInterpolator只会均匀返回[0, 1]，这个[0, 1]怎么和A点和B点的坐标关联起来呢？关键就是估值器。</p>
-<p>我们先看看估值器的源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public interface TypeEvaluator&lt;T&gt; &#123;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * This function returns the result of linearly interpolating the start and end values, with</div><div class="line">     * &lt;code&gt;fraction&lt;/code&gt; representing the proportion between the start and end values. The</div><div class="line">     * calculation is a simple parametric calculation: &lt;code&gt;result = x0 + t * (x1 - x0)&lt;/code&gt;,</div><div class="line">     * where &lt;code&gt;x0&lt;/code&gt; is &lt;code&gt;startValue&lt;/code&gt;, &lt;code&gt;x1&lt;/code&gt; is &lt;code&gt;endValue&lt;/code&gt;,</div><div class="line">     * and &lt;code&gt;t&lt;/code&gt; is &lt;code&gt;fraction&lt;/code&gt;.</div><div class="line">     *</div><div class="line">     * @param fraction   The fraction from the starting to the ending values</div><div class="line">     * @param startValue The start value.</div><div class="line">     * @param endValue   The end value.</div><div class="line">     * @return A linear interpolation between the start and end values, given the</div><div class="line">     *         &lt;code&gt;fraction&lt;/code&gt; parameter.</div><div class="line">     */</div><div class="line">    public T evaluate(float fraction, T startValue, T endValue);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>参数fraction就是前面插值器返回的值，startValue和endValue顾名思义就是指动画的起始值和结束值。估值器的作用就是<strong>根据动画的起始值和结束值还有插值器返回的值，算出当前时刻动画的值</strong>。</p>
-<p>举个最简单的例子IntEvaluator：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class IntEvaluator implements TypeEvaluator&lt;Integer&gt; &#123;</div><div class="line"></div><div class="line">    public Integer evaluate(float fraction, Integer startValue, Integer endValue) &#123;</div><div class="line">        int startInt = startValue;</div><div class="line">        return (int)(startInt + fraction * (endValue - startInt));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>数值类型的估值器非常好理解，就是当前时刻的值 = 起始值 + 变化的值。</p>
-<p>如果属性不是简单的数值类型呢？例如屏幕上的移动是二维的，颜色值的变化不能按照简单数据变化来处理，否则中间的颜色过度非常奇怪。如果系统提供的估值器不能满足你的需求，那么你就只能实现TypeEvaluator接口来自定义对应的挂职器。</p>
-<p>插值器和估值器的知识就讲完了，感冒发烧了，好难受(╯﹏╰)</p>
-
-          
+          <p>之前在公司分享了Android中的属性动画相关的只是，其中我觉得属性动画相对比较难理解的是其中的插值器和估值器，所以特意总结了一下。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/属性动画中的插值器和估值器/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -638,129 +610,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Lifecycle学习笔记，源码分析/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="brainBear">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpeg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="brainBear' Blog">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/Lifecycle学习笔记，源码分析/" itemprop="url">
-                  Lifecycle学习笔记，源码分析
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-26T22:02:32+08:00">
-                2018-06-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Lifecycle学习笔记，源码分析/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://yoursite.com/Lifecycle学习笔记/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -844,6 +693,129 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/Lifecycle学习笔记/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Lifecycle学习笔记，源码分析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/Lifecycle学习笔记，源码分析/" itemprop="url">
+                  Lifecycle学习笔记，源码分析
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-26T22:02:32+08:00">
+                2018-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在前一篇文章中简单说了一下Lifecycle的使用，今天我们来从源码的角度来分析一波原理。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/Lifecycle学习笔记，源码分析/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
