@@ -1,0 +1,740 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,MotionEvent,Multitouch," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近在些自定义控件的时候，遇到了多点触控的问题，所以今天来总结一下关于多点触控的知识。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多点触控学习笔记">
+<meta property="og:url" content="http://yoursite.com/多点触控学习笔记/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="最近在些自定义控件的时候，遇到了多点触控的问题，所以今天来总结一下关于多点触控的知识。">
+<meta property="og:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWFZnWnJHRXR1QjVXSURy.gif">
+<meta property="og:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWGJ4a3lxU2FhbUszMzho.gif">
+<meta property="og:updated_time" content="2018-08-05T16:31:26.983Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多点触控学习笔记">
+<meta name="twitter:description" content="最近在些自定义控件的时候，遇到了多点触控的问题，所以今天来总结一下关于多点触控的知识。">
+<meta name="twitter:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWFZnWnJHRXR1QjVXSURy.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/多点触控学习笔记/"/>
+
+
+
+
+
+  <title> 多点触控学习笔记 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/多点触控学习笔记/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                多点触控学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-05T16:02:32+08:00">
+                2018-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近在些自定义控件的时候，遇到了多点触控的问题，所以今天来总结一下关于多点触控的知识。<br><a id="more"></a></p>
+<h2 id="不处理多点触控存在的问题"><a href="#不处理多点触控存在的问题" class="headerlink" title="不处理多点触控存在的问题"></a>不处理多点触控存在的问题</h2><p>一般代码中就是处理触摸的ACTION_DOWN、ACTION_MOVE和ACTION_UP事件，在单点触控的情况下是没问题的，但是在多点触控的时候呢？我特意做了个画板demo：</p>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWFZnWnJHRXR1QjVXSURy.gif" alt=""></p>
+<p>逻辑很简单，就是画出触摸的轨迹，可以看到在多点触摸的情况下有几个问题：</p>
+<ol>
+<li>第二手指的轨迹没有画出来</li>
+<li>当第一根手指松开，第二跟手指没松开的情况下，轨迹会有跳跃</li>
+</ol>
+<h2 id="MotionEvent"><a href="#MotionEvent" class="headerlink" title="MotionEvent"></a>MotionEvent</h2><p>Android把触摸输入都封装在MotionEvent中，我们先了解一下MotionEvent有什么方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getAction()</td>
+<td>获取事件类型</td>
+</tr>
+<tr>
+<td>getX()</td>
+<td>获取事件在当前view的x坐标</td>
+</tr>
+<tr>
+<td>getY()</td>
+<td>获取事件在当前View的Y坐标</td>
+</tr>
+<tr>
+<td>getRawX()</td>
+<td>获取事件在屏幕的X坐标</td>
+</tr>
+<tr>
+<td>getRawY()</td>
+<td>获取事件在屏幕的Y坐标</td>
+</tr>
+</tbody>
+</table>
+<p>上面的一些方法我们都很清楚了，单点触控也需要调用这些方法处理相关逻辑，下面的一些方法就和多点触控相关了：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>getActionMasked()</td>
+<td>获取事件类型</td>
+</tr>
+<tr>
+<td>getActionIndex()</td>
+<td>获取事件序号</td>
+</tr>
+<tr>
+<td>getPointerCount()</td>
+<td>获取事件有多少个触摸点</td>
+</tr>
+<tr>
+<td>getPointerId(int pointerIndex)</td>
+<td>通过事件序号来获取PointerId</td>
+</tr>
+<tr>
+<td>findPointerIndex(int pointerId)</td>
+<td>通过PointerId来获取事件序号</td>
+</tr>
+</tbody>
+</table>
+<h3 id="事件类型"><a href="#事件类型" class="headerlink" title="事件类型"></a>事件类型</h3><p>我们先看看MotionEvent中有</p>
+<p>从上面的两个表中我们看到有两个方法来获取事件类型：getAction()和getActionMark()，我们先看看他们的方法实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public static final int ACTION_MASK             = 0xff;</div><div class="line"></div><div class="line"></div><div class="line">public final int getAction() &#123;</div><div class="line">    return nativeGetAction(mNativePtr);</div><div class="line">&#125;</div><div class="line"></div><div class="line">public final int getActionMasked() &#123;</div><div class="line">    return nativeGetAction(mNativePtr) &amp; ACTION_MASK;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>从代码上看ActionMark就是Action的低八位，这是因为Android是这么封装多点触控的：Action是一个int值，由ActionMark和ActionIndex组成，ActionMark和ActionIndex都占8位。ActionIndex占8-15位，ActionMark占0-7位。</p>
+<p>也就是说<strong>ActionMark才是真正的事件类型</strong>，但是不是全部事件都有ActionIndex，<strong>ACTION_MOVE没有ActionIndex</strong>。</p>
+<p>我们看看getActionIndex的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">public static final int ACTION_POINTER_INDEX_MASK  = 0xff00;</div><div class="line"></div><div class="line">public static final int ACTION_POINTER_INDEX_SHIFT = 8;</div><div class="line"></div><div class="line">public final int getActionIndex() &#123;</div><div class="line">    return (nativeGetAction(mNativePtr) &amp; ACTION_POINTER_INDEX_MASK)</div><div class="line">            &gt;&gt; ACTION_POINTER_INDEX_SHIFT;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>MotionEvent提供了很多ActionMark，但是我们需要的只有：<br>| 事件类型 | 值| 说明 |<br>|———|——|-|<br>| ACTION_DOWN |0 |第一个手指按下|<br>| ACTION_UP | 1|最后一个手指按下|<br>| ACTION_MOVE | 2|手指移动|<br>| ACTION_CANCEL | 3|事件被拦截 |<br>| ACTION_POINTER_DOWN |5 |有新的手指按下 |<br>| ACTION_POINTER_UP |6 |有手指抬起，而且不是最后一个手指 |</p>
+<p>举个例子，当有多个手指连续按下：</p>
+<ol>
+<li>第一个手指按下 ActionMark = 0 ActionIndex = 0 Action = 0 </li>
+<li>第二个手指按下 ActionMark = 5 ActionIndex = 1 Action = 81</li>
+<li>第三个手指按下 ActionMark = 5 ActionIndex = 2 Action = 82</li>
+</ol>
+<h3 id="ActionIndex和PoninterId"><a href="#ActionIndex和PoninterId" class="headerlink" title="ActionIndex和PoninterId"></a>ActionIndex和PoninterId</h3><p>ActionIndex用来表示事件序号，但是在Move是没用的，那么我们怎么在滑动的时候判断哪个手指移动到哪里了呢？这个时候就需要PointerId了。在一个事件序列中，可以有多个手指触摸屏幕又松开屏幕，在这个过程中ActionIndex是会变化的，但是PointerId是不变的，<strong>PointerId用来标识一个手指的轨迹</strong>。</p>
+<p>本来是想用代码证明一下ActionIndex和PointerId在多点触控下的变化，但是因为我懒，所以省掉了 :-)</p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>文章开头我们没有处理多点触控导致了几个问题，我们需要通过PointerId来处理，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line">public class DrawingBoardView extends View &#123;</div><div class="line"></div><div class="line">    private static final String TAG = &quot;DrawingBoardView&quot;;</div><div class="line"></div><div class="line">    private Paint mPaint;</div><div class="line">    private SparseArray&lt;Path&gt; mPathes = new SparseArray&lt;&gt;();</div><div class="line">    private int[] colors = new int[]&#123;getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorPrimary)&#125;;</div><div class="line"></div><div class="line"></div><div class="line">    public DrawingBoardView(Context context) &#123;</div><div class="line">        this(context, null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public DrawingBoardView(Context context, @Nullable AttributeSet attrs) &#123;</div><div class="line">        this(context, attrs, 0);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public DrawingBoardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) &#123;</div><div class="line">        super(context, attrs, defStyleAttr);</div><div class="line">        init();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void init() &#123;</div><div class="line">        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);</div><div class="line">        mPaint.setColor(getResources().getColor(R.color.colorAccent));</div><div class="line">        mPaint.setStyle(Paint.Style.STROKE);</div><div class="line">        mPaint.setStrokeWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics()));</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    protected void onDraw(Canvas canvas) &#123;</div><div class="line">        super.onDraw(canvas);</div><div class="line"></div><div class="line">        for (int i = 0; i &lt; mPathes.size(); i++) &#123;</div><div class="line">            mPaint.setColor(colors[i % colors.length]);</div><div class="line">            canvas.drawPath(mPathes.get(mPathes.keyAt(i)), mPaint);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    @Override</div><div class="line">    public boolean onTouchEvent(MotionEvent event) &#123;</div><div class="line">        switch (event.getActionMasked()) &#123;</div><div class="line">            case MotionEvent.ACTION_DOWN:</div><div class="line">                mPathes.clear();</div><div class="line">            case MotionEvent.ACTION_POINTER_DOWN:</div><div class="line"></div><div class="line">                Path path = new Path();</div><div class="line">                path.moveTo(event.getX(event.getActionIndex()), event.getY(event.getActionIndex()));</div><div class="line">                </div><div class="line">                // 有新的手指按下，记录PointerId</div><div class="line">                mPathes.put(event.getPointerId(event.getActionIndex()), path);</div><div class="line">                </div><div class="line">                invalidate();</div><div class="line"></div><div class="line">                break;</div><div class="line">            case MotionEvent.ACTION_MOVE:</div><div class="line">                for (int i = 0; i &lt; event.getPointerCount(); i++) &#123;</div><div class="line">                    int pointerId = event.getPointerId(i);</div><div class="line">                    </div><div class="line">                    //通过PointerId取出对应的Path</div><div class="line">                    int key = mPathes.keyAt(pointerId);</div><div class="line">                    mPathes.get(key).lineTo(event.getX(i), event.getY(i));</div><div class="line">                &#125;</div><div class="line">                invalidate();</div><div class="line">                break;</div><div class="line"></div><div class="line">            case MotionEvent.ACTION_POINTER_UP:</div><div class="line">            case MotionEvent.ACTION_UP:</div><div class="line">                break;</div><div class="line">        &#125;</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个是画板的自定义控件，赋值粘贴跑一下就行了，效果如下：</p>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oWGJ4a3lxU2FhbUszMzho.gif" alt=""></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/MotionEvent/" rel="tag"># MotionEvent</a>
+          
+            <a href="/tags/Multitouch/" rel="tag"># Multitouch</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/属性动画中的插值器和估值器/" rel="next" title="属性动画中的插值器和估值器">
+                <i class="fa fa-chevron-left"></i> 属性动画中的插值器和估值器
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#不处理多点触控存在的问题"><span class="nav-number">1.</span> <span class="nav-text">不处理多点触控存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MotionEvent"><span class="nav-number">2.</span> <span class="nav-text">MotionEvent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#事件类型"><span class="nav-number">2.1.</span> <span class="nav-text">事件类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ActionIndex和PoninterId"><span class="nav-number">2.2.</span> <span class="nav-text">ActionIndex和PoninterId</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">3.</span> <span class="nav-text">Demo</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
