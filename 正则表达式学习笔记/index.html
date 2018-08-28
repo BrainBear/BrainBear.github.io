@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/正则表达式学习笔记/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
 <meta property="og:description" content="在这两年的工作中，经常需要通过log日志来定位bug，一般情况下简单的文本搜索就可以解决问题，但是有时候需要使用正则表达式会更方便，之前只是通过百度简单学习了一些基本的概念，很多时候并不知道为什么要这样写，所以这周末就抽时间出来学习了一下正则表达式。">
-<meta property="og:updated_time" content="2018-08-28T16:38:16.053Z">
+<meta property="og:updated_time" content="2018-08-28T16:46:12.339Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="正则表达式学习笔记">
 <meta name="twitter:description" content="在这两年的工作中，经常需要通过log日志来定位bug，一般情况下简单的文本搜索就可以解决问题，但是有时候需要使用正则表达式会更方便，之前只是通过百度简单学习了一些基本的概念，很多时候并不知道为什么要这样写，所以这周末就抽时间出来学习了一下正则表达式。">
@@ -362,47 +362,154 @@
 <p>[0-9]+<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
 <p>共找到 3 处匹配：<br>1<br>23<br>456<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">例如某目录下有以下文件：</div><div class="line"></div><div class="line">    Num.txt</div><div class="line">    Num1.txt</div><div class="line">    Num2.txt</div><div class="line">    Num3.txt</div><div class="line">    Num4.txt</div><div class="line">    Num5.txt</div><div class="line">    Num6.txt</div><div class="line">    Num7.txt</div><div class="line">    Num8.txt</div><div class="line">    Num9.txt</div><div class="line">    Num10.txt</div><div class="line"></div><div class="line">使用正则表达式：</div></pre></td></tr></table></figure></p>
 <p>Num[0-9]?.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 10 处匹配：<br>Num1.txt<br>Num2.txt<br>Num3.txt<br>Num4.txt<br>Num5.txt<br>Num6.txt<br>Num7.txt<br>Num8.txt<br>Num9.txt<br>Num10.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">```Num``` 匹配前面纯文本， ```[0-9]+``` 匹配一个或多个数字字符， ```\.txt``` 匹配后缀名。所以第一个 ```Num.txt``` ，没有被匹配出来，因为 ```+``` 元字符最少也有匹配一个。</div><div class="line"></div><div class="line">#### 匹配零个或一个字符</div><div class="line"></div><div class="line">```+``` 元字符至少也有匹配一个字符，有时候我们需要在一段文本中匹配一些字符，它有可能存在，也有可能存在，这个时候用 ```+``` 元字符就不符合需求了，正则表达式提供了 ```?``` 来解决这个问题。```?``` 元字符效果是匹配该字符不存在或**只存在一次**。</div><div class="line"></div><div class="line">对上面目录的例子使用以下正则匹配：</div><div class="line"></div><div class="line">    Num[0-9]?\.txt</div><div class="line"></div><div class="line"></div><div class="line">结果：</div><div class="line"></div><div class="line">    共找到 10 处匹配：</div><div class="line">    Num.txt</div><div class="line">    Num1.txt</div><div class="line">    Num2.txt</div><div class="line">    Num3.txt</div><div class="line">    Num4.txt</div><div class="line">    Num5.txt</div><div class="line">    Num6.txt</div><div class="line">    Num7.txt</div><div class="line">    Num8.txt</div><div class="line">    Num9.txt</div><div class="line"></div><div class="line">可以看到 Num10.txt 没有匹配出来，因为 ```?``` 只能匹配不存在或只存在一次的情况。</div><div class="line"></div><div class="line">#### 匹配零个或多个字符</div><div class="line"></div><div class="line">```+``` 元字符是匹配一个或多个字符， ```?``` 是匹配零个或一个字符，从上面的例子我们也看到了，有可能该字符出现零次，或者连续出现多次，这个时候 ```+``` 和 ```?``` 就不满足需求了，而正则表达式提供了 ```*``` 来实现这个功能。</div><div class="line"></div><div class="line">继续对上面目录的例子使用以下正则匹配：</div></pre></td></tr></table></figure></p>
-<p>Num[0-9]*.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div><div class="line"></div><div class="line">    共找到 11 处匹配：</div><div class="line">    Num.txt</div><div class="line">    Num1.txt</div><div class="line">    Num2.txt</div><div class="line">    Num3.txt</div><div class="line">    Num4.txt</div><div class="line">    Num5.txt</div><div class="line">    Num6.txt</div><div class="line">    Num7.txt</div><div class="line">    Num8.txt</div><div class="line">    Num9.txt</div><div class="line">    Num10.txt</div><div class="line"></div><div class="line">使用 ```*``` 元字符的时候就可以全部都匹配出来了，因为 ```*``` 匹配了不存在、只存在一次和存在多次的情况。</div><div class="line"></div><div class="line">#### 匹配重复次数</div><div class="line"></div><div class="line">前面讲的 ```*``` 和 ```*``` 都可以匹配连续多个字符，但是他们匹配的个数没有上限，如果我们要匹配手机号码，手机号码都是 11 位的，如果用 ```[0-9]+``` 或 ```[0-9]*``` 都不正确，因为他们都可以匹配超过 11 位的连续数字。</div><div class="line"></div><div class="line">为了解决这个问题，正则表达式提供了 ```&#123;``` 和 ```&#125;``` 让用户可以对字符的匹配字数进行更有效的控制。</div><div class="line"></div><div class="line">| 表达式 | 描述|</div><div class="line">|-------|-----|</div><div class="line">|&#123;n&#125; | 匹配 n 次 |</div><div class="line">| &#123;n,m&#125; | 最少匹配 n 次，最多匹配 m 次|</div><div class="line">| &#123;n,&#125; | 至少匹配 n 次|</div><div class="line"></div><div class="line">例如想校验用户输入的手机号是否是 11 位的纯数字（中国手机号有特定的规律可以更精细地校验，这里只是简单举例）可以使用正则表达式：```[0-9]&#123;11&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="过度匹配"><a href="#过度匹配" class="headerlink" title="过度匹配"></a>过度匹配</h4><p>在重复匹配中存在一个过度匹配的情况，举个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;B&gt; hello &lt;/B&gt; &lt;B&gt; world &lt;/B&gt;</div></pre></td></tr></table></figure></p>
-<p>使用正则表达式<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;B&gt;.* &lt;/B&gt;</div></pre></td></tr></table></figure></p>
-<p>按正常预期，应该是可以匹配到两个结果的，但是结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">共找到 1 处匹配：</div><div class="line">&lt;B&gt; hello &lt;/B&gt; &lt;B&gt; world &lt;/B&gt;</div></pre></td></tr></table></figure></p>
-<p>这是因为在正则表达式中 <figure class="highlight plain"><figcaption><span>和 ```+``` 都是**贪婪型**匹配的，它们在进行匹配的时候会尽可能地从文本开头一直匹配到文本的末尾，而不是从文本开头匹配到第一个匹配的位置。在你不需要这种贪婪的行为的时候，就需要将贪婪型元字符转成懒惰行元字符。只要在贪婪型元字符后面加上 ```?``` 就可以了。</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">|贪婪型|对应的懒惰型|</div><div class="line">|-----|-----------|</div><div class="line">| *   | *?        |</div><div class="line">| +   |  +?       |</div><div class="line">| &#123;n,&#125; | &#123;n,&#125;?    |</div><div class="line"></div><div class="line">用 ```.?``` 来解决上面的问题：</div><div class="line"></div><div class="line">正则表达式：</div></pre></td></tr></table></figure></p>
-<p><b>.*? </b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 2 处匹配：</p>
-<p><b> hello </b></p>
-<p><b> world </b><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 位置匹配</div><div class="line"></div><div class="line">|元字符|	描述|</div><div class="line">|----|-----|</div><div class="line">|^	|匹配输入字符串开始的位置|</div><div class="line">|$	|匹配输入字符串结尾的位置|</div><div class="line">|\b	|匹配一个字符边界，即字与空格间的位置|</div><div class="line">|\B|	非字符边界匹配|</div><div class="line"></div><div class="line">元字符 ```^``` 和 ```$``` 比较好理解，就是用于输入字符串的起始位置和结束位置。举个例子：```[0-9]``` 效果是匹配一个数字，输入文本只要有数字都能匹配出来，但是 ```^[0-9]``` 只匹配输入文本开头的数字。</div><div class="line"></div><div class="line">而 ```\b``` 怎么理解呢？其实我们应该都用过编辑器的搜索功能，一般编辑器都提供一个全单词匹配（match whole word）的功能，我想搜索 cap 的时候，不想搜索出来 captain 。这个时候 ```\b``` 就派上用场了。</div><div class="line"></div><div class="line">有文本：</div></pre></td></tr></table></figure></p>
-<p>cap captain<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">正则表达式：</div></pre></td></tr></table></figure></p>
-<p>\bcap\b<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 1 处匹配：<br>cap<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### 子表达式</div><div class="line"></div><div class="line">所谓的子表达式就是一个更大的表达式的一部分，用 ```(``` 和 ```)``` 括起来的就是子表达式。子表达式的常用用法就是和重复匹配搭配使用。例如你要匹配一个这样的字符串：</div></pre></td></tr></table></figure></p>
-<p>AAAAA-BBBBB-CCCCC-DDDDD<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">字符串由 4 组组成，每组是 5 个大写字母，每组之间用 - 分隔，你可以写成：</div></pre></td></tr></table></figure></p>
-<p>[A-Z]{5}-[A-Z]{5}-[A-Z]{5}-[A-Z]{5}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这样写太啰嗦了，这个时候就可以用子表达式来简化：</div></pre></td></tr></table></figure></p>
-<p>([A-Z]{5}-){3}[A-Z]{5}<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">因为前面三组的匹配逻辑是重复的，可以用子表达式来简化。</div><div class="line"></div><div class="line">### 回溯引用</div><div class="line"></div><div class="line">回溯引用是为了解决前后一致的问题，举个例子：</div><div class="line"></div><div class="line">要匹配一个 HTML 文档中合法的标题：</div></pre></td></tr></table></figure></p>
-<p></p><h1>Chapter 1</h1><p></p>
-<p></p><h2>Chapter 2</h2><p></p>
-<p></p><h3>Chapter 3</h3><p></p>
-<p></p><h4>Chapter 4<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">我们很容易写出一个正则表达式：</div></pre></td></tr></table></figure><p></p>
-<p><h[1-6]>.*?</h[1-6]><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 4 处匹配：</p>
-<p></p><h1>Chapter 1</h1><p></p>
-<p></p><h2>Chapter 2</h2><p></p>
-<p></p><h3>Chapter 3</h3><p></p>
-<p></p><h4>Chapter 4<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">可以看到，第四行中开始标签和结束标签不一致，这不是合法的，但是也被我们匹配出来了。为了解决这种前后一致的问题，正则表达式提供了回溯引用的功能，它的用法是 ```\数字``` ，这个数字表示的是第几个子表达式，例如 ```\1``` 就表示第一个子表达式， ```\2``` 就表示第二个子表达式，以此类推。所以回溯引用必须要和子表达式搭配使用。</div><div class="line"></div><div class="line">将正则表达式修改为：</div></pre></td></tr></table></figure><p></p>
-<p><h([1-6])>.*?<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></h([1-6])></p>
-<p>共找到 3 处匹配：</p>
-<p></p><h1>Chapter 1</h1><p></p>
-<p></p><h2>Chapter 2</h2><p></p>
-<p></p><h3>Chapter 3</h3><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">这次匹配的结果就是对的了。</div><div class="line"></div><div class="line">### 前后查找</div><div class="line"></div><div class="line">在文本匹配的时候，我们需要先找到文本的特征，然后对某些特征进行定位然后匹配出来，但是有时候我们并不想最终匹配出来的文本包含用于定位的特性文本。</div><div class="line"></div><div class="line">| 元字符 | 描述 |</div><div class="line">| -------|----|</div><div class="line">| ?=     |向前查找|</div><div class="line">| ?&lt;=   | 向后查找|</div><div class="line"></div><div class="line"></div><div class="line">#### 向前匹配</div><div class="line"></div><div class="line">假如我们需要匹配出一些 URL 的协议，这个时候就可以用到向前匹配：</div></pre></td></tr></table></figure><p></p>
-<p><a href="http://www.baidu.com" target="_blank" rel="external">http://www.baidu.com</a><br><a href="https://www.google.com" target="_blank" rel="external">https://www.google.com</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">正则表达式：</div></pre></td></tr></table></figure></p>
-<p>.+(?=:)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 2 处匹配：<br>http<br>https<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">#### 向后匹配</div><div class="line"></div><div class="line">假如我们需要匹配金额，但是又不想匹配出前面的符号，这个时候可以用向后匹配：</div></pre></td></tr></table></figure></p>
-<p>$100<br>$150<br>$160<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">正则表达式：</div></pre></td></tr></table></figure></p>
-<p>(?&lt;=\$)[0-9]+<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></p>
-<p>共找到 3 处匹配：<br>100<br>150<br>160<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">#### 向前匹配和向后匹配搭配使用</div><div class="line"></div><div class="line">假如我们需要匹配出 HTML 中的标题文本，这个时候可以搭配使用向前匹配和向后匹配</div></pre></td></tr></table></figure></p>
-<p></p><h1>Chapter 1</h1><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">正则表达式：</div></pre></td></tr></table></figure><p></p>
-<p>(?&lt;=<h([0-9])>).*(?=)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">结果：</div></pre></td></tr></table></figure></h([0-9])></p>
-<p>共找到 1 处匹配：<br>Chapter 1<br>```</p>
-</h4></h4>
+<p>共找到 10 处匹配：<br>Num1.txt<br>Num2.txt<br>Num3.txt<br>Num4.txt<br>Num5.txt<br>Num6.txt<br>Num7.txt<br>Num8.txt<br>Num9.txt<br>Num10.txt<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">```Num``` 匹配前面纯文本， ```[0-9]+``` 匹配一个或多个数字字符， ```\.txt``` 匹配后缀名。所以第一个 ```Num.txt``` ，没有被匹配出来，因为 ```+``` 元字符最少也有匹配一个。</div><div class="line"></div><div class="line">#### 匹配零个或一个字符</div><div class="line"></div><div class="line">```+``` 元字符至少也有匹配一个字符，有时候我们需要在一段文本中匹配一些字符，它有可能存在，也有可能存在，这个时候用 ```+``` 元字符就不符合需求了，正则表达式提供了 ```?``` 来解决这个问题。```?``` 元字符效果是匹配该字符不存在或**只存在一次**。</div><div class="line"></div><div class="line">对上面目录的例子使用以下正则匹配：</div><div class="line"></div><div class="line">    Num[0-9]?\.txt</div><div class="line"></div><div class="line"></div><div class="line">结果：</div><div class="line"></div><div class="line">    共找到 10 处匹配：</div><div class="line">    Num.txt</div><div class="line">    Num1.txt</div><div class="line">    Num2.txt</div><div class="line">    Num3.txt</div><div class="line">    Num4.txt</div><div class="line">    Num5.txt</div><div class="line">    Num6.txt</div><div class="line">    Num7.txt</div><div class="line">    Num8.txt</div><div class="line">    Num9.txt</div><div class="line"></div><div class="line">可以看到 Num10.txt 没有匹配出来，因为 ```?``` 只能匹配不存在或只存在一次的情况。</div><div class="line"></div><div class="line">#### 匹配零个或多个字符</div><div class="line"></div><div class="line">```+``` 元字符是匹配一个或多个字符， ```?``` 是匹配零个或一个字符，从上面的例子我们也看到了，有可能该字符出现零次，或者连续出现多次，这个时候 ```+``` 和 ```?``` 就不满足需求了，而正则表达式提供了 ```*``` 来实现这个功能。</div><div class="line"></div><div class="line">继续对上面目录的例子使用以下正则匹配：</div><div class="line"></div><div class="line">    Num[0-9]*\.txt</div><div class="line"></div><div class="line"></div><div class="line">结果：</div><div class="line"></div><div class="line">    共找到 11 处匹配：</div><div class="line">    Num.txt</div><div class="line">    Num1.txt</div><div class="line">    Num2.txt</div><div class="line">    Num3.txt</div><div class="line">    Num4.txt</div><div class="line">    Num5.txt</div><div class="line">    Num6.txt</div><div class="line">    Num7.txt</div><div class="line">    Num8.txt</div><div class="line">    Num9.txt</div><div class="line">    Num10.txt</div><div class="line"></div><div class="line">使用 ```*``` 元字符的时候就可以全部都匹配出来了，因为 ```*``` 匹配了不存在、只存在一次和存在多次的情况。</div><div class="line"></div><div class="line">#### 匹配重复次数</div><div class="line"></div><div class="line">前面讲的 ```*``` 和 ```*``` 都可以匹配连续多个字符，但是他们匹配的个数没有上限，如果我们要匹配手机号码，手机号码都是 11 位的，如果用 ```[0-9]+``` 或 ```[0-9]*``` 都不正确，因为他们都可以匹配超过 11 位的连续数字。</div><div class="line"></div><div class="line">为了解决这个问题，正则表达式提供了 ```&#123;``` 和 ```&#125;``` 让用户可以对字符的匹配字数进行更有效的控制。</div><div class="line"></div><div class="line">| 表达式 | 描述|</div><div class="line">|-------|-----|</div><div class="line">|&#123;n&#125; | 匹配 n 次 |</div><div class="line">| &#123;n,m&#125; | 最少匹配 n 次，最多匹配 m 次|</div><div class="line">| &#123;n,&#125; | 至少匹配 n 次|</div><div class="line"></div><div class="line">例如想校验用户输入的手机号是否是 11 位的纯数字（中国手机号有特定的规律可以更精细地校验，这里只是简单举例）可以使用正则表达式：```[0-9]&#123;11&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="过度匹配"><a href="#过度匹配" class="headerlink" title="过度匹配"></a>过度匹配</h4><p>在重复匹配中存在一个过度匹配的情况，举个例子：</p>
+<pre><code>&lt;B&gt; hello &lt;/B&gt; &lt;B&gt; world &lt;/B&gt;
+</code></pre><p>使用正则表达式</p>
+<pre><code>&lt;B&gt;.* &lt;/B&gt;
+</code></pre><p>按正常预期，应该是可以匹配到两个结果的，但是结果如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">共找到 1 处匹配：</div><div class="line">&lt;B&gt; hello &lt;/B&gt; &lt;B&gt; world &lt;/B&gt;</div></pre></td></tr></table></figure></p>
+<p>这是因为在正则表达式中 <code>*</code> 和 <code>+</code> 都是<strong>贪婪型</strong>匹配的，它们在进行匹配的时候会尽可能地从文本开头一直匹配到文本的末尾，而不是从文本开头匹配到第一个匹配的位置。在你不需要这种贪婪的行为的时候，就需要将贪婪型元字符转成懒惰行元字符。只要在贪婪型元字符后面加上 <code>?</code> 就可以了。</p>
+<table>
+<thead>
+<tr>
+<th>贪婪型</th>
+<th>对应的懒惰型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*</td>
+<td>*?</td>
+</tr>
+<tr>
+<td>+</td>
+<td>+?</td>
+</tr>
+<tr>
+<td>{n,}</td>
+<td>{n,}?</td>
+</tr>
+</tbody>
+</table>
+<p>用 <code>.?</code> 来解决上面的问题：</p>
+<p>正则表达式：</p>
+<pre><code>&lt;B&gt;.*? &lt;/B&gt;
+</code></pre><p>结果：</p>
+<pre><code>共找到 2 处匹配：
+&lt;B&gt; hello &lt;/B&gt;
+&lt;B&gt; world &lt;/B&gt;
+</code></pre><h3 id="位置匹配"><a href="#位置匹配" class="headerlink" title="位置匹配"></a>位置匹配</h3><table>
+<thead>
+<tr>
+<th>元字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>^</td>
+<td>匹配输入字符串开始的位置</td>
+</tr>
+<tr>
+<td>$</td>
+<td>匹配输入字符串结尾的位置</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>匹配一个字符边界，即字与空格间的位置</td>
+</tr>
+<tr>
+<td>\B</td>
+<td>非字符边界匹配</td>
+</tr>
+</tbody>
+</table>
+<p>元字符 <code>^</code> 和 <code>$</code> 比较好理解，就是用于输入字符串的起始位置和结束位置。举个例子：<code>[0-9]</code> 效果是匹配一个数字，输入文本只要有数字都能匹配出来，但是 <code>^[0-9]</code> 只匹配输入文本开头的数字。</p>
+<p>而 <code>\b</code> 怎么理解呢？其实我们应该都用过编辑器的搜索功能，一般编辑器都提供一个全单词匹配（match whole word）的功能，我想搜索 cap 的时候，不想搜索出来 captain 。这个时候 <code>\b</code> 就派上用场了。</p>
+<p>有文本：</p>
+<pre><code>cap captain
+</code></pre><p>正则表达式：</p>
+<pre><code>\bcap\b
+</code></pre><p>结果：</p>
+<pre><code>共找到 1 处匹配：
+cap
+</code></pre><h3 id="子表达式"><a href="#子表达式" class="headerlink" title="子表达式"></a>子表达式</h3><p>所谓的子表达式就是一个更大的表达式的一部分，用 <code>(</code> 和 <code>)</code> 括起来的就是子表达式。子表达式的常用用法就是和重复匹配搭配使用。例如你要匹配一个这样的字符串：</p>
+<pre><code>AAAAA-BBBBB-CCCCC-DDDDD
+</code></pre><p>字符串由 4 组组成，每组是 5 个大写字母，每组之间用 - 分隔，你可以写成：</p>
+<pre><code>[A-Z]{5}-[A-Z]{5}-[A-Z]{5}-[A-Z]{5}
+</code></pre><p>这样写太啰嗦了，这个时候就可以用子表达式来简化：</p>
+<pre><code>([A-Z]{5}-){3}[A-Z]{5}
+</code></pre><p>因为前面三组的匹配逻辑是重复的，可以用子表达式来简化。</p>
+<h3 id="回溯引用"><a href="#回溯引用" class="headerlink" title="回溯引用"></a>回溯引用</h3><p>回溯引用是为了解决前后一致的问题，举个例子：</p>
+<p>要匹配一个 HTML 文档中合法的标题：</p>
+<pre><code>&lt;H1&gt;Chapter 1&lt;/H1&gt;
+&lt;H2&gt;Chapter 2&lt;/H2&gt;
+&lt;H3&gt;Chapter 3&lt;/H3&gt;
+&lt;H4&gt;Chapter 4&lt;/H5&gt;
+</code></pre><p>我们很容易写出一个正则表达式：</p>
+<pre><code>&lt;H[1-6]&gt;.*?&lt;/H[1-6]&gt;
+</code></pre><p>结果：</p>
+<pre><code>共找到 4 处匹配：
+&lt;H1&gt;Chapter 1&lt;/H1&gt;
+&lt;H2&gt;Chapter 2&lt;/H2&gt;
+&lt;H3&gt;Chapter 3&lt;/H3&gt;
+&lt;H4&gt;Chapter 4&lt;/H5&gt;
+</code></pre><p>可以看到，第四行中开始标签和结束标签不一致，这不是合法的，但是也被我们匹配出来了。为了解决这种前后一致的问题，正则表达式提供了回溯引用的功能，它的用法是 <code>\数字</code> ，这个数字表示的是第几个子表达式，例如 <code>\1</code> 就表示第一个子表达式， <code>\2</code> 就表示第二个子表达式，以此类推。所以回溯引用必须要和子表达式搭配使用。</p>
+<p>将正则表达式修改为：</p>
+<pre><code>&lt;H([1-6])&gt;.*?&lt;/H\1&gt;
+</code></pre><p>结果：</p>
+<pre><code>共找到 3 处匹配：
+&lt;H1&gt;Chapter 1&lt;/H1&gt;
+&lt;H2&gt;Chapter 2&lt;/H2&gt;
+&lt;H3&gt;Chapter 3&lt;/H3&gt;
+</code></pre><p>这次匹配的结果就是对的了。</p>
+<h3 id="前后查找"><a href="#前后查找" class="headerlink" title="前后查找"></a>前后查找</h3><p>在文本匹配的时候，我们需要先找到文本的特征，然后对某些特征进行定位然后匹配出来，但是有时候我们并不想最终匹配出来的文本包含用于定位的特性文本。</p>
+<table>
+<thead>
+<tr>
+<th>元字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>?=</td>
+<td>向前查找</td>
+</tr>
+<tr>
+<td>?&lt;=</td>
+<td>向后查找</td>
+</tr>
+</tbody>
+</table>
+<h4 id="向前匹配"><a href="#向前匹配" class="headerlink" title="向前匹配"></a>向前匹配</h4><p>假如我们需要匹配出一些 URL 的协议，这个时候就可以用到向前匹配：</p>
+<pre><code>http://www.baidu.com
+https://www.google.com
+</code></pre><p>正则表达式：</p>
+<pre><code>.+(?=:)
+</code></pre><p>结果：</p>
+<pre><code>共找到 2 处匹配：
+http
+https
+</code></pre><h4 id="向后匹配"><a href="#向后匹配" class="headerlink" title="向后匹配"></a>向后匹配</h4><p>假如我们需要匹配金额，但是又不想匹配出前面的符号，这个时候可以用向后匹配：</p>
+<pre><code>$100
+$150
+$160
+</code></pre><p>正则表达式：</p>
+<pre><code>(?&lt;=\$)[0-9]+
+</code></pre><p>结果：</p>
+<pre><code>共找到 3 处匹配：
+100
+150
+160
+</code></pre><h4 id="向前匹配和向后匹配搭配使用"><a href="#向前匹配和向后匹配搭配使用" class="headerlink" title="向前匹配和向后匹配搭配使用"></a>向前匹配和向后匹配搭配使用</h4><p>假如我们需要匹配出 HTML 中的标题文本，这个时候可以搭配使用向前匹配和向后匹配</p>
+<pre><code>&lt;H1&gt;Chapter 1&lt;/H1&gt;
+</code></pre><p>正则表达式：</p>
+<pre><code>(?&lt;=&lt;H([0-9])&gt;).*(?=&lt;/H\1&gt;)
+</code></pre><p>结果：</p>
+<pre><code>共找到 1 处匹配：
+Chapter 1
+</code></pre>
       
     </div>
 
@@ -558,43 +665,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#正则表达式"><span class="nav-number">1.</span> <span class="nav-text">正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配纯文本"><span class="nav-number">1.1.</span> <span class="nav-text">匹配纯文本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配特定类型的字符"><span class="nav-number">1.2.</span> <span class="nav-text">匹配特定类型的字符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#过度匹配"><span class="nav-number">1.2.1.</span> <span class="nav-text">过度匹配</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">Chapter 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Chapter 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Chapter 3</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.</span> <span class="nav-text">Chapter 412我们很容易写出一个正则表达式：
-.*?12结果：
-共找到 4 处匹配：
-Chapter 1
-Chapter 2
-Chapter 3
-Chapter 41234可以看到，第四行中开始标签和结束标签不一致，这不是合法的，但是也被我们匹配出来了。为了解决这种前后一致的问题，正则表达式提供了回溯引用的功能，它的用法是 ```\数字``` ，这个数字表示的是第几个子表达式，例如 ```\1``` 就表示第一个子表达式， ```\2``` 就表示第二个子表达式，以此类推。所以回溯引用必须要和子表达式搭配使用。将正则表达式修改为：
-.*?12结果：
-共找到 3 处匹配：
-Chapter 1
-Chapter 2
-Chapter 312345678910111213141516这次匹配的结果就是对的了。### 前后查找在文本匹配的时候，我们需要先找到文本的特征，然后对某些特征进行定位然后匹配出来，但是有时候我们并不想最终匹配出来的文本包含用于定位的特性文本。| 元字符 | 描述 || -------|----|| ?=     |向前查找|| ?<=   | 向后查找|#### 向前匹配假如我们需要匹配出一些 URL 的协议，这个时候就可以用到向前匹配：
-http://www.baidu.comhttps://www.google.com12正则表达式：
-.+(?=:)12结果：
-共找到 2 处匹配：httphttps1234#### 向后匹配假如我们需要匹配金额，但是又不想匹配出前面的符号，这个时候可以用向后匹配：
-$100$150$16012正则表达式：
-(?<=\$)[0-9]+12结果：
-共找到 3 处匹配：1001501601234#### 向前匹配和向后匹配搭配使用假如我们需要匹配出 HTML 中的标题文本，这个时候可以搭配使用向前匹配和向后匹配
-Chapter 112正则表达式：
-(?<=).*(?=)12结果：
-共找到 1 处匹配：Chapter 1```
-</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">Chapter 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Chapter 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Chapter 3</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.1.</span> <span class="nav-text">Chapter 41234可以看到，第四行中开始标签和结束标签不一致，这不是合法的，但是也被我们匹配出来了。为了解决这种前后一致的问题，正则表达式提供了回溯引用的功能，它的用法是 ```\数字``` ，这个数字表示的是第几个子表达式，例如 ```\1``` 就表示第一个子表达式， ```\2``` 就表示第二个子表达式，以此类推。所以回溯引用必须要和子表达式搭配使用。将正则表达式修改为：
-.*?12结果：
-共找到 3 处匹配：
-Chapter 1
-Chapter 2
-Chapter 312345678910111213141516这次匹配的结果就是对的了。### 前后查找在文本匹配的时候，我们需要先找到文本的特征，然后对某些特征进行定位然后匹配出来，但是有时候我们并不想最终匹配出来的文本包含用于定位的特性文本。| 元字符 | 描述 || -------|----|| ?=     |向前查找|| ?<=   | 向后查找|#### 向前匹配假如我们需要匹配出一些 URL 的协议，这个时候就可以用到向前匹配：
-http://www.baidu.comhttps://www.google.com12正则表达式：
-.+(?=:)12结果：
-共找到 2 处匹配：httphttps1234#### 向后匹配假如我们需要匹配金额，但是又不想匹配出前面的符号，这个时候可以用向后匹配：
-$100$150$16012正则表达式：
-(?<=\$)[0-9]+12结果：
-共找到 3 处匹配：1001501601234#### 向前匹配和向后匹配搭配使用假如我们需要匹配出 HTML 中的标题文本，这个时候可以搭配使用向前匹配和向后匹配
-Chapter 112正则表达式：
-(?<=).*(?=)12结果：
-共找到 1 处匹配：Chapter 1```
-</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">Chapter 1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">Chapter 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text">Chapter 3</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number"></span> <span class="nav-text">Chapter 1</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#正则表达式"><span class="nav-number">1.</span> <span class="nav-text">正则表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配纯文本"><span class="nav-number">1.1.</span> <span class="nav-text">匹配纯文本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配特定类型的字符"><span class="nav-number">1.2.</span> <span class="nav-text">匹配特定类型的字符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#过度匹配"><span class="nav-number">1.2.1.</span> <span class="nav-text">过度匹配</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#位置匹配"><span class="nav-number">1.3.</span> <span class="nav-text">位置匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#子表达式"><span class="nav-number">1.4.</span> <span class="nav-text">子表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#回溯引用"><span class="nav-number">1.5.</span> <span class="nav-text">回溯引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前后查找"><span class="nav-number">1.6.</span> <span class="nav-text">前后查找</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#向前匹配"><span class="nav-number">1.6.1.</span> <span class="nav-text">向前匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#向后匹配"><span class="nav-number">1.6.2.</span> <span class="nav-text">向后匹配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#向前匹配和向后匹配搭配使用"><span class="nav-number">1.6.3.</span> <span class="nav-text">向前匹配和向后匹配搭配使用</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
