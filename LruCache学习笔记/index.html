@@ -1,0 +1,680 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,cache," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="对于用户来说，空白的加载状态太影响体验了，产品设计的时候一般都会将上次加载的数据缓存下来，一些不变动的数据缓存之后下次使用就可以秒开，但是现实条件限制不可能将所有的数据都缓存下来，这就需要缓存算法。其中 LRU 算是最常用的算法了，在 Android 很多优秀的开源框架都用到了这种算法，例如：OkHttp、Glide 等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LruCache学习笔记">
+<meta property="og:url" content="http://yoursite.com/LruCache学习笔记/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="对于用户来说，空白的加载状态太影响体验了，产品设计的时候一般都会将上次加载的数据缓存下来，一些不变动的数据缓存之后下次使用就可以秒开，但是现实条件限制不可能将所有的数据都缓存下来，这就需要缓存算法。其中 LRU 算是最常用的算法了，在 Android 很多优秀的开源框架都用到了这种算法，例如：OkHttp、Glide 等。">
+<meta property="og:updated_time" content="2019-01-13T16:40:02.401Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LruCache学习笔记">
+<meta name="twitter:description" content="对于用户来说，空白的加载状态太影响体验了，产品设计的时候一般都会将上次加载的数据缓存下来，一些不变动的数据缓存之后下次使用就可以秒开，但是现实条件限制不可能将所有的数据都缓存下来，这就需要缓存算法。其中 LRU 算是最常用的算法了，在 Android 很多优秀的开源框架都用到了这种算法，例如：OkHttp、Glide 等。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/LruCache学习笔记/"/>
+
+
+
+
+
+  <title> LruCache学习笔记 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/LruCache学习笔记/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                LruCache学习笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-13T22:58:32+08:00">
+                2019-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>对于用户来说，空白的加载状态太影响体验了，产品设计的时候一般都会将上次加载的数据缓存下来，一些不变动的数据缓存之后下次使用就可以秒开，但是现实条件限制不可能将所有的数据都缓存下来，这就需要缓存算法。其中 LRU 算是最常用的算法了，在 Android 很多优秀的开源框架都用到了这种算法，例如：OkHttp、Glide 等。</p>
+<a id="more"></a>
+<h2 id="LRU-算法"><a href="#LRU-算法" class="headerlink" title="LRU 算法"></a>LRU 算法</h2><p>LRU 是 Least Recently Used 的缩写，简单来说就是找出最近最少使用的数据，它是基于这样一个前提：最近最少使用的数据，以后再用的可能性就越低。所以先丢弃这部分数据，让位置给新的数据。</p>
+<p>LRU 算法比较简单，核心就是要找到最近最少使用的数据。既然是最少使用，那么我们每次将数据按使用时间来排序，例如构建一个队列，添加新的数据就添加到队尾，如果访问了队列中的数据，就将该数据移动到队尾。也就是说每次最新使用的数据就在对尾，那么队头的数据就是最近都没有使用过的，在新加入数据的时候，如果队列慢了，就将队头的数据移除。</p>
+<p>因为对于缓存的数据，我们还要构建一个 key-value 的对应关系，方便查询缓存，在 java 中提供了一个类可以实现我们想要的功能：<code>LinkedHashMap</code> 。</p>
+<p>LinkedHashMap 的构造方法提供了一个 <code>accessOrder</code> 的参数，如果传入 <code>false</code>，LinkedHashMap 内部是根据数据插入的顺序排序，但是如果传入 <code>true</code> 的话，就根据访问的顺序排序。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line">  * Constructs an empty &lt;tt&gt;LinkedHashMap&lt;/tt&gt; instance with the</div><div class="line">  * specified initial capacity, load factor and ordering mode.</div><div class="line">  *</div><div class="line">  * <span class="doctag">@param</span>  initialCapacity the initial capacity</div><div class="line">  * <span class="doctag">@param</span>  loadFactor      the load factor</div><div class="line">  * <span class="doctag">@param</span>  accessOrder     the ordering mode - &lt;tt&gt;true&lt;/tt&gt; for</div><div class="line">  *         access-order, &lt;tt&gt;false&lt;/tt&gt; for insertion-order</div><div class="line">  * <span class="doctag">@throws</span> IllegalArgumentException if the initial capacity is negative</div><div class="line">  *         or the load factor is nonpositive</div><div class="line">  */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">LinkedHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity,</span></span></div><div class="line">                      <span class="keyword">float</span> loadFactor,</div><div class="line">                      <span class="keyword">boolean</span> accessOrder) &#123;</div><div class="line">    <span class="keyword">super</span>(initialCapacity, loadFactor);</div><div class="line">    <span class="keyword">this</span>.accessOrder = accessOrder;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>也就是说直接使用 LinkedHashMap 就可以提供了我们想要的数据结构，那么里面的是怎么实现的呢？</p>
+<p>因为是根据访问顺序排序，那么数据处理肯定在访问方法实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</div><div class="line">    Node&lt;K,V&gt; e;</div><div class="line">    <span class="keyword">if</span> ((e = getNode(hash(key), key)) == <span class="keyword">null</span>)</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">if</span> (accessOrder)</div><div class="line">        afterNodeAccess(e);</div><div class="line">    <span class="keyword">return</span> e.value;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 LinkedHashMap 的 <code>get()</code> 方法中，如果 <code>accessOrder</code> 为 <code>true</code> 的话会调用 <code>afterNodeAccess()</code> 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></div><div class="line">    LinkedHashMapEntry&lt;K,V&gt; last;</div><div class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</div><div class="line">        LinkedHashMapEntry&lt;K,V&gt; p =</div><div class="line">            (LinkedHashMapEntry&lt;K,V&gt;)e, b = p.before, a = p.after;</div><div class="line">        p.after = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</div><div class="line">            head = a;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            b.after = a;</div><div class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</div><div class="line">            a.before = b;</div><div class="line">        <span class="keyword">else</span></div><div class="line">            last = b;</div><div class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</div><div class="line">            head = p;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            p.before = last;</div><div class="line">            last.after = p;</div><div class="line">        &#125;</div><div class="line">        tail = p;</div><div class="line">        ++modCount;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>afterNodeAccess()</code> 就是简单地将传入的 Node 节点移动到队尾。<code>before</code> 是队头方向，<code>after</code> 是队尾方向。</p>
+<h2 id="LruCache"><a href="#LruCache" class="headerlink" title="LruCache"></a>LruCache</h2><p>Android 默认就提供了一个 LruCache 类。其中实现了基于内存的 LruCache 算法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LruCache</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; </span>&#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LinkedHashMap&lt;K, V&gt; map;</div><div class="line">   </div><div class="line">    <span class="comment">/** Size of this cache in units. Not necessarily the number of elements. */</span></div><div class="line">    <span class="comment">//当前缓存的总大小</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size;</div><div class="line">    <span class="comment">//缓存的最大容量</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxSize;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * <span class="doctag">@param</span> maxSize for caches that do not override &#123;<span class="doctag">@link</span> #sizeOf&#125;, this is</div><div class="line">     *     the maximum number of entries in the cache. For all other caches,</div><div class="line">     *     this is the maximum sum of the sizes of the entries in this cache.</div><div class="line">     */</div><div class="line">     <span class="comment">//必须要传入 maxSize 具体的单位要看 sizeOf 方法的实现</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LruCache</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"maxSize &lt;= 0"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">this</span>.maxSize = maxSize;</div><div class="line">        <span class="comment">//构建一个 LinkedHashMap ，accessOrder 传入了 true</span></div><div class="line">        <span class="keyword">this</span>.map = <span class="keyword">new</span> LinkedHashMap&lt;K, V&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>LruCache 只有一个构造方法，所以必须要传入一个 <code>maxSize</code> ，但是这个 maxSize 具体的单位要看内部 <code>sizeOf()</code> 的实现。最后构建一个 LinkedHashMap ，<code>accessOrder</code> 传入了 <code>true</code> 。</p>
+<p>我们直接按使用流程来讲，先是写入缓存，然后是读取缓存，有时候我们还会手动删除缓存。</p>
+<h3 id="写入缓存"><a href="#写入缓存" class="headerlink" title="写入缓存"></a>写入缓存</h3><p>LruCache 是通过 <code>put()</code> 方法来写入缓存的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Caches &#123;<span class="doctag">@code</span> value&#125; for &#123;<span class="doctag">@code</span> key&#125;. The value is moved to the head of</div><div class="line"> * the queue.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@return</span> the previous value mapped by &#123;<span class="doctag">@code</span> key&#125;.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span> || value == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"key == null || value == null"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    V previous;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        putCount++;</div><div class="line">        <span class="comment">//计算新数据的大小</span></div><div class="line">        size += safeSizeOf(key, value);</div><div class="line">        <span class="comment">//写入到 map 中</span></div><div class="line">        previous = map.put(key, value);</div><div class="line">        <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">//如果有旧的数据被覆盖，需要删除旧数据的大小</span></div><div class="line">            size -= safeSizeOf(key, previous);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">//如果有被覆盖的数据，回调 entryRemoved 方法</span></div><div class="line">        entryRemoved(<span class="keyword">false</span>, key, previous, value);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//整理数据大小，如果超过指定的大小，需要移除旧数据</span></div><div class="line">    trimToSize(maxSize);</div><div class="line">    <span class="keyword">return</span> previous;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>写入数据前会先调用 <code>safeSizeOf()</code> 方法来获取数据的大小：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">safeSizeOf</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> result = sizeOf(key, value);</div><div class="line">    <span class="keyword">if</span> (result &lt; <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Negative size: "</span> + key + <span class="string">"="</span> + value);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>里面只是调用了 <code>sizeOf()</code> 方法，对返回值做了安全判断</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Returns the size of the entry for &#123;<span class="doctag">@code</span> key&#125; and &#123;<span class="doctag">@code</span> value&#125; in</div><div class="line"> * user-defined units.  The default implementation returns 1 so that size</div><div class="line"> * is the number of entries and max size is the maximum number of entries.</div><div class="line"> *</div><div class="line"> * &lt;p&gt;An entry's size must not change while it is in the cache.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">sizeOf</span><span class="params">(K key, V value)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="number">1</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>默认的 <code>sizeOf()</code> 方法只是简单地返回了 1 ，你可以理解为默认是按照缓存的数量来限制，对于正常的使用来说肯定是不对的，我们一般都要重写这个方法，返回对应数据在内存中占用的大小。例如缓存的是 bitmap 对象，我们就需要在这个方法中返回这个 bitmap 对象在内存中占用的大小。</p>
+<p>如果有旧的数据被覆盖，会调用 <code>entryRemoved</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Called for entries that have been evicted or removed. This method is</div><div class="line"> * invoked when a value is evicted to make space, removed by a call to</div><div class="line"> * &#123;<span class="doctag">@link</span> #remove&#125;, or replaced by a call to &#123;<span class="doctag">@link</span> #put&#125;. The default</div><div class="line"> * implementation does nothing.</div><div class="line"> *</div><div class="line"> * &lt;p&gt;The method is called without synchronization: other threads may</div><div class="line"> * access the cache while this method is executing.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> evicted true if the entry is being removed to make space, false</div><div class="line"> *     if the removal was caused by a &#123;<span class="doctag">@link</span> #put&#125; or &#123;<span class="doctag">@link</span> #remove&#125;.</div><div class="line"> * <span class="doctag">@param</span> newValue the new value for &#123;<span class="doctag">@code</span> key&#125;, if it exists. If non-null,</div><div class="line"> *     this removal was caused by a &#123;<span class="doctag">@link</span> #put&#125;. Otherwise it was caused by</div><div class="line"> *     an eviction or a &#123;<span class="doctag">@link</span> #remove&#125;.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">entryRemoved</span><span class="params">(<span class="keyword">boolean</span> evicted, K key, V oldValue, V newValue)</span> </span>&#123;&#125;</div></pre></td></tr></table></figure>
+<p><code>entryRemoved()</code> 方法默认是空实现的，有需要的自己重写这个方法。</p>
+<p>到了最后调用了 <code>trimToSize()</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Remove the eldest entries until the total of remaining entries is at or</div><div class="line"> * below the requested size.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> maxSize the maximum size of the cache before returning. May be -1</div><div class="line"> *            to evict even 0-sized elements.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">trimToSize</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</div><div class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">        K key;</div><div class="line">        V value;</div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (size &lt; <span class="number">0</span> || (map.isEmpty() &amp;&amp; size != <span class="number">0</span>)) &#123;</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(getClass().getName()</div><div class="line">                        + <span class="string">".sizeOf() is reporting inconsistent results!"</span>);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">//如果当前缓存大小小于设定的最大容量则不处理</span></div><div class="line">            <span class="keyword">if</span> (size &lt;= maxSize) &#123;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">//直接获取 LinkedHashMap 中的头节点，也就是最近最少使用的数据</span></div><div class="line">            Map.Entry&lt;K, V&gt; toEvict = map.eldest();</div><div class="line">            <span class="keyword">if</span> (toEvict == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            key = toEvict.getKey();</div><div class="line">            value = toEvict.getValue();</div><div class="line">            <span class="comment">//从 LinkedHashMap 中移除</span></div><div class="line">            map.remove(key);</div><div class="line">            <span class="comment">//删除对应的缓存大小</span></div><div class="line">            size -= safeSizeOf(key, value);</div><div class="line">            evictionCount++;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        entryRemoved(<span class="keyword">true</span>, key, value, <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>trimToSize()</code> 就是移除最近最少使用的缓存数据的。逻辑比较简单，直接看注释吧。</p>
+<h3 id="读取缓存"><a href="#读取缓存" class="headerlink" title="读取缓存"></a>读取缓存</h3><p>读取缓存用的是 <code>get()</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Returns the value for &#123;<span class="doctag">@code</span> key&#125; if it exists in the cache or can be</div><div class="line"> * created by &#123;<span class="doctag">@code</span> #create&#125;. If a value was returned, it is moved to the</div><div class="line"> * head of the queue. This returns null if a value is not cached and cannot</div><div class="line"> * be created.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">get</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"key == null"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    V mapValue;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        mapValue = map.get(key);</div><div class="line">        <span class="keyword">if</span> (mapValue != <span class="keyword">null</span>) &#123;</div><div class="line">            hitCount++;</div><div class="line">            <span class="comment">//如果命中缓存则直接返回数据</span></div><div class="line">            <span class="keyword">return</span> mapValue;</div><div class="line">        &#125;</div><div class="line">        missCount++;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line">     * Attempt to create a value. This may take a long time, and the map</div><div class="line">     * may be different when create() returns. If a conflicting value was</div><div class="line">     * added to the map while create() was working, we leave that value in</div><div class="line">     * the map and release the created value.</div><div class="line">     */</div><div class="line">    <span class="comment">//如果没有命中，会调用 create 方法来尝试创建一个数据，如果 create 方法返回非 null ，则写入缓存，否则直接返回</span></div><div class="line">    V createdValue = create(key);</div><div class="line">    <span class="keyword">if</span> (createdValue == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        createCount++;</div><div class="line">        mapValue = map.put(key, createdValue);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (mapValue != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// There was a conflict so undo that last put</span></div><div class="line">            map.put(key, mapValue);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            size += safeSizeOf(key, createdValue);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (mapValue != <span class="keyword">null</span>) &#123;</div><div class="line">        entryRemoved(<span class="keyword">false</span>, key, createdValue, mapValue);</div><div class="line">        <span class="keyword">return</span> mapValue;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        trimToSize(maxSize);</div><div class="line">        <span class="keyword">return</span> createdValue;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>读取缓存就是直接从 LinkedHashMap 中查找，如果有数据则直接返回，如果没有命中的话会回调 <code>create()</code> 方法来尝试创建一个数据，如果 create 方法返回非 null ，则写入缓存，否则直接返回。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Called after a cache miss to compute a value for the corresponding key.</div><div class="line"> * Returns the computed value or null if no value can be computed. The</div><div class="line"> * default implementation returns null.</div><div class="line"> *</div><div class="line"> * &lt;p&gt;The method is called without synchronization: other threads may</div><div class="line"> * access the cache while this method is executing.</div><div class="line"> *</div><div class="line"> * &lt;p&gt;If a value for &#123;<span class="doctag">@code</span> key&#125; exists in the cache when this method</div><div class="line"> * returns, the created value will be released with &#123;<span class="doctag">@link</span> #entryRemoved&#125;</div><div class="line"> * and discarded. This can occur when multiple threads request the same key</div><div class="line"> * at the same time (causing multiple values to be created), or when one</div><div class="line"> * thread calls &#123;<span class="doctag">@link</span> #put&#125; while another is creating a value for the same</div><div class="line"> * key.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">protected</span> V <span class="title">create</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>create()</code> 方法默认是返回 null 的，有特殊需求的要重写这个方法。</p>
+<h3 id="删除缓存"><a href="#删除缓存" class="headerlink" title="删除缓存"></a>删除缓存</h3><p>LruCache 提供了 <code>remove()</code> 方法来主动删除缓存：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> V <span class="title">remove</span><span class="params">(K key)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"key == null"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    V previous;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="comment">//从 LinkedHashMap 中删除数据</span></div><div class="line">        previous = map.remove(key);</div><div class="line">        <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">//如果删除成功则减去对应的缓存大小</span></div><div class="line">            size -= safeSizeOf(key, previous);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (previous != <span class="keyword">null</span>) &#123;</div><div class="line">        entryRemoved(<span class="keyword">false</span>, key, previous, <span class="keyword">null</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> previous;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>删除的逻辑是最简单的，直接看注释吧。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/cache/" rel="tag"># cache</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/OkHttp学习笔记_2_拦截器链/" rel="next" title="OkHttp学习笔记 2 拦截器链">
+                <i class="fa fa-chevron-left"></i> OkHttp学习笔记 2 拦截器链
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#LRU-算法"><span class="nav-number">1.</span> <span class="nav-text">LRU 算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LruCache"><span class="nav-number">2.</span> <span class="nav-text">LruCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写入缓存"><span class="nav-number">2.1.</span> <span class="nav-text">写入缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读取缓存"><span class="nav-number">2.2.</span> <span class="nav-text">读取缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除缓存"><span class="nav-number">2.3.</span> <span class="nav-text">删除缓存</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
