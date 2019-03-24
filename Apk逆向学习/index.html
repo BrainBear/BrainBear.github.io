@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Android,Sensor," />
+  <meta name="keywords" content="Android,逆向," />
 
 
 
@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="Android手机中内置了不少Sensor（传感器），有时候有一些需求需要通过获取这些传感器返回的数据来实现，最近有一个需求需要用到这方面的知识，整理了一些资料，于是有了这一篇博客">
+<meta name="description" content="过年到上班这么久了都没有写过博客，一是事情比较多，一个是没有什么想写的。这周因为特殊的原因需要逆向一个 Apk ，需要修改一个 Apk 的网络判断逻辑，所以简单了解了一些逆向 Apk 的步骤，也就有了今天这个博客。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android Sensor简单了解">
-<meta property="og:url" content="http://yoursite.com/Android Sensor简单了解/index.html">
+<meta property="og:title" content="Apk逆向学习">
+<meta property="og:url" content="http://yoursite.com/Apk逆向学习/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
-<meta property="og:description" content="Android手机中内置了不少Sensor（传感器），有时候有一些需求需要通过获取这些传感器返回的数据来实现，最近有一个需求需要用到这方面的知识，整理了一些资料，于是有了这一篇博客">
-<meta property="og:updated_time" content="2017-04-17T15:51:02.000Z">
+<meta property="og:description" content="过年到上班这么久了都没有写过博客，一是事情比较多，一个是没有什么想写的。这周因为特殊的原因需要逆向一个 Apk ，需要修改一个 Apk 的网络判断逻辑，所以简单了解了一些逆向 Apk 的步骤，也就有了今天这个博客。">
+<meta property="og:updated_time" content="2019-03-24T14:09:50.434Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android Sensor简单了解">
-<meta name="twitter:description" content="Android手机中内置了不少Sensor（传感器），有时候有一些需求需要通过获取这些传感器返回的数据来实现，最近有一个需求需要用到这方面的知识，整理了一些资料，于是有了这一篇博客">
+<meta name="twitter:title" content="Apk逆向学习">
+<meta name="twitter:description" content="过年到上班这么久了都没有写过博客，一是事情比较多，一个是没有什么想写的。这周因为特殊的原因需要逆向一个 Apk ，需要修改一个 Apk 的网络判断逻辑，所以简单了解了一些逆向 Apk 的步骤，也就有了今天这个博客。">
 
 
 
@@ -121,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/Android Sensor简单了解/"/>
+  <link rel="canonical" href="http://yoursite.com/Apk逆向学习/"/>
 
 
 
 
 
-  <title> Android Sensor简单了解 | brainBear' Blog </title>
+  <title> Apk逆向学习 | brainBear' Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="en">
@@ -240,7 +240,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Android Sensor简单了解/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Apk逆向学习/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="brainBear">
@@ -264,7 +264,7 @@
             
             
               
-                Android Sensor简单了解
+                Apk逆向学习
               
             
           </h1>
@@ -279,8 +279,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-17T23:30:32+08:00">
-                2017-04-17
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-24T21:02:32+08:00">
+                2018-03-24
               </time>
             
 
@@ -315,56 +315,30 @@
       
 
       
-        <p>Android手机中内置了不少Sensor（传感器），有时候有一些需求需要通过获取这些传感器返回的数据来实现，最近有一个需求需要用到这方面的知识，整理了一些资料，于是有了这一篇博客<a id="more"></a></p>
-<h3 id="Sensor类型"><a href="#Sensor类型" class="headerlink" title="Sensor类型"></a>Sensor类型</h3><p>Android平台支持下面几种类型的传感器：</p>
+        <p>过年到上班这么久了都没有写过博客，一是事情比较多，一个是没有什么想写的。这周因为特殊的原因需要逆向一个 Apk ，需要修改一个 Apk 的网络判断逻辑，所以简单了解了一些逆向 Apk 的步骤，也就有了今天这个博客。<br><a id="more"></a></p>
+<h1 id="Apk-逆向学习"><a href="#Apk-逆向学习" class="headerlink" title="Apk 逆向学习"></a>Apk 逆向学习</h1><p>首先说明一下我的环境，我使用的是 mac 环境，如果只是查看源码的话我记得 windows 平台有个更简单的软件可以用，但是我忘记叫什么名字了。。</p>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><p>需要以下几个工具：</p>
 <ul>
-<li><p>Motion sensors（运动传感器）</p>
-<p>运动传感器主要是在空间上测量Android设备在x，y，z三个轴上的加速度和角加速度，常见的传感器有加速度传感器（用于测量加速度），陀螺仪（用于测量角加速度）</p>
-</li>
-<li><p>Environmental sensors（环境传感器）</p>
-<p>这些传感器测量各种环境参数，如环境空气的温度和压力、光照、湿度。常见的传感器有温湿度传感器，光照传感器。</p>
-</li>
-<li><p>Position sensors（位置传感器）</p>
-<p>位置传感器主要用于测量Android设置的位置参数，常见的传感器有GPS，磁场传感器。</p>
-</li>
+<li><a href="https://ibotpeaches.github.io/Apktool/install/" target="_blank" rel="external">ApkTool</a> 用于 Apk 的反编译和回编译</li>
+<li><a href="https://github.com/pxb1988/dex2jar" target="_blank" rel="external">dex2jar</a> 用于将 dex 文件转换成 class 文件</li>
+<li><a href="http://java-decompiler.github.io/" target="_blank" rel="external">JD-GUI</a> 用于查看 class 文件</li>
 </ul>
-<h3 id="Sensor开发"><a href="#Sensor开发" class="headerlink" title="Sensor开发"></a>Sensor开发</h3><p>Android中Sensor开发主要用到以下几个类：</p>
-<ul>
-<li><p>SensorManager</p>
-<p>这个是主要用到的类，SensorManager提供了方法访问各种传感器，也提供了监听具体某个传感器值变化的回调。</p>
-</li>
-<li><p>Sensor</p>
-<p>标识具体某一个传感器，提供了很多方法来获取传感器的数据，例如分辨率，厂商等等。</p>
-</li>
-<li><p>SensorEvent</p>
-<p>传感器事件类，这个类用来标识一个传感器事件，这个类主要由几个重要的成员变量组成。其中最重要的是values，这是个float数组，对于运动传感器来说这个数组长度一般是3，用于标识3个轴x，y，z轴的原始数据。例如，如果是加速度传感器返回的SensorEvent其中的values[0]标识x轴的加速度，values[1]标识y轴的加速度，values[2]标识z轴的加速度。具体某个传感器返回的值代表什么含义可以去Developer的官网查看。链接：<a href="https://developer.android.google.cn/reference/android/hardware/SensorEvent.html#values" target="_blank" rel="external">values</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class SensorEvent &#123;</div><div class="line">    public int accuracy; //传感器的精度</div><div class="line">    public Sensor sensor; //具体的传感器类型</div><div class="line">    public long timestamp;  //时间戳</div><div class="line">    public final float[] values = null; //原始的传感器数据</div><div class="line"></div><div class="line">    SensorEvent() &#123;</div><div class="line">        throw new RuntimeException(&quot;Stub!&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>SensorEventListener</p>
-<p>这个类提供了两个回调方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public interface SensorEventListener &#123;</div><div class="line">    void onSensorChanged(SensorEvent var1); //当传感器的值发生改变时候回调</div><div class="line"></div><div class="line">    void onAccuracyChanged(Sensor var1, int var2); //当传感器的精度发生改变时候回调</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>TriggerEvent</p>
-<p>和SensorEvent类似</p>
-</li>
-<li><p>TriggerEventListener</p>
-<p>和SensorEventListener类似</p>
-</li>
-</ul>
-<p>基本上Android设备都会有加速度计和陀螺仪传感器，但是其他的传感器就说不定了，那么怎么获取到Android设备有哪一些传感器呢？具体的代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">private SensorManager mManager;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line">mManager = (SensorManager) getSystemService(Service.SENSOR_SERVICE);</div><div class="line">List&lt;Sensor&gt; sensorList = mManager.getSensorList(Sensor.TYPE_ALL);</div><div class="line">for (Sensor s : sensorList) &#123;</div><div class="line">  Log.d(TAG, s.getName());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>如果是只想获取到具体的某一个传感器，例如怎么获取到加速度传感器呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Sensor accSensor = mManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);</div></pre></td></tr></table></figure></p>
-<p>Sensor这个类提供了一系列的常量标识某个传感器，通过SensorManager的getDefaultSensor就可以获取到指定的传感器。如果没有这个传感器的话就返回null。</p>
-<p>好了，获取到具体的Sensor了，那么怎么获取到传感器的值呢？Android提供了两组方法来获取传感器的值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">boolean registerListener(...)</div><div class="line">void unregisterListener(...)</div><div class="line"></div><div class="line">boolean requestTriggerSensor(...)</div><div class="line">boolean cancelTriggerSensor(...)</div></pre></td></tr></table></figure></p>
-<p>这两组的区别是registerListener如果不调用unregisterListener方法的话，事件会一直回调，而requestTriggerSensor只会回调一次，回调之后就会自动取消监听，如果想重复获取数据的话，需要在事件回调中再调用requestTriggerSensor。</p>
-<p>其中boolean registerListener (SensorEventListener listener, Sensor sensor, int samplingPeriodUs)第三个参数是指定传感器的采样频率。支持以下几个参数值</p>
-<ul>
-<li>SENSOR_DELAY_FASTEST</li>
-<li>SENSOR_DELAY_GAME</li>
-<li>SENSOR_DELAY_NORMAL</li>
-<li>SENSOR_DELAY_UI</li>
-</ul>
-<p>以上的值，回调的延迟从上到下依次升高，但是功耗依次降低，具体使用那一个需要根据实际的情况决定。</p>
-<p>Android的Sensor还是很丰富的，不知不觉都快毕业一年了，大学学的是电子信息工程专业，做的都是和嵌入式相关的技术，就是和各种各样的传感器打交道，机缘巧合下转到了Android，没想到还能再接触到。看到Android里面的加速度计和陀螺仪，想起了大学时候参加的飞思卡尔智能车比赛，当时参加的是光电直立组，其中的核心就是加速度计和陀螺仪的技术，忘记了在实验室中度过了多少不眠的晚上，最后也拿了华南赛区的二等奖，算是大学一个结束。智能车比赛结束接触到Android，结果一直坚持到了现在，飞思卡尔智能车比赛也改名叫恩智浦智能车比赛了，白驹过隙，希望自己能继续坚持下去，与诸君共勉。加油！</p>
+<p>下载好上面的工具，按文档配置好就可以了。</p>
+<h2 id="反编译"><a href="#反编译" class="headerlink" title="反编译"></a>反编译</h2><p>因为需要先查看源码，所以需要反编译 apk，使用<code>apktool d</code>命令可以反编译 apk ：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d -s apk路径</div></pre></td></tr></table></figure>
+<p>其中 <code>-s</code> 是指不将 dex 文件反编译成 samli 文件，其他的参数可以参考<a href="https://ibotpeaches.github.io/Apktool/documentation/#decode" target="_blank" rel="external">文档</a>。</p>
+<p>执行上面的命令，会在当前目录下生成一个和 apk 同名的文件夹，里面就有我们需要的 dex 文件，如果 apk 使有 multidex 的话可能会有几个 dex 文件。</p>
+<h2 id="查看源码"><a href="#查看源码" class="headerlink" title="查看源码"></a>查看源码</h2><p>使用 dex2jar 将 dex 文件转成 jar 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sh d2j-dex2jar.sh dex文件路径</div></pre></td></tr></table></figure>
+<p>执行上面的命令也会有当前目录下生成一个 jar 文件，将它拖到 JD-GUI 就可以看到代码了。</p>
+<h2 id="修改代码"><a href="#修改代码" class="headerlink" title="修改代码"></a>修改代码</h2><p>找到你需要修改的代码的位置，但是我们无法直接修改 dex 文件，所以我们需要重新反编译 apk ，但是这次我们需要生成 smali 文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d apk路径</div></pre></td></tr></table></figure>
+<p>执行上面的命令就会生成 smali 文件，找到对应的类就可以修改了，samli 语法的话我也因为时间的原因没有认真看，我说一下我的办法：我自己新建了一个 demo 工程，里面写好我需要最终修改的目标代码，然后编译，反编译，复制 samli 代码，粘贴到逆向的 samli 文件。</p>
+<p>修改完之后，我们需要回编译：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool b 反编译出来的文件夹路径</div></pre></td></tr></table></figure>
+<h2 id="重签名"><a href="#重签名" class="headerlink" title="重签名"></a>重签名</h2><p>因为反编译会破坏原有的签名，当我们重新回编译的时候需要重新签名，我们使用 JDK 提供的 jarsigner 工具来签名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore [keystore路径] -storepass [keystore密码] [需要签名的apk路径] [keystore别名]</div></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>由于时间的关系，很多东西都没有认真看，所以这篇文章也比较水^_^，不过这次的经验很有趣，下次再花时间深入去看看。</p>
 
       
     </div>
@@ -390,7 +364,7 @@
           
             <a href="/tags/Android/" rel="tag"># Android</a>
           
-            <a href="/tags/Sensor/" rel="tag"># Sensor</a>
+            <a href="/tags/逆向/" rel="tag"># 逆向</a>
           
         </div>
       
@@ -399,8 +373,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/Android插件换肤基础/" rel="next" title="Android插件换肤基础">
-                <i class="fa fa-chevron-left"></i> Android插件换肤基础
+              <a href="/用RxJava封装接口/" rel="next" title="用RxJava封装接口">
+                <i class="fa fa-chevron-left"></i> 用RxJava封装接口
               </a>
             
           </div>
@@ -409,8 +383,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/一个简单的Log库/" rel="prev" title="一个简单的Log库">
-                一个简单的Log库 <i class="fa fa-chevron-right"></i>
+              <a href="/Butterknife简单分析/" rel="prev" title="Butterknife简单分析">
+                Butterknife简单分析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -527,7 +501,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sensor类型"><span class="nav-number">1.</span> <span class="nav-text">Sensor类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sensor开发"><span class="nav-number">2.</span> <span class="nav-text">Sensor开发</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Apk-逆向学习"><span class="nav-number">1.</span> <span class="nav-text">Apk 逆向学习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#工具"><span class="nav-number">1.1.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反编译"><span class="nav-number">1.2.</span> <span class="nav-text">反编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查看源码"><span class="nav-number">1.3.</span> <span class="nav-text">查看源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改代码"><span class="nav-number">1.4.</span> <span class="nav-text">修改代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重签名"><span class="nav-number">1.5.</span> <span class="nav-text">重签名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
             
 
           </div>
