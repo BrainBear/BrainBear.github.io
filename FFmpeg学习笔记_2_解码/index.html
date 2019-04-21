@@ -1,0 +1,693 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="FFmpeg," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章已经成功编译 FFmpeg 然后集成到 Android Studio 中，今天我们就要学习 FFmpeg 中解码的流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FFmpeg学习笔记 2 解码">
+<meta property="og:url" content="http://yoursite.com/FFmpeg学习笔记_2_解码/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="上一篇文章已经成功编译 FFmpeg 然后集成到 Android Studio 中，今天我们就要学习 FFmpeg 中解码的流程。">
+<meta property="og:updated_time" content="2019-04-21T09:35:33.772Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FFmpeg学习笔记 2 解码">
+<meta name="twitter:description" content="上一篇文章已经成功编译 FFmpeg 然后集成到 Android Studio 中，今天我们就要学习 FFmpeg 中解码的流程。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/FFmpeg学习笔记_2_解码/"/>
+
+
+
+
+
+  <title> FFmpeg学习笔记 2 解码 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/FFmpeg学习笔记_2_解码/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                FFmpeg学习笔记 2 解码
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-20T16:02:32+08:00">
+                2019-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章已经成功编译 FFmpeg 然后集成到 Android Studio 中，今天我们就要学习 FFmpeg 中解码的流程。<br><a id="more"></a></p>
+<h2 id="FFmpeg-解封装"><a href="#FFmpeg-解封装" class="headerlink" title="FFmpeg 解封装"></a>FFmpeg 解封装</h2><ol>
+<li>初始化</li>
+<li>打开输入</li>
+<li>找到需要的 stream</li>
+<li>获取压缩数据</li>
+</ol>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>首先需要注册一些封装器和解封装器：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Initialize libavformat and register all the muxers, demuxers and</div><div class="line"> * protocols. If you do not call this function, then you can select</div><div class="line"> * exactly which formats you want to support.</div><div class="line"> *</div><div class="line"> * @see av_register_input_format()</div><div class="line"> * @see av_register_output_format()</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">av_register_all</span><span class="params">(<span class="keyword">void</span>)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>如果你打开的是网络资源，还需要初始化网络<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Do global initialization of network components. This is optional,</div><div class="line"> * but recommended, since it avoids the overhead of implicitly</div><div class="line"> * doing the setup for each session.</div><div class="line"> *</div><div class="line"> * Calling this function will become mandatory if using network</div><div class="line"> * protocols at some major version bump.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avformat_network_init</span><span class="params">(<span class="keyword">void</span>)</span></span>;</div></pre></td></tr></table></figure></p>
+<h3 id="打开输入"><a href="#打开输入" class="headerlink" title="打开输入"></a>打开输入</h3><p>打开输入主要涉及了 <code>AVFormatContext</code> ，主要的属性如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AVFormatContext &#123;</div><div class="line">   </div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Number of elements in AVFormatContext.streams.</div><div class="line">     *</div><div class="line">     * Set by avformat_new_stream(), must not be modified by any other code.</div><div class="line">     */</div><div class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nb_streams; <span class="comment">//有多少个 stream，一般有音频流，视频流，字幕流</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * A list of all streams in the file. New streams are created with</div><div class="line">     * avformat_new_stream().</div><div class="line">     *</div><div class="line">     * - demuxing: streams are created by libavformat in avformat_open_input().</div><div class="line">     *             If AVFMTCTX_NOHEADER is set in ctx_flags, then new streams may also</div><div class="line">     *             appear in av_read_frame().</div><div class="line">     * - muxing: streams are created by the user before avformat_write_header().</div><div class="line">     *</div><div class="line">     * Freed by libavformat in avformat_free_context().</div><div class="line">     */</div><div class="line">    AVStream **streams; <span class="comment">//存储 AVStream 的数组</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * input or output filename</div><div class="line">     *</div><div class="line">     * - demuxing: set by avformat_open_input()</div><div class="line">     * - muxing: may be set by the caller before avformat_write_header()</div><div class="line">     */</div><div class="line">    <span class="keyword">char</span> filename[<span class="number">1024</span>]; <span class="comment">//输入路径</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Duration of the stream, in AV_TIME_BASE fractional</div><div class="line">     * seconds. Only set this value if you know none of the individual stream</div><div class="line">     * durations and also do not set any of them. This is deduced from the</div><div class="line">     * AVStream values if not set.</div><div class="line">     *</div><div class="line">     * Demuxing only, set by libavformat.</div><div class="line">     */</div><div class="line">    <span class="keyword">int64_t</span> duration; <span class="comment">//时长</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Total stream bitrate in bit/s, 0 if not</div><div class="line">     * available. Never set it directly if the file_size and the</div><div class="line">     * duration are known as FFmpeg can compute it automatically.</div><div class="line">     */</div><div class="line">    <span class="keyword">int64_t</span> bit_rate; <span class="comment">//比特率</span></div><div class="line"></div><div class="line">&#125; AVFormatContext;</div></pre></td></tr></table></figure>
+<p>FFMpeg 提供了两个方法来创建和释放 <code>AVFormatContext</code> :</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Allocate an AVFormatContext.</div><div class="line"> * avformat_free_context() can be used to free the context and everything</div><div class="line"> * allocated by the framework within it.</div><div class="line"> */</div><div class="line"><span class="function">AVFormatContext *<span class="title">avformat_alloc_context</span><span class="params">(<span class="keyword">void</span>)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Free an AVFormatContext and all its streams.</div><div class="line"> * @param s context to free</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">avformat_free_context</span><span class="params">(AVFormatContext *s)</span></span>;</div></pre></td></tr></table></figure>
+<p>我们需要通过 <code>int avformat_open_input(AVFormatContext **ps, const char *url, AVInputFormat *fmt, AVDictionary **options);</code> 方法来打开输入</p>
+<ul>
+<li><code>AVFormatContext **ps</code> AVFormatContext 指针的指针 可以传入一个指向 NULL 的 AVFormatContext 的指针，这样该方法内部会自动创建 AVFormatContext 并且赋值</li>
+<li><code>const char *url</code> 需要打开的输入流的 url</li>
+<li><code>AVInputFormat *fmt</code> 如果不为 NULL 则指定输入的格式，一般都传 NULL 让它自动检测</li>
+<li><code>AVDictionary **options</code> 一些额外的参数 在 FFmpeg 源码目录下 ./libavformat/options_table.h 文件有定义，一般传 NULL</li>
+</ul>
+<p>一般情况下，调用 <code>avformat_open_input</code> 方法就可以在 <code>AVFormatContext</code> 获取到需要的信息，但是对于部分没有头部信息的格式来说，还需要调用 <code>avformat_find_stream_info</code> 方法来获取信息填充到 <code>AVFormatContext</code> 中：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Read packets of a media file to get stream information. This</div><div class="line"> * is useful for file formats with no headers such as MPEG. This</div><div class="line"> * function also computes the real framerate in case of MPEG-2 repeat</div><div class="line"> * frame mode.</div><div class="line"> * The logical file position is not changed by this function;</div><div class="line"> * examined packets may be buffered for later processing.</div><div class="line"> *</div><div class="line"> * @param ic media file handle</div><div class="line"> * @param options  If non-NULL, an ic.nb_streams long array of pointers to</div><div class="line"> *                 dictionaries, where i-th member contains options for</div><div class="line"> *                 codec corresponding to i-th stream.</div><div class="line"> *                 On return each dictionary will be filled with options that were not found.</div><div class="line"> * @return &gt;=0 if OK, AVERROR_xxx on error</div><div class="line"> *</div><div class="line"> * @note this function isn't guaranteed to open all the codecs, so</div><div class="line"> *       options being non-empty at return is a perfectly normal behavior.</div><div class="line"> *</div><div class="line"> * @todo Let the user decide somehow what information is needed so that</div><div class="line"> *       we do not waste time getting stuff the user does not need.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avformat_find_stream_info</span><span class="params">(AVFormatContext *ic, AVDictionary **options)</span></span>;</div></pre></td></tr></table></figure></p>
+<h3 id="找到需要的流"><a href="#找到需要的流" class="headerlink" title="找到需要的流"></a>找到需要的流</h3><p>FFmpeg 中用 AVStream 描述流：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AVStream &#123;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * This is the fundamental unit of time (in seconds) in terms</div><div class="line">     * of which frame timestamps are represented.</div><div class="line">     *</div><div class="line">     * decoding: set by libavformat</div><div class="line">     * encoding: May be set by the caller before avformat_write_header() to</div><div class="line">     *           provide a hint to the muxer about the desired timebase. In</div><div class="line">     *           avformat_write_header(), the muxer will overwrite this field</div><div class="line">     *           with the timebase that will actually be used for the timestamps</div><div class="line">     *           written into the file (which may or may not be related to the</div><div class="line">     *           user-provided one, depending on the format).</div><div class="line">     */</div><div class="line">    AVRational time_base; <span class="comment">//时间基数，是一个有理数</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Decoding: duration of the stream, in stream time base.</div><div class="line">     * If a source file does not specify a duration, but does specify</div><div class="line">     * a bitrate, this value will be estimated from bitrate and file size.</div><div class="line">     *</div><div class="line">     * Encoding: May be set by the caller before avformat_write_header() to</div><div class="line">     * provide a hint to the muxer about the estimated duration.</div><div class="line">     */</div><div class="line">    <span class="keyword">int64_t</span> duration; </div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Average framerate</div><div class="line">     *</div><div class="line">     * - demuxing: May be set by libavformat when creating the stream or in</div><div class="line">     *             avformat_find_stream_info().</div><div class="line">     * - muxing: May be set by the caller before avformat_write_header().</div><div class="line">     */</div><div class="line">    AVRational avg_frame_rate;  <span class="comment">//帧率</span></div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line">     * Codec parameters associated with this stream. Allocated and freed by</div><div class="line">     * libavformat in avformat_new_stream() and avformat_free_context()</div><div class="line">     * respectively.</div><div class="line">     *</div><div class="line">     * - demuxing: filled by libavformat on stream creation or in</div><div class="line">     *             avformat_find_stream_info()</div><div class="line">     * - muxing: filled by the caller before avformat_write_header()</div><div class="line">     */</div><div class="line">    AVCodecParameters *codecpar; <span class="comment">//编解码器参数</span></div><div class="line">&#125; AVStream;</div></pre></td></tr></table></figure>
+<p>其中 <code>AVCodecParameters</code> 是描述编解码器的一些参数封装：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AVCodecParameters &#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * General type of the encoded data.</div><div class="line">     */</div><div class="line">    <span class="keyword">enum</span> AVMediaType codec_type; <span class="comment">//编码器类型</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Specific type of the encoded data (the codec used).</div><div class="line">     */</div><div class="line">    <span class="keyword">enum</span> AVCodecID   codec_id; <span class="comment">//编码器ID</span></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * - video: the pixel format, the value corresponds to enum AVPixelFormat.</div><div class="line">     * - audio: the sample format, the value corresponds to enum AVSampleFormat.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> format; <span class="comment">//对于视频数据是像素格式 对于音频数据是采样格式</span></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Video only. The dimensions of the video frame in pixels.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> width;</div><div class="line">    <span class="keyword">int</span> height; <span class="comment">//宽高 只有视频数据才有</span></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Audio only. The channel layout bitmask. May be 0 if the channel layout is</div><div class="line">     * unknown or unspecified, otherwise the number of bits set must be equal to</div><div class="line">     * the channels field.</div><div class="line">     */</div><div class="line">    <span class="keyword">uint64_t</span> channel_layout; <span class="comment">//音频数据才有 指声道的布局</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Audio only. The number of audio channels.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span>      channels; <span class="comment">//音频数据才有 几声道</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Audio only. The number of audio samples per second.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span>      sample_rate;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Audio only. Audio frame size, if known. Required by some formats to be static.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span>      frame_size;</div><div class="line"></div><div class="line"></div><div class="line">&#125; AVCodecParameters;</div></pre></td></tr></table></figure>
+<p> <code>AVMediaType</code> 是描述这个流是哪种媒体类型的，有以下的值：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">enum</span> AVMediaType &#123;</div><div class="line">    AVMEDIA_TYPE_UNKNOWN = <span class="number">-1</span>,  <span class="comment">///&lt; Usually treated as AVMEDIA_TYPE_DATA</span></div><div class="line">    AVMEDIA_TYPE_VIDEO,  </div><div class="line">    AVMEDIA_TYPE_AUDIO,</div><div class="line">    AVMEDIA_TYPE_DATA,          <span class="comment">///&lt; Opaque data information usually continuous</span></div><div class="line">    AVMEDIA_TYPE_SUBTITLE,</div><div class="line">    AVMEDIA_TYPE_ATTACHMENT,    <span class="comment">///&lt; Opaque data information usually sparse</span></div><div class="line">    AVMEDIA_TYPE_NB</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>而 <code>AVCodecID</code> 则是描述这个流具体需要哪个编解码器来处理，这里只贴一部分：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">enum</span> AVCodecID &#123;</div><div class="line">    AV_CODEC_ID_NONE,</div><div class="line"></div><div class="line">    <span class="comment">/* video codecs */</span></div><div class="line">    AV_CODEC_ID_MPEG4,</div><div class="line">    AV_CODEC_ID_H264,</div><div class="line">    ..................</div><div class="line"></div><div class="line">    <span class="comment">/* audio codecs */</span></div><div class="line">    AV_CODEC_ID_MP3, </div><div class="line">    AV_CODEC_ID_AAC,</div><div class="line">    ..................</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>从上面知道了 <code>AVFormatContext</code> 中可能有很多的流，但并不是全部我们都需要，所以我们需要从 <code>AVFormatContext</code> 中获取我们想要的，旧的方法是通过编译来获取，新版本提供了一个方法来获取。</p>
+<p>新接口：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Find the "best" stream in the file.</div><div class="line"> * The best stream is determined according to various heuristics as the most</div><div class="line"> * likely to be what the user expects.</div><div class="line"> * If the decoder parameter is non-NULL, av_find_best_stream will find the</div><div class="line"> * default decoder for the stream's codec; streams for which no decoder can</div><div class="line"> * be found are ignored.</div><div class="line"> *</div><div class="line"> * @param ic                media file handle</div><div class="line"> * @param type              stream type: video, audio, subtitles, etc.</div><div class="line"> * @param wanted_stream_nb  user-requested stream number,</div><div class="line"> *                          or -1 for automatic selection</div><div class="line"> * @param related_stream    try to find a stream related (eg. in the same</div><div class="line"> *                          program) to this one, or -1 if none</div><div class="line"> * @param decoder_ret       if non-NULL, returns the decoder for the</div><div class="line"> *                          selected stream</div><div class="line"> * @param flags             flags; none are currently defined</div><div class="line"> * @return  the non-negative stream number in case of success,</div><div class="line"> *          AVERROR_STREAM_NOT_FOUND if no stream with the requested type</div><div class="line"> *          could be found,</div><div class="line"> *          AVERROR_DECODER_NOT_FOUND if streams were found but no decoder</div><div class="line"> * @note  If av_find_best_stream returns successfully and decoder_ret is not</div><div class="line"> *        NULL, then *decoder_ret is guaranteed to be set to a valid AVCodec.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">av_find_best_stream</span><span class="params">(AVFormatContext *ic,</span></span></div><div class="line">                        <span class="keyword">enum</span> AVMediaType type,</div><div class="line">                        <span class="keyword">int</span> wanted_stream_nb,</div><div class="line">                        <span class="keyword">int</span> related_stream,</div><div class="line">                        AVCodec **decoder_ret,</div><div class="line">                        <span class="keyword">int</span> flags);</div></pre></td></tr></table></figure></p>
+<p>遍历：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pFormatCtx-&gt;nb_streams; i++) &#123;</div><div class="line">        <span class="keyword">if</span> (pFormatCtx-&gt;streams[i]-&gt;codecpar-&gt;codec_type == AVMEDIA_TYPE_AUDIO)<span class="comment">//得到音频流</span></div><div class="line">        &#123;</div><div class="line">            audioStreamIndex = i; <span class="comment">//保存需要的 stream index </span></div><div class="line">            codecpar = pFormatCtx-&gt;streams[i]-&gt;codecpar; <span class="comment">//保存对应的编解码器参数</span></div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<h3 id="获取压缩数据"><a href="#获取压缩数据" class="headerlink" title="获取压缩数据"></a>获取压缩数据</h3><p>当我们成功打开输入的时候，就可以开始读取输入的压缩数据了，FFmpeg 的压缩数据存在 <code>AVPacket</code> 中，<code>AVPacket</code> 主要使用以下几个方法<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Allocate an AVPacket and set its fields to default values.  The resulting</div><div class="line"> * struct must be freed using av_packet_free().</div><div class="line"> *</div><div class="line"> * @return An AVPacket filled with default values or NULL on failure.</div><div class="line"> *</div><div class="line"> * @note this only allocates the AVPacket itself, not the data buffers. Those</div><div class="line"> * must be allocated through other means such as av_new_packet.</div><div class="line"> *</div><div class="line"> * @see av_new_packet</div><div class="line"> */</div><div class="line"><span class="function">AVPacket *<span class="title">av_packet_alloc</span><span class="params">(<span class="keyword">void</span>)</span></span>; <span class="comment">// 创建</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Free the packet, if the packet is reference counted, it will be</div><div class="line"> * unreferenced first.</div><div class="line"> *</div><div class="line"> * @param pkt packet to be freed. The pointer will be set to NULL.</div><div class="line"> * @note passing NULL is a no-op.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">av_packet_free</span><span class="params">(AVPacket **pkt)</span></span>; <span class="comment">// 释放</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Wipe the packet.</div><div class="line"> *</div><div class="line"> * Unreference the buffer referenced by the packet and reset the</div><div class="line"> * remaining packet fields to their default values.</div><div class="line"> *</div><div class="line"> * @param pkt The packet to be unreferenced.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">av_packet_unref</span><span class="params">(AVPacket *pkt)</span></span>;<span class="comment">// 减少引用计数</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Setup a new reference to the data described by a given packet</div><div class="line"> *</div><div class="line"> * If src is reference-counted, setup dst as a new reference to the</div><div class="line"> * buffer in src. Otherwise allocate a new buffer in dst and copy the</div><div class="line"> * data from src into it.</div><div class="line"> *</div><div class="line"> * All the other fields are copied from src.</div><div class="line"> *</div><div class="line"> * @see av_packet_unref</div><div class="line"> *</div><div class="line"> * @param dst Destination packet</div><div class="line"> * @param src Source packet</div><div class="line"> *</div><div class="line"> * @return 0 on success, a negative AVERROR on error.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">av_packet_ref</span><span class="params">(AVPacket *dst, <span class="keyword">const</span> AVPacket *src)</span><span class="comment">// 增加引用计数</span></span></div></pre></td></tr></table></figure></p>
+<p>FFmpeg 提供了 <code>av_read_frame</code> 方法从输入中读取压缩数据：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Return the next frame of a stream.</div><div class="line"> * This function returns what is stored in the file, and does not validate</div><div class="line"> * that what is there are valid frames for the decoder. It will split what is</div><div class="line"> * stored in the file into frames and return one for each call. It will not</div><div class="line"> * omit invalid data between valid frames so as to give the decoder the maximum</div><div class="line"> * information possible for decoding.</div><div class="line"> *</div><div class="line"> * If pkt-&gt;buf is NULL, then the packet is valid until the next</div><div class="line"> * av_read_frame() or until avformat_close_input(). Otherwise the packet</div><div class="line"> * is valid indefinitely. In both cases the packet must be freed with</div><div class="line"> * av_packet_unref when it is no longer needed. For video, the packet contains</div><div class="line"> * exactly one frame. For audio, it contains an integer number of frames if each</div><div class="line"> * frame has a known fixed size (e.g. PCM or ADPCM data). If the audio frames</div><div class="line"> * have a variable size (e.g. MPEG audio), then it contains one frame.</div><div class="line"> *</div><div class="line"> * pkt-&gt;pts, pkt-&gt;dts and pkt-&gt;duration are always set to correct</div><div class="line"> * values in AVStream.time_base units (and guessed if the format cannot</div><div class="line"> * provide them). pkt-&gt;pts can be AV_NOPTS_VALUE if the video format</div><div class="line"> * has B-frames, so it is better to rely on pkt-&gt;dts if you do not</div><div class="line"> * decompress the payload.</div><div class="line"> *</div><div class="line"> * @return 0 if OK, &lt; 0 on error or end of file</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">av_read_frame</span><span class="params">(AVFormatContext *s, AVPacket *pkt)</span></span>;</div></pre></td></tr></table></figure></p>
+<h2 id="FFmpeg-解码"><a href="#FFmpeg-解码" class="headerlink" title="FFmpeg 解码"></a>FFmpeg 解码</h2><ol>
+<li>找到解码器</li>
+<li>创建解码器上下文并初始化</li>
+<li>打开解码器</li>
+<li>输入压缩数据，读取原始数据</li>
+</ol>
+<h3 id="找到解码器"><a href="#找到解码器" class="headerlink" title="找到解码器"></a>找到解码器</h3><p>FFmpeg 提供了 <code>avcodec_find_decoder</code> 方法来获取解码器<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Find a registered decoder with a matching codec ID.</div><div class="line"> *</div><div class="line"> * @param id AVCodecID of the requested decoder</div><div class="line"> * @return A decoder if one was found, NULL otherwise.</div><div class="line"> */</div><div class="line"><span class="function">AVCodec *<span class="title">avcodec_find_decoder</span><span class="params">(<span class="keyword">enum</span> AVCodecID id)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>参数 <code>id</code> 就是前面解封装后获取到的。</p>
+<h3 id="创建解码器上下文并初始化"><a href="#创建解码器上下文并初始化" class="headerlink" title="创建解码器上下文并初始化"></a>创建解码器上下文并初始化</h3><p>FFmpeg 提供了 <code>avcodec_alloc_context3</code> 方法来创建<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Allocate an AVCodecContext and set its fields to default values. The</div><div class="line"> * resulting struct should be freed with avcodec_free_context().</div><div class="line"> *</div><div class="line"> * @param codec if non-NULL, allocate private data and initialize defaults</div><div class="line"> *              for the given codec. It is illegal to then call avcodec_open2()</div><div class="line"> *              with a different codec.</div><div class="line"> *              If NULL, then the codec-specific defaults won't be initialized,</div><div class="line"> *              which may result in suboptimal default settings (this is</div><div class="line"> *              important mainly for encoders, e.g. libx264).</div><div class="line"> *</div><div class="line"> * @return An AVCodecContext filled with default values or NULL on failure.</div><div class="line"> */</div><div class="line"><span class="function">AVCodecContext *<span class="title">avcodec_alloc_context3</span><span class="params">(<span class="keyword">const</span> AVCodec *codec)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Free the codec context and everything associated with it and write NULL to</div><div class="line"> * the provided pointer.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">avcodec_free_context</span><span class="params">(AVCodecContext **avctx)</span></span>;</div></pre></td></tr></table></figure></p>
+<p><code>avcodec_alloc_context3</code> 需要传入刚刚获取到的解码器。然后我们需要用前面解封装获取到的解码器参数初始化 <code>AVCodecContext</code>。使用 FFmpeg 提供的 <code>avcodec_parameters_to_context</code> 方法。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Fill the codec context based on the values from the supplied codec</div><div class="line"> * parameters. Any allocated fields in codec that have a corresponding field in</div><div class="line"> * par are freed and replaced with duplicates of the corresponding field in par.</div><div class="line"> * Fields in codec that do not have a counterpart in par are not touched.</div><div class="line"> *</div><div class="line"> * @return &gt;= 0 on success, a negative AVERROR code on failure.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avcodec_parameters_to_context</span><span class="params">(AVCodecContext *codec,</span></span></div><div class="line">                                  <span class="keyword">const</span> AVCodecParameters *par);</div><div class="line">```                               </div><div class="line"></div><div class="line">### 打开解码器</div><div class="line"></div><div class="line">解码器上下文初始化好之后就可以打开解码器了：</div><div class="line">```c</div><div class="line"><span class="comment">/**</span></div><div class="line"> * Initialize the AVCodecContext to use the given AVCodec. Prior to using this</div><div class="line"> * function the context has to be allocated with avcodec_alloc_context3().</div><div class="line"> *</div><div class="line"> * The functions avcodec_find_decoder_by_name(), avcodec_find_encoder_by_name(),</div><div class="line"> * avcodec_find_decoder() and avcodec_find_encoder() provide an easy way for</div><div class="line"> * retrieving a codec.</div><div class="line"> *</div><div class="line"> * @warning This function is not thread safe!</div><div class="line"> *</div><div class="line"> * @note Always call this function before using decoding routines (such as</div><div class="line"> * @ref avcodec_receive_frame()).</div><div class="line"> *</div><div class="line"> * @code</div><div class="line"> * avcodec_register_all();</div><div class="line"> * av_dict_set(&amp;opts, "b", "2.5M", 0);</div><div class="line"> * codec = avcodec_find_decoder(AV_CODEC_ID_H264);</div><div class="line"> * if (!codec)</div><div class="line"> *     exit(1);</div><div class="line"> *</div><div class="line"> * context = avcodec_alloc_context3(codec);</div><div class="line"> *</div><div class="line"> * if (avcodec_open2(context, codec, opts) &lt; 0)</div><div class="line"> *     exit(1);</div><div class="line"> * @endcode</div><div class="line"> *</div><div class="line"> * @param avctx The context to initialize.</div><div class="line"> * @param codec The codec to open this context for. If a non-NULL codec has been</div><div class="line"> *              previously passed to avcodec_alloc_context3() or</div><div class="line"> *              for this context, then this parameter MUST be either NULL or</div><div class="line"> *              equal to the previously passed codec.</div><div class="line"> * @param options A dictionary filled with AVCodecContext and codec-private options.</div><div class="line"> *                On return this object will be filled with options that were not found.</div><div class="line"> *</div><div class="line"> * @return zero on success, a negative value on error</div><div class="line"> * @see avcodec_alloc_context3(), avcodec_find_decoder(), avcodec_find_encoder(),</div><div class="line"> *      av_dict_set(), av_opt_find().</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avcodec_open2</span><span class="params">(AVCodecContext *avctx, <span class="keyword">const</span> AVCodec *codec, AVDictionary **options)</span></span>;</div></pre></td></tr></table></figure>
+<h3 id="输入压缩数据，读取原始数据"><a href="#输入压缩数据，读取原始数据" class="headerlink" title="输入压缩数据，读取原始数据"></a>输入压缩数据，读取原始数据</h3><p>打开了解码器之后我们就可以输入解封装获取到的压缩数据了，</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Supply raw packet data as input to a decoder.</div><div class="line"> *</div><div class="line"> * Internally, this call will copy relevant AVCodecContext fields, which can</div><div class="line"> * influence decoding per-packet, and apply them when the packet is actually</div><div class="line"> * decoded. (For example AVCodecContext.skip_frame, which might direct the</div><div class="line"> * decoder to drop the frame contained by the packet sent with this function.)</div><div class="line"> *</div><div class="line"> * @warning The input buffer, avpkt-&gt;data must be AV_INPUT_BUFFER_PADDING_SIZE</div><div class="line"> *          larger than the actual read bytes because some optimized bitstream</div><div class="line"> *          readers read 32 or 64 bits at once and could read over the end.</div><div class="line"> *</div><div class="line"> * @warning Do not mix this API with the legacy API (like avcodec_decode_video2())</div><div class="line"> *          on the same AVCodecContext. It will return unexpected results now</div><div class="line"> *          or in future libavcodec versions.</div><div class="line"> *</div><div class="line"> * @note The AVCodecContext MUST have been opened with @ref avcodec_open2()</div><div class="line"> *       before packets may be fed to the decoder.</div><div class="line"> *</div><div class="line"> * @param avctx codec context</div><div class="line"> * @param[in] avpkt The input AVPacket. Usually, this will be a single video</div><div class="line"> *                  frame, or several complete audio frames.</div><div class="line"> *                  Ownership of the packet remains with the caller, and the</div><div class="line"> *                  decoder will not write to the packet. The decoder may create</div><div class="line"> *                  a reference to the packet data (or copy it if the packet is</div><div class="line"> *                  not reference-counted).</div><div class="line"> *                  Unlike with older APIs, the packet is always fully consumed,</div><div class="line"> *                  and if it contains multiple frames (e.g. some audio codecs),</div><div class="line"> *                  will require you to call avcodec_receive_frame() multiple</div><div class="line"> *                  times afterwards before you can send a new packet.</div><div class="line"> *                  It can be NULL (or an AVPacket with data set to NULL and</div><div class="line"> *                  size set to 0); in this case, it is considered a flush</div><div class="line"> *                  packet, which signals the end of the stream. Sending the</div><div class="line"> *                  first flush packet will return success. Subsequent ones are</div><div class="line"> *                  unnecessary and will return AVERROR_EOF. If the decoder</div><div class="line"> *                  still has frames buffered, it will return them after sending</div><div class="line"> *                  a flush packet.</div><div class="line"> *</div><div class="line"> * @return 0 on success, otherwise negative error code:</div><div class="line"> *      AVERROR(EAGAIN):   input is not accepted in the current state - user</div><div class="line"> *                         must read output with avcodec_receive_frame() (once</div><div class="line"> *                         all output is read, the packet should be resent, and</div><div class="line"> *                         the call will not fail with EAGAIN).</div><div class="line"> *      AVERROR_EOF:       the decoder has been flushed, and no new packets can</div><div class="line"> *                         be sent to it (also returned if more than 1 flush</div><div class="line"> *                         packet is sent)</div><div class="line"> *      AVERROR(EINVAL):   codec not opened, it is an encoder, or requires flush</div><div class="line"> *      AVERROR(ENOMEM):   failed to add packet to internal queue, or similar</div><div class="line"> *      other errors: legitimate decoding errors</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avcodec_send_packet</span><span class="params">(AVCodecContext *avctx, <span class="keyword">const</span> AVPacket *avpkt)</span></span>;</div></pre></td></tr></table></figure>
+<p>输入压缩数据之后就可以开始读取原始数据了，FFmpeg 中原始数据用 <code>AVFrame</code> 结构保存。其中常用的属性如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> AVFrame &#123;</div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> AV_NUM_DATA_POINTERS 8</span></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * pointer to the picture/channel planes.</div><div class="line">     * This might be different from the first allocated byte</div><div class="line">     *</div><div class="line">     * Some decoders access areas outside 0,0 - width,height, please</div><div class="line">     * see avcodec_align_dimensions2(). Some filters and swscale can read</div><div class="line">     * up to 16 bytes beyond the planes, if these filters are to be used,</div><div class="line">     * then 16 extra bytes must be allocated.</div><div class="line">     *</div><div class="line">     * <span class="doctag">NOTE:</span> Except for hwaccel formats, pointers not needed by the format</div><div class="line">     * MUST be set to NULL.</div><div class="line">     */</div><div class="line">    <span class="keyword">uint8_t</span> *data[AV_NUM_DATA_POINTERS]; </div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * For video, size in bytes of each picture line.</div><div class="line">     * For audio, size in bytes of each plane.</div><div class="line">     *</div><div class="line">     * For audio, only linesize[0] may be set. For planar audio, each channel</div><div class="line">     * plane must be the same size.</div><div class="line">     *</div><div class="line">     * For video the linesizes should be multiples of the CPUs alignment</div><div class="line">     * preference, this is 16 or 32 for modern desktop CPUs.</div><div class="line">     * Some code requires such alignment other code can be slower without</div><div class="line">     * correct alignment, for yet other it makes no difference.</div><div class="line">     *</div><div class="line">     * @note The linesize may be larger than the size of usable data -- there</div><div class="line">     * may be extra padding present for performance reasons.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> linesize[AV_NUM_DATA_POINTERS]; </div><div class="line"></div><div class="line">   </div><div class="line">    <span class="comment">/**</span></div><div class="line">     * @name Video dimensions</div><div class="line">     * Video frames only. The coded dimensions (in pixels) of the video frame,</div><div class="line">     * i.e. the size of the rectangle that contains some well-defined values.</div><div class="line">     *</div><div class="line">     * @note The part of the frame intended for display/presentation is further</div><div class="line">     * restricted by the @ref cropping "Cropping rectangle".</div><div class="line">     * @&#123;</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> width, height;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * @&#125;</div><div class="line">     */</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * number of audio samples (per channel) described by this frame</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> nb_samples;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * format of the frame, -1 if unknown or unset</div><div class="line">     * Values correspond to enum AVPixelFormat for video frames,</div><div class="line">     * enum AVSampleFormat for audio)</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> format;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Presentation timestamp in time_base units (time when frame should be shown to user).</div><div class="line">     */</div><div class="line">    <span class="keyword">int64_t</span> pts;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * DTS copied from the AVPacket that triggered returning this frame. (if frame threading isn't used)</div><div class="line">     * This is also the Presentation time of this AVFrame calculated from</div><div class="line">     * only AVPacket.dts values without pts values.</div><div class="line">     */</div><div class="line">    <span class="keyword">int64_t</span> pkt_dts;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Sample rate of the audio data.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> sample_rate;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Channel layout of the audio data.</div><div class="line">     */</div><div class="line">    <span class="keyword">uint64_t</span> channel_layout;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     * number of audio channels, only used for audio.</div><div class="line">     * - encoding: unused</div><div class="line">     * - decoding: Read by user.</div><div class="line">     */</div><div class="line">    <span class="keyword">int</span> channels;</div><div class="line"></div><div class="line">&#125; AVFrame;</div></pre></td></tr></table></figure></p>
+<p>其中最核心的是 <code>data</code> 和 <code>linesize</code> ，但是我也没有理解具体的含义，后续深入学习才研究吧，这不影响我们使用 FFmpeg 。</p>
+<p>AVFrame 有几个常用的方法：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Allocate an AVFrame and set its fields to default values.  The resulting</div><div class="line"> * struct must be freed using av_frame_free().</div><div class="line"> *</div><div class="line"> * @return An AVFrame filled with default values or NULL on failure.</div><div class="line"> *</div><div class="line"> * @note this only allocates the AVFrame itself, not the data buffers. Those</div><div class="line"> * must be allocated through other means, e.g. with av_frame_get_buffer() or</div><div class="line"> * manually.</div><div class="line"> */</div><div class="line"><span class="function">AVFrame *<span class="title">av_frame_alloc</span><span class="params">(<span class="keyword">void</span>)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Free the frame and any dynamically allocated objects in it,</div><div class="line"> * e.g. extended_data. If the frame is reference counted, it will be</div><div class="line"> * unreferenced first.</div><div class="line"> *</div><div class="line"> * @param frame frame to be freed. The pointer will be set to NULL.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">av_frame_free</span><span class="params">(AVFrame **frame)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Set up a new reference to the data described by the source frame.</div><div class="line"> *</div><div class="line"> * Copy frame properties from src to dst and create a new reference for each</div><div class="line"> * AVBufferRef from src.</div><div class="line"> *</div><div class="line"> * If src is not reference counted, new buffers are allocated and the data is</div><div class="line"> * copied.</div><div class="line"> *</div><div class="line"> * @warning: dst MUST have been either unreferenced with av_frame_unref(dst),</div><div class="line"> *           or newly allocated with av_frame_alloc() before calling this</div><div class="line"> *           function, or undefined behavior will occur.</div><div class="line"> *</div><div class="line"> * @return 0 on success, a negative AVERROR on error</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">av_frame_ref</span><span class="params">(AVFrame *dst, <span class="keyword">const</span> AVFrame *src)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * Unreference all the buffers referenced by frame and reset the frame fields.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">av_frame_unref</span><span class="params">(AVFrame *frame)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>我们使用 FFmpeg 提供的 <code>avcodec_receive_frame</code> 方法来读取解码器解码之后的原始数据：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Return decoded output data from a decoder.</div><div class="line"> *</div><div class="line"> * @param avctx codec context</div><div class="line"> * @param frame This will be set to a reference-counted video or audio</div><div class="line"> *              frame (depending on the decoder type) allocated by the</div><div class="line"> *              decoder. Note that the function will always call</div><div class="line"> *              av_frame_unref(frame) before doing anything else.</div><div class="line"> *</div><div class="line"> * @return</div><div class="line"> *      0:                 success, a frame was returned</div><div class="line"> *      AVERROR(EAGAIN):   output is not available in this state - user must try</div><div class="line"> *                         to send new input</div><div class="line"> *      AVERROR_EOF:       the decoder has been fully flushed, and there will be</div><div class="line"> *                         no more output frames</div><div class="line"> *      AVERROR(EINVAL):   codec not opened, or it is an encoder</div><div class="line"> *      other negative values: legitimate decoding errors</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">avcodec_receive_frame</span><span class="params">(AVCodecContext *avctx, AVFrame *frame)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>需要注意的是，<strong>输入一个 AVPacket 有可能需要读取多次原始数据</strong>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/FFmpeg/" rel="tag"># FFmpeg</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/FFmpeg学习笔记_1_编译/" rel="next" title="FFmpeg学习笔记 1 编译">
+                <i class="fa fa-chevron-left"></i> FFmpeg学习笔记 1 编译
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#FFmpeg-解封装"><span class="nav-number">1.</span> <span class="nav-text">FFmpeg 解封装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">1.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#打开输入"><span class="nav-number">1.2.</span> <span class="nav-text">打开输入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#找到需要的流"><span class="nav-number">1.3.</span> <span class="nav-text">找到需要的流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取压缩数据"><span class="nav-number">1.4.</span> <span class="nav-text">获取压缩数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FFmpeg-解码"><span class="nav-number">2.</span> <span class="nav-text">FFmpeg 解码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#找到解码器"><span class="nav-number">2.1.</span> <span class="nav-text">找到解码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建解码器上下文并初始化"><span class="nav-number">2.2.</span> <span class="nav-text">创建解码器上下文并初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输入压缩数据，读取原始数据"><span class="nav-number">2.3.</span> <span class="nav-text">输入压缩数据，读取原始数据</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
