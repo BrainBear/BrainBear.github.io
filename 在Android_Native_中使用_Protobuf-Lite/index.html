@@ -1,0 +1,668 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,JNI,ProtoBuf," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇文章中我们简单介绍了一下 Protobuf 的 C 实现 – Nanopb ，但是由于代码量很小，优点是简洁，生成的包很小，但是使用上不太方便，但是如果在 NDK 中直接使用 Protobuf 又太大了，但是在看官方文档的时候看到了通过设置参数优化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Android Native 中使用 ProtoBuf-Lite">
+<meta property="og:url" content="http://yoursite.com/在Android_Native_中使用_Protobuf-Lite/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="上一篇文章中我们简单介绍了一下 Protobuf 的 C 实现 – Nanopb ，但是由于代码量很小，优点是简洁，生成的包很小，但是使用上不太方便，但是如果在 NDK 中直接使用 Protobuf 又太大了，但是在看官方文档的时候看到了通过设置参数优化。">
+<meta property="og:updated_time" content="2019-04-30T16:08:59.511Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在 Android Native 中使用 ProtoBuf-Lite">
+<meta name="twitter:description" content="上一篇文章中我们简单介绍了一下 Protobuf 的 C 实现 – Nanopb ，但是由于代码量很小，优点是简洁，生成的包很小，但是使用上不太方便，但是如果在 NDK 中直接使用 Protobuf 又太大了，但是在看官方文档的时候看到了通过设置参数优化。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/在Android_Native_中使用_Protobuf-Lite/"/>
+
+
+
+
+
+  <title> 在 Android Native 中使用 ProtoBuf-Lite | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/在Android_Native_中使用_Protobuf-Lite/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                在 Android Native 中使用 ProtoBuf-Lite
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-29T11:37:32+08:00">
+                2019-04-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一篇文章中我们简单介绍了一下 Protobuf 的 C 实现 – Nanopb ，但是由于代码量很小，优点是简洁，生成的包很小，但是使用上不太方便，但是如果在 NDK 中直接使用 Protobuf 又太大了，但是在看官方文档的时候看到了通过设置参数优化。<br><a id="more"></a></p>
+<h2 id="Protobuf-Lite"><a href="#Protobuf-Lite" class="headerlink" title="Protobuf-Lite"></a>Protobuf-Lite</h2><p>Protobuf 提供了 <code>optimize_for</code> 这个优化选项，可以设置成 <code>SPEED</code>, <code>CODE_SIZE</code>, <code>LITE_RUNTIME</code> 。这个选项只对 java 和 C++ 有影响。</p>
+<p>SPEED<br>  : 默认值，代码效率最高，但是生成的代码量比较大</p>
+<p>CODE_SIZE<br>  : 代码效率最低，但是生成的代码量最小，而且 API 和 <code>SPEED</code> 一致</p>
+<p>LITE_RUNTIME<br>  : 代码效率和 <code>SPEED</code> 差不多，但是生成的代码量比 <code>SPEED</code> 少一个数量级，但是它依赖于 <code>libprotobuf-lite</code>，因此有一些在 <code>SPEED</code> 中的 API 在 <code>LITE_RUNTIME</code> 不可以使用。</p>
+<h3 id="编译"><a href="#编译" class="headerlink" title="编译"></a>编译</h3><p>先去 <a href="https://github.com/protocolbuffers/protobuf/releases" target="_blank" rel="external">github</a> 下载源码，我这里使用的是 <code>3.6.0</code> 版本。如果只用 c++ 的话只下载 C++ 版本的代码就好了。</p>
+<p>下载，解压，找到 <code>src</code> 目录.</p>
+<p>在 <code>src</code> 目录下 <code>Application.mk</code> 文件。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">APP_MODULES      := protobuf</div><div class="line">APP_PLATFORM     := android-19</div><div class="line">APP_ABI          := armeabi-v7a</div><div class="line">APP_STL          := c++_static</div><div class="line">APP_OPTIM        := release</div></pre></td></tr></table></figure>
+<p>这里的 <code>APP_ABI</code> 指定了我们需要的生产的平台。Android 中支持 <code>armeabi、armeabi-v7a、arm64-v8a、x86、x86_64、mips、mips64</code>，你也可以指定为 <code>all</code> 生成全部平台的库文件。</p>
+<p>在 <code>src</code> 目录下创建 <code>Android.mk</code> 文件。<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">LOCAL_PATH := <span class="variable">$(call my-dir)</span></div><div class="line"> </div><div class="line">include $(CLEAR_VARS)</div><div class="line"> </div><div class="line">LOCAL_MODULE := protobuf</div><div class="line">LOCAL_CFLAGS := -std=c++11 -fexceptions -frtti</div><div class="line">LOCAL_MODULE_FILENAME := libprotobuf</div><div class="line">LOCAL_SRC_FILES := google/protobuf/stubs/bytestream.cc                          \</div><div class="line">  google/protobuf/stubs/bytestream.h                           \</div><div class="line">  google/protobuf/stubs/common.cc                              \</div><div class="line">  google/protobuf/stubs/hash.h                                 \</div><div class="line">  google/protobuf/stubs/int128.cc                              \</div><div class="line">  google/protobuf/stubs/int128.h                               \</div><div class="line">  google/protobuf/stubs/io_win32.cc                            \</div><div class="line">  google/protobuf/stubs/io_win32.h                             \</div><div class="line">  google/protobuf/stubs/map_util.h                             \</div><div class="line">  google/protobuf/stubs/mathutil.h                             \</div><div class="line">  google/protobuf/stubs/status.cc                              \</div><div class="line">  google/protobuf/stubs/status.h                               \</div><div class="line">  google/protobuf/stubs/status_macros.h                        \</div><div class="line">  google/protobuf/stubs/statusor.cc                            \</div><div class="line">  google/protobuf/stubs/statusor.h                             \</div><div class="line">  google/protobuf/stubs/stringpiece.cc                         \</div><div class="line">  google/protobuf/stubs/stringpiece.h                          \</div><div class="line">  google/protobuf/stubs/stringprintf.cc                        \</div><div class="line">  google/protobuf/stubs/stringprintf.h                         \</div><div class="line">  google/protobuf/stubs/structurally_valid.cc                  \</div><div class="line">  google/protobuf/stubs/strutil.cc                             \</div><div class="line">  google/protobuf/stubs/strutil.h                              \</div><div class="line">  google/protobuf/stubs/time.cc                                \</div><div class="line">  google/protobuf/stubs/time.h                                 \</div><div class="line">  google/protobuf/arena.cc                                     \</div><div class="line">  google/protobuf/arenastring.cc                               \</div><div class="line">  google/protobuf/extension_set.cc                             \</div><div class="line">  google/protobuf/generated_message_util.cc                    \</div><div class="line">  google/protobuf/generated_message_table_driven_lite.h        \</div><div class="line">  google/protobuf/generated_message_table_driven_lite.cc       \</div><div class="line">  google/protobuf/implicit_weak_message.cc                     \</div><div class="line">  google/protobuf/message_lite.cc                              \</div><div class="line">  google/protobuf/repeated_field.cc                            \</div><div class="line">  google/protobuf/wire_format_lite.cc                          \</div><div class="line">  google/protobuf/io/coded_stream.cc                           \</div><div class="line">  google/protobuf/io/coded_stream_inl.h                        \</div><div class="line">  google/protobuf/io/zero_copy_stream.cc                       \</div><div class="line">  google/protobuf/io/zero_copy_stream_impl_lite.cc             \</div><div class="line">  google/protobuf/any.pb.cc                                    \</div><div class="line">  google/protobuf/api.pb.cc                                    \</div><div class="line">  google/protobuf/stubs/mathlimits.cc                          \</div><div class="line">  google/protobuf/stubs/mathlimits.h                           \</div><div class="line">  google/protobuf/any.cc                                       \</div><div class="line">  google/protobuf/descriptor.cc                                \</div><div class="line">  google/protobuf/descriptor_database.cc                       \</div><div class="line">  google/protobuf/descriptor.pb.cc                             \</div><div class="line">  google/protobuf/duration.pb.cc                               \</div><div class="line">  google/protobuf/dynamic_message.cc                           \</div><div class="line">  google/protobuf/empty.pb.cc                                  \</div><div class="line">  google/protobuf/extension_set_heavy.cc                       \</div><div class="line">  google/protobuf/field_mask.pb.cc                             \</div><div class="line">  google/protobuf/generated_message_reflection.cc              \</div><div class="line">  google/protobuf/generated_message_table_driven_lite.h        \</div><div class="line">  google/protobuf/generated_message_table_driven.cc            \</div><div class="line">  google/protobuf/map_field.cc                                 \</div><div class="line">  google/protobuf/message.cc                                   \</div><div class="line">  google/protobuf/reflection_internal.h                        \</div><div class="line">  google/protobuf/reflection_ops.cc                            \</div><div class="line">  google/protobuf/service.cc                                   \</div><div class="line">  google/protobuf/source_context.pb.cc                         \</div><div class="line">  google/protobuf/struct.pb.cc                                 \</div><div class="line">  google/protobuf/stubs/substitute.cc                          \</div><div class="line">  google/protobuf/stubs/substitute.h                           \</div><div class="line">  google/protobuf/text_format.cc                               \</div><div class="line">  google/protobuf/timestamp.pb.cc                              \</div><div class="line">  google/protobuf/type.pb.cc                                   \</div><div class="line">  google/protobuf/unknown_field_set.cc                         \</div><div class="line">  google/protobuf/wire_format.cc                               \</div><div class="line">  google/protobuf/wrappers.pb.cc                               \</div><div class="line">  google/protobuf/io/gzip_stream.cc                            \</div><div class="line">  google/protobuf/io/printer.cc                                \</div><div class="line">  google/protobuf/io/strtod.cc                                 \</div><div class="line">  google/protobuf/io/tokenizer.cc                              \</div><div class="line">  google/protobuf/io/zero_copy_stream_impl.cc                  \</div><div class="line">  google/protobuf/compiler/importer.cc                         \</div><div class="line">  google/protobuf/compiler/parser.cc                           \</div><div class="line">  google/protobuf/util/delimited_message_util.cc               \</div><div class="line">  google/protobuf/util/field_comparator.cc                     \</div><div class="line">  google/protobuf/util/field_mask_util.cc                      \</div><div class="line">  google/protobuf/util/internal/constants.h                    \</div><div class="line">  google/protobuf/util/internal/datapiece.cc                   \</div><div class="line">  google/protobuf/util/internal/datapiece.h                    \</div><div class="line">  google/protobuf/util/internal/default_value_objectwriter.cc  \</div><div class="line">  google/protobuf/util/internal/default_value_objectwriter.h   \</div><div class="line">  google/protobuf/util/internal/error_listener.cc              \</div><div class="line">  google/protobuf/util/internal/error_listener.h               \</div><div class="line">  google/protobuf/util/internal/expecting_objectwriter.h       \</div><div class="line">  google/protobuf/util/internal/field_mask_utility.cc          \</div><div class="line">  google/protobuf/util/internal/field_mask_utility.h           \</div><div class="line">  google/protobuf/util/internal/json_escaping.cc               \</div><div class="line">  google/protobuf/util/internal/json_escaping.h                \</div><div class="line">  google/protobuf/util/internal/json_objectwriter.cc           \</div><div class="line">  google/protobuf/util/internal/json_objectwriter.h            \</div><div class="line">  google/protobuf/util/internal/json_stream_parser.cc          \</div><div class="line">  google/protobuf/util/internal/json_stream_parser.h           \</div><div class="line">  google/protobuf/util/internal/location_tracker.h             \</div><div class="line">  google/protobuf/util/internal/mock_error_listener.h          \</div><div class="line">  google/protobuf/util/internal/object_location_tracker.h      \</div><div class="line">  google/protobuf/util/internal/object_source.h                \</div><div class="line">  google/protobuf/util/internal/object_writer.cc               \</div><div class="line">  google/protobuf/util/internal/object_writer.h                \</div><div class="line">  google/protobuf/util/internal/protostream_objectsource.cc    \</div><div class="line">  google/protobuf/util/internal/protostream_objectsource.h     \</div><div class="line">  google/protobuf/util/internal/protostream_objectwriter.cc    \</div><div class="line">  google/protobuf/util/internal/protostream_objectwriter.h     \</div><div class="line">  google/protobuf/util/internal/proto_writer.cc                \</div><div class="line">  google/protobuf/util/internal/proto_writer.h                 \</div><div class="line">  google/protobuf/util/internal/structured_objectwriter.h      \</div><div class="line">  google/protobuf/util/internal/type_info.cc                   \</div><div class="line">  google/protobuf/util/internal/type_info.h                    \</div><div class="line">  google/protobuf/util/internal/type_info_test_helper.cc       \</div><div class="line">  google/protobuf/util/internal/type_info_test_helper.h        \</div><div class="line">  google/protobuf/util/internal/utility.cc                     \</div><div class="line">  google/protobuf/util/internal/utility.h                      \</div><div class="line">  google/protobuf/util/json_util.cc                            \</div><div class="line">  google/protobuf/util/message_differencer.cc                  \</div><div class="line">  google/protobuf/util/time_util.cc                            \</div><div class="line">  google/protobuf/util/type_resolver_util.cc</div><div class="line"> </div><div class="line"></div><div class="line">LOCAL_CPPFLAGS := -std=c++11 -D HAVE_PTHREAD=1</div><div class="line">LOCAL_EXPORT_C_INCLUDES :=</div><div class="line">LOCAL_EXPORT_LDLIBS :=</div><div class="line"> </div><div class="line">LOCAL_C_INCLUDES := <span class="variable">$(LOCAL_PATH)</span> \</div><div class="line">$(LOCAL_PATH)/src</div><div class="line"> </div><div class="line">LOCAL_LDLIBS := -llog -lz</div><div class="line"> </div><div class="line"><span class="comment">#include $(BUILD_SHARED_LIBRARY)</span></div><div class="line">include $(BUILD_STATIC_LIBRARY)</div></pre></td></tr></table></figure></p>
+<p><code>Android.mk</code> 中最核心的就是配置需要编译的代码，就是通过 <code>LOCAL_SRC_FILES</code> 属性来指定的，上面的配置是编译 <code>3.6.0</code> 的 Lite 版本。如果你需要编译其他版本，则需要查看 <code>/src/Makefile.am</code> 文件，里面的 <code>libprotobuf_la_SOURCES</code> 和 <code>libprotobuf_lite_la_SOURCES</code> 分别指定了完整版本和 LITE 版本需要编译的代码，复制到 <code>LOCAL_SRC_FILES</code> 就可以了。</p>
+<p>然后在 <code>src</code> 目录下执行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk</div></pre></td></tr></table></figure></p>
+<p>编译完成之后我们需要的静态库文件就在 <code>/src/obj/{ABI}/libprotobuf.a</code>。</p>
+<p>生成静态文件导入到 Android 工程之后，我们还需要引入头文件，我们需要的头文件在 <code>/src/Makefile.am</code> 也定义了，但是我懒的一个个导入了，所以我就直接将 <code>/src/google</code> 目录下面的 <code>.h</code> 文件全部导入了。</p>
+<p><a href="https://github.com/BrainBear/ProtoBuf-Cpp-Android" target="_blank" rel="external">Demo</a></p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://github.com/Dimon4eg/protobuf-android" target="_blank" rel="external">protobuf-android</a><br><a href="https://tech.pic-collage.com/how-to-cross-compile-google-protobuf-lite-for-android-977df3b7f20c" target="_blank" rel="external">How To Cross-Compile Google Protobuf-Lite For Android JNI</a><br><a href="https://blog.csdn.net/q610098308/article/details/83829312" target="_blank" rel="external">protobuf使用（一）android ndk 编译 protobuf-3.6.x windows</a><br><a href="https://dawnarc.com/2018/04/android-ndkprotobuf-lite-3.5%E7%BC%96%E8%AF%91/" target="_blank" rel="external">protobuf-lite 3.5编译</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/JNI/" rel="tag"># JNI</a>
+          
+            <a href="/tags/ProtoBuf/" rel="tag"># ProtoBuf</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/FFmpeg学习笔记_3_重采样/" rel="next" title="FFmpeg学习笔记 3 重采样">
+                <i class="fa fa-chevron-left"></i> FFmpeg学习笔记 3 重采样
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/在Android_Native_中使用_Protobuf_Nanopb/" rel="prev" title="在 Android Native 中使用 ProtoBuf - Nanopb">
+                在 Android Native 中使用 ProtoBuf - Nanopb <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Protobuf-Lite"><span class="nav-number">1.</span> <span class="nav-text">Protobuf-Lite</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#编译"><span class="nav-number">1.1.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">1.2.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
