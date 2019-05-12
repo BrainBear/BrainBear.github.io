@@ -1,0 +1,687 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Kotlin," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="最近项目在准备使用 Kotlin ，其实之前就简单了解了一下 Kotlin ，但是开始用的时候很多东西忘接了，现在从新开始学习一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin 学习笔记 1 数据类型">
+<meta property="og:url" content="http://yoursite.com/Kotlin学习笔记_1_数据类型/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="最近项目在准备使用 Kotlin ，其实之前就简单了解了一下 Kotlin ，但是开始用的时候很多东西忘接了，现在从新开始学习一下。">
+<meta property="og:updated_time" content="2019-05-12T04:06:02.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kotlin 学习笔记 1 数据类型">
+<meta name="twitter:description" content="最近项目在准备使用 Kotlin ，其实之前就简单了解了一下 Kotlin ，但是开始用的时候很多东西忘接了，现在从新开始学习一下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Kotlin学习笔记_1_数据类型/"/>
+
+
+
+
+
+  <title> Kotlin 学习笔记 1 数据类型 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Kotlin学习笔记_1_数据类型/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Kotlin 学习笔记 1 数据类型
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-09T23:35:02+08:00">
+                2019-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近项目在准备使用 Kotlin ，其实之前就简单了解了一下 Kotlin ，但是开始用的时候很多东西忘接了，现在从新开始学习一下。<br><a id="more"></a></p>
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><ul>
+<li>Number</li>
+<li>Boolean</li>
+<li>Char</li>
+<li>String</li>
+</ul>
+<h2 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h2><table><br><tr><br>    <td>分类</td><br>    <td>类型</td><br>    <td>位宽</td><br></tr><br><br><tr><br>    <td rowspan="2">浮点型</td><br>    <td>Double</td><br>    <td>64</td><br></tr><br><tr><br>    <td>Float</td><br>    <td>32</td><br></tr><br><br><tr><br>    <td rowspan="3">整型</td><br>    <td>Long</td><br>    <td>64</td><br></tr><br><tr><br>    <td>Int</td><br>    <td>32</td><br></tr><br><tr><br>    <td>Short</td><br>    <td>16</td><br></tr><br><br><br><tr><br>    <td>字节</td><br>    <td>Byte</td><br>    <td>8</td><br></tr><br></table>
+
+<h2 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h2><p>和 Java 中的 boolean 基本一样。</p>
+<h2 id="Char"><a href="#Char" class="headerlink" title="Char"></a>Char</h2><p>Char 占 2 个字节，表示一个 16 位的 Unicode 字符，字符是用单引号 <code>&#39;&#39;</code> 括起来的， 例如<code>&#39;a&#39;, &#39;0&#39;, &#39;\n&#39;</code>。</p>
+<h2 id="装箱类型和基本类型"><a href="#装箱类型和基本类型" class="headerlink" title="装箱类型和基本类型"></a>装箱类型和基本类型</h2><p>在 Java 中存在装箱类型和基本类型，例如 <code>int</code> ，和 <code>Integer</code> ，但是在 Kotlin 中只有 <code>Int</code> ，其实 <code>Int</code> 在 JVM 中是 <code>int</code> 和 <code>Integer</code> 的组合，由 Kotlin 编译器决定到底是使用基本类型还是装箱类型，程序员不需要关心也没办法控制。</p>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>在 Java 中支持类型的隐式转换，例如把一个 <code>int</code> 类型的变量赋值给 <code>long</code> 类型。这是因为 <code>long</code> 类型表示的范围比 <code>int</code> 大，<code>long</code> 兼容 <code>int</code>。但是在 Kotlin 中，<code>Int</code> 类型并不能隐式转换为 <code>Long</code> 类型。基本类型之间的转换必须使用 Kotlin 提供的方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">toByte()</div><div class="line">toChar()</div><div class="line">toDouble()</div><div class="line">toFloat()</div><div class="line">toInt()</div><div class="line">toLong()</div><div class="line">toShort()</div><div class="line">toString()</div><div class="line">toBigDecimal()</div></pre></td></tr></table></figure>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>Kotlin 中的 String 和 Java 中的基本一样，只是在上面新增了一些很棒的特性，例如字符串模板和原始字符串。</p>
+<p>在 Android 中我们经常需要用到日志输出变量的值来 Debug ，如果需要输出变量比较多那是真的烦，要么一个个拼接，要么用 <code>format</code> 方法，<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> value1 = <span class="number">1</span>;</div><div class="line"><span class="keyword">int</span> value2 = <span class="number">1</span>;</div><div class="line">System.out.println(<span class="string">""</span> + value1 + <span class="string">" "</span> + value2 + <span class="string">"="</span> + (value1 value2));</div></pre></td></tr></table></figure></p>
+<p>但是在 Kotlin 中使用字符串模板就很方便了：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> value1: <span class="built_in">Int</span> = <span class="number">1</span>;</div><div class="line"><span class="keyword">val</span> value2: <span class="built_in">Int</span> = <span class="number">2</span>;</div><div class="line">print(<span class="string">"<span class="subst">$value1</span> + <span class="subst">$value2</span> = <span class="subst">$&#123;value1 + value2&#125;</span>"</span>)</div></pre></td></tr></table></figure>
+<p>Kotlin 中用三引号括起来的就是原始字符串，原始字符串中的内容不会有转义，更棒的是 Kotlin 在原始字符串中也支持模板。</p>
+<h2 id="var-amp-val"><a href="#var-amp-val" class="headerlink" title="var &amp; val"></a>var &amp; val</h2><p>上面我们已经知道了常用的数据类型，但是怎么定义变量呢？Kotlin 提供了 <code>var</code> 和 <code>val</code> 来定义。</p>
+<p>定义变量的格式是：<code>var/val name: Type</code></p>
+<p>例如：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> i: <span class="built_in">Int</span> = <span class="number">1</span></div><div class="line"></div><div class="line"><span class="keyword">val</span> str: String = <span class="string">"hello"</span></div></pre></td></tr></table></figure></p>
+<p>val 是用于定义只读常量的，它只能被赋值 1 次，var 则用于定义普通变量，可以重复赋值：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"></div><div class="line">    <span class="keyword">val</span> valA: <span class="built_in">Int</span> = <span class="number">1</span></div><div class="line"></div><div class="line">    valA = <span class="number">2</span> <span class="comment">//编译报错</span></div><div class="line"></div><div class="line">    <span class="keyword">var</span> varA: <span class="built_in">Int</span> = <span class="number">1</span></div><div class="line"></div><div class="line">    varA = <span class="number">2</span></div><div class="line"></div><div class="line">    <span class="keyword">val</span> valB = <span class="number">2</span> <span class="comment">//由于 Kotlin 可以根据初始化值推导出 valB 的类型，所以可以省略类型</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="空类型安全"><a href="#空类型安全" class="headerlink" title="空类型安全"></a>空类型安全</h2><p>在 Kotlin 中任意类型，包括 <code>Int</code> ，<code>String</code> 和自定义的类型都有可空和不可空两种，默认的都是不可空类型，如果需要声明可空类型，需要在类型后面加 <code>?</code> 。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> str:String = <span class="string">"123"</span></div><div class="line">str = <span class="literal">null</span> <span class="comment">//编译出错 str 为不可空的 String 类型，不能赋值为 null</span></div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> str:String? = <span class="string">"123"</span></div><div class="line">str = <span class="literal">null</span> <span class="comment">//运行正常 str 为可空的 String? 类型</span></div></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> str:String? = <span class="string">"123"</span></div><div class="line"><span class="keyword">val</span> len = str.length <span class="comment">//编译错误 可空类型不能直接使用</span></div><div class="line"></div><div class="line"><span class="keyword">val</span> len = str!!.length <span class="comment">//编译正常 !! 强制认定 str 不为空 如果 str 确实为 null 则运行出错</span></div><div class="line"></div><div class="line"><span class="keyword">val</span> len = str?.length <span class="comment">//编译正常 如果 str 为 null 则返回 null 否则返回 str 的长度</span></div></pre></td></tr></table></figure>
+<h2 id="智能类型转换"><a href="#智能类型转换" class="headerlink" title="智能类型转换"></a>智能类型转换</h2><p>Kotlin 是一门智能的语言，编译器会尽可能推导类型，减少模板代码、</p>
+<p>举个例子，假设有一个 Person 类和 Chinese 类，Chinese 继承 Person ：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Chinese</span> <span class="keyword">extends</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sayHi</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"hi"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 Java 中即使你使用 <code>instanseof</code> 判断了一个 Person 变量其实是 Chinese 类型，后续使用 Chinese 当中的方法的时候还是需要强制转换:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Person p = <span class="keyword">new</span> Chinese();</div><div class="line"><span class="keyword">if</span>(p <span class="keyword">instanceof</span> Chinese) &#123;</div><div class="line">    ((Chinese) p).sayHi();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>而在 Kotlin 中使用关键字 <code>is</code> 来判断类型，判断完类后编译器就可以推导出变量的真正类型而不需要再强制转换：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    </div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Chinese</span> : <span class="type">Person</span></span>() &#123;</div><div class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">sayHi</span><span class="params">()</span></span> :String &#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"hi"</span></div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">   </div><div class="line">   <span class="keyword">val</span> one:Person = Chinese()</div><div class="line">   <span class="keyword">if</span>(one <span class="keyword">is</span> Chinese) &#123;</div><div class="line">       one.sayHi()</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>而且由于在 Kotlin 中可空和不可空是两种类型，如果判断了不为空类型，后续则可以推导为非空类型、</p>
+<h2 id="区间"><a href="#区间" class="headerlink" title="区间"></a>区间</h2><p>Kotlin 对比 Java 新增了现在流行的区间 <code>Range</code> 的概念，用于表示范围，最常用的是 <code>IntRange</code>。</p>
+<p> 定义一个闭区间需要使用 <code>..</code> ， 例如 <code>0..100</code> 定义一个从 0 到 100 的闭区间 <code>[0, 100]</code>，如果你想要定义半开区间 <code>[0, 100)</code>，只能使用 <code>until</code> ，例如 <code>0 until 100</code>。</p>
+<p>区间常用的方法有 <code>isEmpty()</code> 和 <code>contains()</code> ， 而且 Kotlin 还提供了 <code>in</code> 来简化 <code>constans()</code>。</p>
+<p>在遍历区间的时候也可以使用 <code>in</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">val</span> range:IntRange = <span class="number">0.</span><span class="number">.100</span></div><div class="line"></div><div class="line">    println(<span class="string">"range start:<span class="subst">$&#123;range.start&#125;</span>"</span>)</div><div class="line">    println(<span class="string">"range endInclusive:<span class="subst">$&#123;range.endInclusive&#125;</span>"</span>)</div><div class="line">    println(<span class="string">"is range empty? <span class="subst">$&#123;range.isEmpty()&#125;</span>"</span>)</div><div class="line">    println(<span class="string">"Does range contain 50? <span class="subst">$&#123;range.contains(<span class="number">50</span>)&#125;</span>"</span>)</div><div class="line">    println(<span class="string">"Does range contain 50? <span class="subst">$&#123;<span class="number">50</span> in range&#125;</span>"</span>)</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">val</span> excludeRange = <span class="number">0</span> until <span class="number">10</span></div><div class="line">    <span class="keyword">for</span>(i <span class="keyword">in</span> excludeRange) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">range start:0</div><div class="line">range endInclusive:100</div><div class="line">is range empty? false</div><div class="line">Does range contain 50? true</div><div class="line">Does range contain 50? true</div><div class="line">0 1 2 3 4 5 6 7 8 9</div></pre></td></tr></table></figure></p>
+<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>在 Kotlin 中，数组使用 <code>Array</code> 表示，我们可以使用 <code>arrayOf()</code> 函数来创建一个数组：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">val</span> array = arrayOf(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> array) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>Array</code> 提供了 <code>get()</code>, <code>set()</code>, <code>size()</code> 函数来实现读、写，获取长度的功能，而且 <code>get()</code> 和 <code>set()</code> 都被重载为 <code>[]</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">val</span> array = arrayOf(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> array) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    println()</div><div class="line">    </div><div class="line">    array.<span class="keyword">set</span>(<span class="number">0</span>, <span class="number">100</span>)</div><div class="line">    array[<span class="number">1</span>] = <span class="number">101</span></div><div class="line"></div><div class="line">    println(<span class="string">"array[0]=<span class="subst">$&#123;array[<span class="number">0</span>]&#125;</span> array[1]=<span class="subst">$&#123;array[<span class="number">1</span>]&#125;</span> array size=<span class="subst">$&#123;array.size&#125;</span>"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">1 2 3 </div><div class="line">array[0]=100 array[1]=101 array size=3</div></pre></td></tr></table></figure></p>
+<p>如果你需要使用对象数组，而需要使用泛型，例如你需要一个 String 数组：<code>Array&lt;String&gt;</code>。</p>
+<p>上面我们使用的整形数组也可以用 <code>Array&lt;Int&gt;</code> 定义，但是 Kotin 为了避免装箱和拆箱，创建了专门的类来表示原生类型的数组：<code>ByteArray</code>，<code>CharArray</code>，<code>ShortArray</code>，<code>IntArray</code>，<code>LongArray</code>，<code>FloatArray</code>，<code>DoubleArray</code>，<code>BooleanArray</code>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/在Android_Native_中使用_Protobuf-Lite/" rel="next" title="在 Android Native 中使用 ProtoBuf-Lite">
+                <i class="fa fa-chevron-left"></i> 在 Android Native 中使用 ProtoBuf-Lite
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#数据类型"><span class="nav-number">1.</span> <span class="nav-text">数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Number"><span class="nav-number">1.1.</span> <span class="nav-text">Number</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Boolean"><span class="nav-number">1.2.</span> <span class="nav-text">Boolean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Char"><span class="nav-number">1.3.</span> <span class="nav-text">Char</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#装箱类型和基本类型"><span class="nav-number">1.4.</span> <span class="nav-text">装箱类型和基本类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类型转换"><span class="nav-number">1.5.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String"><span class="nav-number">1.6.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#var-amp-val"><span class="nav-number">1.7.</span> <span class="nav-text">var & val</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#空类型安全"><span class="nav-number">1.8.</span> <span class="nav-text">空类型安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#智能类型转换"><span class="nav-number">1.9.</span> <span class="nav-text">智能类型转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区间"><span class="nav-number">1.10.</span> <span class="nav-text">区间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组"><span class="nav-number">1.11.</span> <span class="nav-text">数组</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
