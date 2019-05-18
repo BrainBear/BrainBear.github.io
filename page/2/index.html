@@ -241,6 +241,129 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/OkHttp学习笔记_2_拦截器链/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/OkHttp学习笔记_2_拦截器链/" itemprop="url">
+                  OkHttp学习笔记 2 拦截器链
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-08T22:58:32+08:00">
+                2019-01-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>上一篇讲了 OkHttp 中异步任务和同步任务的调度，今天来学习一下具体的请求过程是怎么处理的，在 OkHttp 中是通过一系列的拦截器来构成一个拦截器链来处理请求的。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/OkHttp学习笔记_2_拦截器链/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://yoursite.com/OkHttp学习笔记_1_Dispatcher/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1312,146 +1435,6 @@
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Kotlin学习笔记_2_程序结构/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="brainBear">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpeg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="brainBear' Blog">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/Kotlin学习笔记_2_程序结构/" itemprop="url">
-                  Kotlin 学习笔记 2 程序结构
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-06T22:04:54+08:00">
-                2018-08-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <a id="more"></a>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>在 Kotlin 中用 <code>fun</code> 关键字定义函数，完整的结构是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">fun 函数名(参数列表): 返回值类型 &#123;</div><div class="line">    函数体</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>需要函数不需要参数的话，参数列表可以为空，如果函数没有返回值，在 Java 中是用 <code>void</code> 表示，但是在 Kotlin 中是用 <code>Unit</code> 或者省略返回值类型：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">fun1</span><span class="params">()</span></span>:<span class="built_in">Unit</span> &#123;</div><div class="line">    ....</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">fun2</span><span class="params">()</span></span> &#123;</div><div class="line">    ....</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>如果函数体就是一个表达式的话可以更加简化：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(arg1: <span class="type">Int</span>, arg2: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> = arg1 + arg2</div></pre></td></tr></table></figure></p>
-<p>当返回值可以被推导出来的时候，返回值类型也可以省略：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(arg1: <span class="type">Int</span>, arg2: <span class="type">Int</span>)</span></span> = arg1 + arg2</div></pre></td></tr></table></figure></p>
-<h3 id="函数参数"><a href="#函数参数" class="headerlink" title="函数参数"></a>函数参数</h3><p>Java 方法中的参数是比较死板的，只支持变长参数，而 Kotlin 在这之上拓展了具名参数和默认参数。</p>
-<h4 id="具名参数"><a href="#具名参数" class="headerlink" title="具名参数"></a>具名参数</h4><p>具名参数就是函数调用的时候附上形参的名称：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    sum(<span class="number">1</span>, <span class="number">2</span>)</div><div class="line">    sum(s1 = <span class="number">1</span>, s2 = <span class="number">2</span>)</div><div class="line">    sum(<span class="number">1</span>, s2 = <span class="number">2</span>)</div><div class="line">    sum(s2 = <span class="number">2</span>, s1 = <span class="number">1</span>)</div><div class="line">    sum(s1 = <span class="number">1</span>, <span class="number">2</span>) <span class="comment">//先用具名参数，然后用位置参数会编译报错</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(s1: <span class="type">Int</span>, s2: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">return</span> s1 + s2</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="变长参数"><a href="#变长参数" class="headerlink" title="变长参数"></a>变长参数</h4><p>在 Kotlin 中，变长参数用 <code>vararg</code> 声明：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(<span class="keyword">vararg</span> values: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">var</span> sum = <span class="number">0</span></div><div class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> values) &#123;</div><div class="line">        sum += i</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> sum</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在 Java 中，如果是变长参数，调用的时候可以直接传入数组，但是在 Kotlin 中不可以，需要 <code>*</code> 来展开数组：</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"></div><div class="line">    sum(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line">    </div><div class="line">    <span class="keyword">val</span> array = intArrayOf(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line">    </div><div class="line">    sum(*array)</div><div class="line">    sum(array) <span class="comment">//编译出错</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="默认参数"><a href="#默认参数" class="headerlink" title="默认参数"></a>默认参数</h4><p>Kotlin 中还支持使用默认参数来编写更加简洁的代码，顾名思义，默认参数就是带有默认值的参数，</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    sayHi(<span class="string">"bear"</span>)</div><div class="line">    sayHi()</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sayHi</span><span class="params">(name: <span class="type">String</span> = <span class="string">"world"</span>)</span></span> &#123;</div><div class="line">    println(<span class="string">"hello <span class="subst">$name</span>"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>输出：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hello bear</div><div class="line">hello world</div></pre></td></tr></table></figure></p>
-<h2 id="if-amp-amp-when"><a href="#if-amp-amp-when" class="headerlink" title="if &amp;&amp; when"></a>if &amp;&amp; when</h2><p>在 Java 中常用 <code>if</code> ，<code>switch</code>，三目运算符 <code>?</code> 来控制代码分支，但是在 Kotlin 中 <code>if</code> 是一个<strong>表达式</strong>，它会返回一个值，因此 <code>if</code> 也可以实现 Java 中 <code>?</code> 的效果：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//普通用法</span></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">max</span><span class="params">(v1: <span class="type">Int</span>, v2: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">if</span> (v1 &gt; v2) &#123;</div><div class="line">        <span class="keyword">return</span> v1</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> v2</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//作为表达式</span></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">max1</span><span class="params">(v1: <span class="type">Int</span>, v2: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (v1 &gt; v2) v1 <span class="keyword">else</span> v2</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>在 Kotlin 中 <code>if</code> 分支可以是代码块，代码块最后的表达式作为该分支的值：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">max</span><span class="params">(v1: <span class="type">Int</span>, v2: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">if</span>(v1 &gt; v2) &#123;</div><div class="line">        println(<span class="string">"max is <span class="subst">$v1</span>"</span>)</div><div class="line">        v1</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">        println(<span class="string">"max is <span class="subst">$v2</span>"</span>)</div><div class="line">        v2</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>如果是分支比较多的时候，在 Java 中我们一般使用 <code>switch</code> ，但是在 Kotlin 中提供了增强版的 <code>when</code> 。</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> result = <span class="keyword">when</span>(x) &#123;</div><div class="line">    条件<span class="number">1</span> -&gt; 表达式<span class="number">1</span></div><div class="line">    条件<span class="number">2</span> -&gt; 代码块<span class="number">2</span> &#123;</div><div class="line">      <span class="comment">//代码块最后一句表达式的值就是该分支的值</span></div><div class="line">    &#125;</div><div class="line">    条件<span class="number">3</span>, 条件<span class="number">4</span> -&gt; 表达式<span class="number">3</span></div><div class="line">    <span class="keyword">else</span> -&gt; &#123;</div><div class="line">        <span class="comment">//如果 when 用于表达式，则必须要覆盖所有的条件</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>when</code> 会将参数与所有分支条件<strong>按照顺序</strong>比较，直到某个分支满足条件，如果有多个条件执行同样的逻辑，可以使用 <code>,</code> 并列多个条件。<code>when</code> 既可以当做表达式也可以当成语句使用，<strong>如果 <code>when</code> 用于表达式，则必须要覆盖所有的条件</strong>，否则编译出错。</p>
-<p>对于 Java 来说，<code>switch</code> 只支持特定的类型，而 <code>when</code> 支持任意表达式作为分支条件：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"></div><div class="line">    <span class="keyword">val</span> i= <span class="number">1</span></div><div class="line">    <span class="keyword">when</span>(i) &#123;</div><div class="line">        <span class="number">1</span> -&gt; println(<span class="string">"i is 1"</span>)</div><div class="line">        <span class="keyword">in</span> <span class="number">0.</span><span class="number">.10</span> -&gt; println(<span class="string">"i in [0, 10]"</span>)</div><div class="line">        <span class="keyword">is</span> Number -&gt; println(<span class="string">"i is number"</span>)</div><div class="line">        <span class="keyword">else</span> -&gt; &#123;</div><div class="line">            println(<span class="string">"i is'n number"</span>)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="for-amp-amp-while"><a href="#for-amp-amp-while" class="headerlink" title="for &amp;&amp; while"></a>for &amp;&amp; while</h2><p>Kotlin 中 for 循环可以遍历任意提供了迭代器 (Iterator) 的对象进行遍历<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"></div><div class="line">    <span class="comment">//遍历区间</span></div><div class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0.</span><span class="number">.10</span>) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line">    println()</div><div class="line"></div><div class="line">    <span class="comment">//自定义步进遍历区间</span></div><div class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">10</span> downTo <span class="number">0</span> step <span class="number">2</span>) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line">    println()</div><div class="line"></div><div class="line">    <span class="keyword">val</span> array = intArrayOf(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"></div><div class="line">    <span class="comment">//遍历数组</span></div><div class="line">    <span class="keyword">for</span>(i <span class="keyword">in</span> array) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$i</span> "</span>)</div><div class="line">    &#125;</div><div class="line">    println()</div><div class="line"></div><div class="line">    <span class="comment">//使用数组下标遍历</span></div><div class="line">    <span class="keyword">for</span>(i <span class="keyword">in</span> array.indices) &#123;</div><div class="line">        print(<span class="string">"<span class="subst">$&#123;array[i]&#125;</span> "</span>)</div><div class="line">    &#125;</div><div class="line">    println()</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><code>while</code> 和 <code>do..while</code> 和 Java 用法一致。</p>
-<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>Kotlin 中对于异常 <code>Exception</code> 也有 <code>try...catch...finally</code> 语句，但是在 Kotlin 中 <code>try..catch</code> 也是可以当成表达式用的：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line"></div><div class="line">    println(divide(<span class="number">0.0</span>, <span class="number">0.0</span>))</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">divide</span><span class="params">(d1: <span class="type">Double</span>, d2: <span class="type">Double</span>)</span></span>: <span class="built_in">Double</span> &#123;</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">try</span> &#123;</div><div class="line">        d1 / d2</div><div class="line">    &#125; <span class="keyword">catch</span> (e: Exception) &#123;</div><div class="line">        <span class="built_in">Double</span>.NaN</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-          
         
       
     </div>
