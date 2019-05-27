@@ -1,0 +1,679 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Kotlin,Lambda," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在 Kotlin  中 Lambda 表达式和匿名函数都被称为函数字面值，在 Kotlin 中，函数可以存储在变量或者数据结构中，也可以作为参数传递。Kotlin 对 Java 的一个比较大的改进就是完全支持 Lambda 表达式，即使是在 Java8 也不是完美支持 Lambda ，例如说不支持闭包等。Lambda 可以简化代码，但是在使用的时候也需要多加小心，一不小心就踩坑了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin 学习笔记 4 Lambda">
+<meta property="og:url" content="http://yoursite.com/Kotlin学习笔记_4_lambda/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="在 Kotlin  中 Lambda 表达式和匿名函数都被称为函数字面值，在 Kotlin 中，函数可以存储在变量或者数据结构中，也可以作为参数传递。Kotlin 对 Java 的一个比较大的改进就是完全支持 Lambda 表达式，即使是在 Java8 也不是完美支持 Lambda ，例如说不支持闭包等。Lambda 可以简化代码，但是在使用的时候也需要多加小心，一不小心就踩坑了。">
+<meta property="og:updated_time" content="2019-05-27T16:50:58.915Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kotlin 学习笔记 4 Lambda">
+<meta name="twitter:description" content="在 Kotlin  中 Lambda 表达式和匿名函数都被称为函数字面值，在 Kotlin 中，函数可以存储在变量或者数据结构中，也可以作为参数传递。Kotlin 对 Java 的一个比较大的改进就是完全支持 Lambda 表达式，即使是在 Java8 也不是完美支持 Lambda ，例如说不支持闭包等。Lambda 可以简化代码，但是在使用的时候也需要多加小心，一不小心就踩坑了。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Kotlin学习笔记_4_lambda/"/>
+
+
+
+
+
+  <title> Kotlin 学习笔记 4 Lambda | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Kotlin学习笔记_4_lambda/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Kotlin 学习笔记 4 Lambda
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-27T11:24:00+08:00">
+                2019-05-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 Kotlin  中 Lambda 表达式和匿名函数都被称为函数字面值，在 Kotlin 中，函数可以存储在变量或者数据结构中，也可以作为参数传递。Kotlin 对 Java 的一个比较大的改进就是完全支持 Lambda 表达式，即使是在 Java8 也不是完美支持 Lambda ，例如说不支持闭包等。Lambda 可以简化代码，但是在使用的时候也需要多加小心，一不小心就踩坑了。<br><a id="more"></a></p>
+<h1 id="Lambda"><a href="#Lambda" class="headerlink" title="Lambda"></a>Lambda</h1><p>Lambda 的语法形式：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;参数列表 -&gt; 函数体&#125;</div></pre></td></tr></table></figure></p>
+<p>例如：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">val sum = &#123;x: Int, y: Int -&gt; x + y&#125;</div></pre></td></tr></table></figure></p>
+<p>如果 Lambda 表达式的返回类型不是 Unit ，那么函数体最后一个表达式的值就是返回值。</p>
+<p>在前面说了 Lambda 表达式可以作为变量存储，所以函数也有类型，在 Kotlin 中用类似 <code>(T) -&gt; R</code> 的形式来表示函数类型，其中 <code>T</code> 是函数的参数类型， <code>R</code> 是返回值类型。例如：<code>(Int, Double) -&gt; String</code> 就表示形参类型分别是 <code>Int</code> 和 <code>Double</code> ，返回值类型是 <code>String</code> 的函数类型。</p>
+<p>Kotlin 中还有一种带接收者的 Lambda 表达式：<code>T.(A, B) -&gt; R</code> ，它表示一个 <code>T</code> 类型的接收者对象的参数类型为 <code>A</code> 和 <code>B</code>，返回值类型是 <code>R</code> 的 Lambda 表达式。</p>
+<p>在带接收者的 Lambda 表达式中，内部隐式有指向调用者对象的引用，所以在表达式内部可以直接或者通过 <code>this</code> 来访问接收者对象。这和拓展函数有点像，这个特性在 Kotlin 提供的很多高阶函数中用到。</p>
+<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><p>Lambda 表达式可以使用 <code>invoke()</code> 方法来调用，也可以直接使用 <code>()</code> 调用，例如调用前面定义的 <code>sum</code> 。<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> sum = &#123;x: <span class="built_in">Int</span>, y: <span class="built_in">Int</span> -&gt; x + y&#125;</div><div class="line"></div><div class="line">sum(<span class="number">1</span>, <span class="number">2</span>)</div><div class="line"></div><div class="line">sum.invoke(<span class="number">1</span>, <span class="number">2</span>)</div></pre></td></tr></table></figure></p>
+<h2 id="简化"><a href="#简化" class="headerlink" title="简化"></a>简化</h2><p>标准形式的 Lambda 表达式平时还是比较少用的，因为在 Kotlin 中有各种各样的简化形式，假设我们有一个函数：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">test</span><span class="params">(action: (<span class="type">Int</span>)</span></span> -&gt; String) &#123;&#125;</div></pre></td></tr></table></figure></p>
+<p>如果我们需要调用 <code>test()</code> ，一开始我们可能会这样写：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test(&#123; i: <span class="built_in">Int</span> -&gt; <span class="string">"<span class="subst">$i</span>"</span>&#125;)</div></pre></td></tr></table></figure></p>
+<p>其中的 <code>i</code> 是我们自定义的形参，我们可以随便定义。因为在 Kotlin 中，类型推导很方便，在 Lambda 表达式中它可以推导出需要的类型，所以我们可以省略掉形参的类型声明：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test(&#123; i -&gt; <span class="string">"<span class="subst">$i</span>"</span>&#125;)</div></pre></td></tr></table></figure>
+<p>在 Kotlin 中，如果 Lambda 只有一个形参，它会提供一个默认的参数名 <code>it</code> ，你可以用 <code>it</code> 省略唯一的形参：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test(&#123; <span class="string">"<span class="subst">$it</span>"</span> &#125;)</div></pre></td></tr></table></figure>
+<p>如果你自定义了形参名，那么 <code>it</code> 就没有了。在 Kotlin 中规定了，如果函数最后一个实参是 Lambda 表达式，那么可以将 Lambda 表达式挪到小括号外面：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test() &#123; <span class="string">"<span class="subst">$it</span>"</span> &#125;</div></pre></td></tr></table></figure>
+<p>如果函数只有一个 Lambda 实参，那么函数调用的时候可以把小括号省略：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">test &#123; <span class="string">"<span class="subst">$it</span>"</span> &#125;</div></pre></td></tr></table></figure></p>
+<p>从上面的描述可以知道 Lambda 表达式可以将代码写得很简洁，但是过于简洁的代码会带来可读性差的问题，特别是 Lambda 表达式嵌套的时候，写的时候一时爽，读代码火葬场。</p>
+<h2 id="FunctionN"><a href="#FunctionN" class="headerlink" title="FunctionN"></a>FunctionN</h2><p>Kotlin 和 Java 是互相兼容的，那么在 Java 中是怎么表示 Kotlin 中的函数类型呢？我们用刚刚的 <code>test()</code> 方法来探索看看：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">test</span><span class="params">(action: (<span class="type">Int</span>)</span></span> -&gt; String) &#123;&#125;</div></pre></td></tr></table></figure></p>
+<p>将它反编译成 Java 代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(@NotNull Function1 action)</span> </span>&#123;</div><div class="line">      Intrinsics.checkParameterIsNotNull(action, <span class="string">"action"</span>);</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>因为 <code>test()</code> 方法是空实现的，所以反编译成 Java 方法体里面只有检测参数不为空的逻辑。我们主要是要看 <code>test()</code> 方法的形参类型：Function1 。</p>
+<p>在 IDE 中找到了 Function1 定义在 <code>Functions.kt</code> 文件中，里面定义了一系列的 Function 接口，我们以 Function1 为例：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/** A function that takes 1 argument. */</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Function1</span>&lt;<span class="type">in P1, out R</span>&gt; : <span class="type">Function</span>&lt;<span class="type">R</span>&gt; </span>&#123;</div><div class="line">    <span class="comment">/** Invokes the function with the specified argument. */</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(p1: <span class="type">P1</span>)</span></span>: R</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这些 FunctionN 接口都继承于 Function 接口，Function 接口是一个空接口，只起到一个标记的作用：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Represents a value of a functional type, such as a lambda, an anonymous function or a function reference.</div><div class="line"> *</div><div class="line"> * <span class="doctag">@param</span> R return type of the function.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Function</span>&lt;<span class="type">out R</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>FunctionN 接口中都有一个 <code>invoke()</code> 方法，不同的 FunctionN 接口中 <code>invoke()</code> 方法的形参数量也不一样。需要注意的是 FunctionN 接口最多支持 22 个形参，不过正常情况下也用不到这么多形参。</p>
+<h2 id="访问局部变量"><a href="#访问局部变量" class="headerlink" title="访问局部变量"></a>访问局部变量</h2><p>在 Java 的方法中定义一个匿名内部类是不能访问方法中的局部变量的，只能访问成员变量或者被 final 修饰的局部变量，也就是说 Java 方法中的匿名内部类不能修改方法中的局部变量。但是在 Kotlin 中却可以：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">var</span> array = intArrayOf(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line"></div><div class="line">    <span class="keyword">var</span> sum = <span class="number">0</span></div><div class="line">    array.filter &#123; it &gt; <span class="number">0</span> &#125;.forEach &#123;</div><div class="line">        sum += it</div><div class="line">    &#125;</div><div class="line">    print(sum)</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>上面的例子里，在 forEach 中修改了局部变量 sum 的值。其实 Kotlin 内部还是只能引用 final 的变量，只是 Kotlin 会创建一个 fianl 的 Ref 引用类，这个引用类指向了我们真正需要引用的局部变量，这样我们就可以 final 的 Ref 类来引用到局部变量了。</p>
+<h2 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h2><p>如果一个函数形参是函数类型，一般情况下我们会传入一个 Lambda 表达式，但是如果我们已经有一个命名函数它的类型和需要的类型契合，那么就可以通方法引用的方式传入：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">test</span><span class="params">(action: (<span class="type">Int</span>)</span></span> -&gt; String) &#123;&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">int2String</span><span class="params">(i: <span class="type">Int</span>)</span></span>: String &#123;</div><div class="line">    <span class="keyword">return</span> <span class="string">"<span class="subst">$i</span>"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    test(::int2String)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>方法引用的方式是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">类名::方法名</div></pre></td></tr></table></figure></p>
+<p>如果是顶层函数，例如上面的 <code>int2String()</code> 就省略类名。</p>
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p>在前面我们已经说了 Lambda 表达式最后一个表达式的值的类型就是返回类型，无法显式指定返回类型。如果你在特殊情况下需要指定返回类型，可以使用匿名函数，匿名函数顾名思义就是没有名字的函数：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//命名函数</span></div><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">sum</span><span class="params">(i: <span class="type">Int</span>, j: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">return</span> i + j</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//匿名函数</span></div><div class="line"><span class="keyword">val</span> sum = <span class="function"><span class="title">fun</span><span class="params">(i: <span class="type">Int</span>, j: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</div><div class="line">    <span class="keyword">return</span> i + j</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>匿名函数和 Lambda 表达式最大的区别就是<strong>非局部返回</strong>:<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">    <span class="keyword">val</span> array = intArrayOf(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</div><div class="line"></div><div class="line">    println(<span class="string">"start"</span>)</div><div class="line"></div><div class="line">    array.forEach(anonymous)</div><div class="line">    </div><div class="line">    array.forEach &#123;</div><div class="line">        println(<span class="string">"lambda <span class="subst">$it</span>"</span>)</div><div class="line">        <span class="keyword">if</span> (it == <span class="number">2</span>) &#123;</div><div class="line">            <span class="keyword">return</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    println(<span class="string">"end"</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">val</span> anonymous = <span class="function"><span class="title">fun</span><span class="params">(i: <span class="type">Int</span>)</span></span>: <span class="built_in">Unit</span> &#123;</div><div class="line">    println(<span class="string">"anonymous <span class="subst">$i</span>"</span>)</div><div class="line">    <span class="keyword">if</span> (i == <span class="number">2</span>) &#123;</div><div class="line">        <span class="keyword">return</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">start</div><div class="line">anonymous 0</div><div class="line">anonymous 1</div><div class="line">anonymous 2</div><div class="line">anonymous 3</div><div class="line">lambda 0</div><div class="line">lambda 1</div><div class="line">lambda 2</div></pre></td></tr></table></figure></p>
+<p>匿名函数中的 return 语句只能打断自己，但是 Lambda 表达式中的 return 语句会打断调用它的函数。如果 Lambda 表达式的 return 语句来打断自己的调用，需要配置标签来使用：<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">array.forEach &#123;</div><div class="line">    println(<span class="string">"lambda <span class="subst">$it</span>"</span>)</div><div class="line">    <span class="keyword">if</span> (it == <span class="number">2</span>) &#123;</div><div class="line">        <span class="keyword">return</span><span class="symbol">@forEach</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 return 中加上了 forEach 标签，输出就正常了：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">start</div><div class="line">anonymous 0</div><div class="line">anonymous 1</div><div class="line">anonymous 2</div><div class="line">anonymous 3</div><div class="line">lambda 0</div><div class="line">lambda 1</div><div class="line">lambda 2</div><div class="line">lambda 3</div><div class="line">end</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          
+            <a href="/tags/Lambda/" rel="tag"># Lambda</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/如何去除代码中的敏感日志/" rel="next" title="如何去除代码中的敏感日志">
+                <i class="fa fa-chevron-left"></i> 如何去除代码中的敏感日志
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">43</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lambda"><span class="nav-number">1.</span> <span class="nav-text">Lambda</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#调用"><span class="nav-number">1.1.</span> <span class="nav-text">调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简化"><span class="nav-number">1.2.</span> <span class="nav-text">简化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FunctionN"><span class="nav-number">1.3.</span> <span class="nav-text">FunctionN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问局部变量"><span class="nav-number">1.4.</span> <span class="nav-text">访问局部变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法引用"><span class="nav-number">1.5.</span> <span class="nav-text">方法引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#匿名函数"><span class="nav-number">1.6.</span> <span class="nav-text">匿名函数</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
