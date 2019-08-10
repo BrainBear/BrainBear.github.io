@@ -1,0 +1,688 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,WebRtc,VAD," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="VAD语音活动检测 (Voice Activity Detection, VAD) ，也叫语音端点检测或者静音检测。VAD 是语音处理技术中比较基础的功能，国内很多有做语音的公司，他们提供的 SDK 一般都有 VAD 的功能，但是这些 SDK 一般都比较臃肿，但是小公司自己去实现一个可用的 VAD 功能付出回报比太低。我无意中发现 WebRtc 中有集成 VAD 的模块，所以就参考了网上的一些资料">
+<meta property="og:type" content="article">
+<meta property="og:title" content="移植WebRtc中的VAD模块到Android中">
+<meta property="og:url" content="http://yoursite.com/移植WebRtc中的VAD模块到Android中/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="VAD语音活动检测 (Voice Activity Detection, VAD) ，也叫语音端点检测或者静音检测。VAD 是语音处理技术中比较基础的功能，国内很多有做语音的公司，他们提供的 SDK 一般都有 VAD 的功能，但是这些 SDK 一般都比较臃肿，但是小公司自己去实现一个可用的 VAD 功能付出回报比太低。我无意中发现 WebRtc 中有集成 VAD 的模块，所以就参考了网上的一些资料">
+<meta property="og:updated_time" content="2019-08-10T17:47:01.447Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="移植WebRtc中的VAD模块到Android中">
+<meta name="twitter:description" content="VAD语音活动检测 (Voice Activity Detection, VAD) ，也叫语音端点检测或者静音检测。VAD 是语音处理技术中比较基础的功能，国内很多有做语音的公司，他们提供的 SDK 一般都有 VAD 的功能，但是这些 SDK 一般都比较臃肿，但是小公司自己去实现一个可用的 VAD 功能付出回报比太低。我无意中发现 WebRtc 中有集成 VAD 的模块，所以就参考了网上的一些资料">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/移植WebRtc中的VAD模块到Android中/"/>
+
+
+
+
+
+  <title> 移植WebRtc中的VAD模块到Android中 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/移植WebRtc中的VAD模块到Android中/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                移植WebRtc中的VAD模块到Android中
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-07T11:55:00+08:00">
+                2019-08-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="VAD"><a href="#VAD" class="headerlink" title="VAD"></a>VAD</h2><p>语音活动检测 (Voice Activity Detection, VAD) ，也叫语音端点检测或者静音检测。VAD 是语音处理技术中比较基础的功能，国内很多有做语音的公司，他们提供的 SDK 一般都有 VAD 的功能，但是这些 SDK 一般都比较臃肿，但是小公司自己去实现一个可用的 VAD 功能付出回报比太低。我无意中发现 WebRtc 中有集成 VAD 的模块，所以就参考了网上的一些资料移植到 Android 平台。<br><a id="more"></a></p>
+<h2 id="移植过程"><a href="#移植过程" class="headerlink" title="移植过程"></a>移植过程</h2><h3 id="下载源码"><a href="#下载源码" class="headerlink" title="下载源码"></a>下载源码</h3><p>首先需要去下载 <a href="https://android.googlesource.com/platform/external/webrtc/" target="_blank" rel="external">WebRtc</a> 的源码，我使用的是 <code>cd952219d163becb6bebac757673098c347dfd0e</code> 版本。</p>
+<p>VAD 主要的实现代码在 <code>webrtc/common_audio/vad</code> 路径下，但是内部有依赖其他的一些文件，所以我们移植的主要工作就是找到这些文件。</p>
+<p><code>webrtc/common_audio/vad/include</code> 路径下的 <code>webrtc_vad.h</code> 文件是 VAD 的接口：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Creates an instance to the VAD structure.</span></div><div class="line"><span class="function">VadInst* <span class="title">WebRtcVad_Create</span><span class="params">()</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// Frees the dynamic memory of a specified VAD instance.</span></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">WebRtcVad_Free</span><span class="params">(VadInst* handle)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// Initializes a VAD instance.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">WebRtcVad_Init</span><span class="params">(VadInst* handle)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// Sets the VAD operating mode. A more aggressive (higher mode) VAD is more</span></div><div class="line"><span class="comment">// restrictive in reporting speech. Put in other words the probability of being</span></div><div class="line"><span class="comment">// speech when the VAD returns 1 is increased with increasing mode. As a</span></div><div class="line"><span class="comment">// consequence also the missed detection rate goes up.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">WebRtcVad_set_mode</span><span class="params">(VadInst* handle, <span class="keyword">int</span> mode)</span></span>;</div><div class="line"></div><div class="line"><span class="comment">// Calculates a VAD decision for the |audio_frame|. For valid sampling rates</span></div><div class="line"><span class="comment">// frame lengths, see the description of WebRtcVad_ValidRatesAndFrameLengths().</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">WebRtcVad_Process</span><span class="params">(VadInst* handle, <span class="keyword">int</span> fs, <span class="keyword">const</span> <span class="keyword">int16_t</span>* audio_frame,</span></span></div><div class="line">                      <span class="keyword">size_t</span> frame_length);</div><div class="line"></div><div class="line"><span class="comment">// Checks for valid combinations of |rate| and |frame_length|. We support 10,</span></div><div class="line"><span class="comment">// 20 and 30 ms frames and the rates 8000, 16000 and 32000 Hz.</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">WebRtcVad_ValidRateAndFrameLength</span><span class="params">(<span class="keyword">int</span> rate, <span class="keyword">size_t</span> frame_length)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>VAD 的全部功能都是通过调用这里面的接口来实现。</p>
+<h3 id="创建-Android-Studio-工程"><a href="#创建-Android-Studio-工程" class="headerlink" title="创建 Android Studio 工程"></a>创建 Android Studio 工程</h3><p>创建一个 Native 的工程，<code>C++</code> 版本选择 <code>C++11</code>，创建成功后，在工程自动创建的 cpp 文件夹下创建一个 vad 文件夹，然后我们将 <code>webrtc/common_audio/vad</code> 路径和 <code>webrtc/common_audio/vad/include</code> 路径下的文件复制到 vad 文件夹，需要注意文件带 <code>test</code> 字样的是测试代码，这些文件不需要复制。</p>
+<p>文件复制完之后，可以发现它们的头文件引用是使用全路径的，就像这样：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"webrtc/typedefs.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"webrtc/common_audio/signal_processing/include/signal_processing_library.h"</span></span></div></pre></td></tr></table></figure></p>
+<p>为了引用的方便，我们把这些层级关系打平，可以去到对应的路径下这些头文件到我们创建的 vad 文件夹，然后把源文件的引用改掉，就像这样：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"typedefs.h"</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"signal_processing_library.h"</span></span></div></pre></td></tr></table></figure></p>
+<p>把文件全部复制进来之后，记得把这些文件添加到 <code>CMakeLists.txt</code> 文件中，否则是不会把这些文件编译的，具体的添加规格可以自行查找。添加成功后我们可以尝试编译，但是肯定会报错的，因为我们添加的头文件只有方法的声明，没有实现，由于 WebRtc 的实现比较复杂，很多实现的 c 文件和头文件并不是同名的，所以我们可以用文本编辑器，例如 <code>VSCode</code> 打开 WebRtc 源码，直接搜索报错提示找不到的方法名，找到对应的文件复制进来，添加到 <code>CMakeLists.txt</code>，一直这样操作下去。</p>
+<p>当我们全部文件添加完成之后，还会提示找不到一个 <code>once()</code> 方法，这个方法在 <code>spl_init.c</code> 中，但是需要我们在编译的时候打开一个宏定义才行，需要再 <code>CMakeLists.txt</code> 文件中添加以下代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">add_definitions(-DWEBRTC_POSIX)</div></pre></td></tr></table></figure>
+<p>这样就完成了全部文件的导入，可以正常编译通过了，我这里附上我添加的文件列表：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">checks.cc</div><div class="line">checks.h</div><div class="line">constructormagic.h</div><div class="line">cpu_features_wrapper.h</div><div class="line">cross_correlation.c</div><div class="line">deprecation.h</div><div class="line">division_operations.c</div><div class="line">downsample_fast.c</div><div class="line">energy.c</div><div class="line">get_scaling_square.c</div><div class="line">min_max_operations.c</div><div class="line">resample.c</div><div class="line">resample_48khz.c</div><div class="line">resample_by_2.c</div><div class="line">resample_by_2_internal.c</div><div class="line">resample_by_2_internal.h</div><div class="line">resample_by_2_mips.c</div><div class="line">resample_fractional.c</div><div class="line">scoped_ptr.h</div><div class="line">signal_processing_library.h</div><div class="line">spl_init.c</div><div class="line">spl_inl.h</div><div class="line">template_util.h</div><div class="line">typedefs.h</div><div class="line">vad.cc</div><div class="line">vad.h</div><div class="line">vad_core.c</div><div class="line">vad_core.h</div><div class="line">vad_filterbank.c</div><div class="line">vad_filterbank.h</div><div class="line">vad_gmm.c</div><div class="line">vad_gmm.h</div><div class="line">vad_sp.c</div><div class="line">vad_sp.h</div><div class="line">vector_scaling_operations.c</div><div class="line">webrtc_vad.c</div><div class="line">webrtc_vad.h</div></pre></td></tr></table></figure></p>
+<h2 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h2><p>正常编译通过之后我们就需要编写逻辑代码了。</p>
+<p>首先我们需要明确的是 WebRtc 的 VAD 模块只支持<strong>单通道，16位采样长度（位宽）</strong> 的 PCM 数据，</p>
+<p>支持的采样率：</p>
+<ul>
+<li>8k</li>
+<li>16k</li>
+<li>32k</li>
+<li>48k</li>
+</ul>
+<p>WebRtc 的 VAD 模块是按照固定的音频帧时长来处理的，它只支持特定的长度：</p>
+<ul>
+<li>10ms</li>
+<li>20ms</li>
+<li>30ms</li>
+</ul>
+<p>从上面的接口可以看到，VAD 提供了 <code>int WebRtcVad_ValidRateAndFrameLength(int rate, size_t frame_length)</code> 方法来判断采样率和音频帧是否有效。</p>
+<p>WebRtc 的 VAD 模块可以通过调用 <code>int WebRtcVad_set_mode(VadInst* handle, int mode)</code> 方法来设置不同的模式，他的取值是从 0 到 3，简单来说值越大，对非语音的过滤就越明显。</p>
+<p>方法调用顺序：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">WebRtcVad_Create </div><div class="line">  -&gt; WebRtcVad_Init </div><div class="line">    -&gt; WebRtcVad_set_mode </div><div class="line">      -&gt; WebRtcVad_Process</div><div class="line">        -&gt; WebRtcVad_Free</div></pre></td></tr></table></figure></p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p>由于 WebRtc 的 VAD 模块只能处理固定时长的音频帧，而且这个时长还非常短，不能直接满足正常的业务网使用，所以我自己封装了一个模块，大家可以参考一下：</p>
+<p><a href="https://github.com/BrainBear/webrtc_vad_android" target="_blank" rel="external">webrtc_vad_android</a></p>
+<h2 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h2><ul>
+<li><a href="https://cmusphinx.github.io/wiki/asr/vad/" target="_blank" rel="external">CMUSphinx</a></li>
+<li><a href="https://blog.csdn.net/langzxz/article/details/78858065" target="_blank" rel="external">Android Studio 单独编译WebRTC的 vad 模块</a></li>
+<li><a href="https://blog.csdn.net/shichaog/article/details/52399354" target="_blank" rel="external">WebRTC之VAD算法</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/WebRtc/" rel="tag"># WebRtc</a>
+          
+            <a href="/tags/VAD/" rel="tag"># VAD</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Kotlin学习笔记_5_高阶函数/" rel="next" title="Kotlin学习笔记_5_高阶函数">
+                <i class="fa fa-chevron-left"></i> Kotlin学习笔记_5_高阶函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/运行时动态修改Retrofit请求的host/" rel="prev" title="运行时动态修改Retrofit请求的host">
+                运行时动态修改Retrofit请求的host <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#VAD"><span class="nav-number">1.</span> <span class="nav-text">VAD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#移植过程"><span class="nav-number">2.</span> <span class="nav-text">移植过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载源码"><span class="nav-number">2.1.</span> <span class="nav-text">下载源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建-Android-Studio-工程"><span class="nav-number">2.2.</span> <span class="nav-text">创建 Android Studio 工程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#说明"><span class="nav-number">3.</span> <span class="nav-text">说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">4.</span> <span class="nav-text">Demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#感谢"><span class="nav-number">5.</span> <span class="nav-text">感谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
