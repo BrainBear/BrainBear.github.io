@@ -1,0 +1,662 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="加载界面在 app 的界面中，经常需要请求网络等异步操作，为了交互友好一点，产品都会设计一个加载中的状态，而且这些异步操作，可能会请求失败，有可能请求到空数据，所以界面实现的时候，除了最终要展示内容的界面，还需要加载中，加载失败，加载到空数据的界面。而这些界面在整个 app 可能都是一样的。目前的项目中，是在不同的 layout 中手动插入这些界面的布局，然后手动去设置这些界面的 visible">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何优雅地给界面添加加载中和重试界面">
+<meta property="og:url" content="http://yoursite.com/如何优雅地给界面添加加载中和重试界面/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="加载界面在 app 的界面中，经常需要请求网络等异步操作，为了交互友好一点，产品都会设计一个加载中的状态，而且这些异步操作，可能会请求失败，有可能请求到空数据，所以界面实现的时候，除了最终要展示内容的界面，还需要加载中，加载失败，加载到空数据的界面。而这些界面在整个 app 可能都是一样的。目前的项目中，是在不同的 layout 中手动插入这些界面的布局，然后手动去设置这些界面的 visible">
+<meta property="og:updated_time" content="2019-09-22T07:51:10.270Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何优雅地给界面添加加载中和重试界面">
+<meta name="twitter:description" content="加载界面在 app 的界面中，经常需要请求网络等异步操作，为了交互友好一点，产品都会设计一个加载中的状态，而且这些异步操作，可能会请求失败，有可能请求到空数据，所以界面实现的时候，除了最终要展示内容的界面，还需要加载中，加载失败，加载到空数据的界面。而这些界面在整个 app 可能都是一样的。目前的项目中，是在不同的 layout 中手动插入这些界面的布局，然后手动去设置这些界面的 visible">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/如何优雅地给界面添加加载中和重试界面/"/>
+
+
+
+
+
+  <title> 如何优雅地给界面添加加载中和重试界面 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/如何优雅地给界面添加加载中和重试界面/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                如何优雅地给界面添加加载中和重试界面
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-22T15:03:00+08:00">
+                2019-09-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="加载界面"><a href="#加载界面" class="headerlink" title="加载界面"></a>加载界面</h2><p>在 app 的界面中，经常需要请求网络等异步操作，为了交互友好一点，产品都会设计一个加载中的状态，而且这些异步操作，可能会请求失败，有可能请求到空数据，所以界面实现的时候，除了最终要展示内容的界面，还需要加载中，加载失败，加载到空数据的界面。而这些界面在整个 app 可能都是一样的。目前的项目中，是在不同的 layout 中手动插入这些界面的布局，然后手动去设置这些界面的 visible 来控制显示。这样的操作非常繁琐，拓展性非常差，所以就想去解决掉这个问题。<br><a id="more"></a></p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><ul>
+<li>通过外部设置加载界面，不在 layout 中手动插入布局</li>
+<li>可以设置一个全局的加载界面，也可以自定义，没有自定义的则使用全局默认的界面</li>
+<li>加载失败或者加载到空数据的时候，可以提供重试的接口</li>
+<li>支持 Activity，Fragment</li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>一开始没有想到怎么去解耦这些逻辑，在看代码的时候看到了 Activity 滑动返回的逻辑，它是在 setContentView 的时候，获取到 DecorView ，先将原本的 contentView 移除，然后添加控制滑动返回的View ，再把 contentView 添加到滑动返回的 view 中，通过狸猫换太子的方式来解耦。</p>
+<p>我也参考了这个逻辑，在 Activity setContentView 的时候，把设置进去的 contentView 从父 ViewGroup 中移除，添加一个 FrameLayout， 再把 contentView 添加到 Fragment 中，然后其他加载中，加载失败的界面也添加到这个 FragmentLayout 中，提供接口去控制哪个 View 显示，这样就可以和 layout 解耦了。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>根据上面的思路，我实现了一个库 <a href="https://github.com/BrainBear/Switcher" target="_blank" rel="external">Switcher</a>。</p>
+<p>首先我们定义 4 中界面类型：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> VIEW_CONTENT = -<span class="number">1</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> VIEW_LOADING = -<span class="number">2</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> VIEW_FAILED = -<span class="number">3</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> VIEW_EMPTY = -<span class="number">4</span>;</div></pre></td></tr></table></figure></p>
+<p>给 activity 添加加载中的状态的时候调用 <code>with</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@NonNull</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Switcher <span class="title">with</span><span class="params">(@NonNull Activity activity)</span> </span>&#123;</div><div class="line">    FrameLayout parent = activity.findViewById(android.R.id.content);</div><div class="line"></div><div class="line">    Switcher switcher = <span class="keyword">new</span> Switcher(activity, parent.getChildAt(<span class="number">0</span>));</div><div class="line"></div><div class="line">    <span class="keyword">return</span> switcher;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>activity 在调用 setContentView 的时候就是给 id 是 android.R.id.content 的 Fragment 添加内容，然后我把这个内容获取出来，去构建一个 Switcher 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Switcher</span><span class="params">(Context context, View contentView)</span> </span>&#123;</div><div class="line">    mContext = context;</div><div class="line">    <span class="comment">//缓存内容view</span></div><div class="line">    mViewsArray.put(VIEW_CONTENT, contentView);</div><div class="line">    <span class="comment">//构建一个 FrameLayout 去替换原本内容 view 所处的位置</span></div><div class="line">    mWarpViewGroup = <span class="keyword">new</span> FrameLayout(context);</div><div class="line"></div><div class="line">    mWarpViewGroup.setLayoutParams(contentView.getLayoutParams());</div><div class="line"></div><div class="line">    ViewGroup parent = (ViewGroup) contentView.getParent();</div><div class="line"></div><div class="line">    <span class="keyword">int</span> rawIndex = <span class="number">0</span>;</div><div class="line">    <span class="comment">//如果给 Fragment 使用的话，传入的 contentView 无法获取到 parent</span></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != parent) &#123;</div><div class="line">        rawIndex = parent.indexOfChild(contentView);</div><div class="line">        parent.removeView(contentView);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    FrameLayout.LayoutParams newLp = <span class="keyword">new</span> FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);</div><div class="line"></div><div class="line">    mWarpViewGroup.addView(contentView, newLp);</div><div class="line"></div><div class="line">    <span class="comment">//替换原本内容 view 所处的位置</span></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != parent) &#123;</div><div class="line">        parent.addView(mWarpViewGroup, rawIndex);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Switcher 的构造函数就是实现了狸猫换太子，然后我们去看切换不同界面的逻辑：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setCurrentView</span><span class="params">(<span class="keyword">int</span> viewType)</span> </span>&#123;</div><div class="line">    log(<span class="string">"set current view:"</span> + viewType + <span class="string">" "</span> + getViewTypeName(viewType));</div><div class="line"></div><div class="line">    <span class="comment">//从缓存中获取上一个状态的 View</span></div><div class="line">    View lastView = mViewsArray.get(mCurrentViewType);</div><div class="line"></div><div class="line">    <span class="comment">//如果获取到的 View 不为空，则设置为不可见</span></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> != lastView) &#123;</div><div class="line">        lastView.setVisibility(View.INVISIBLE);</div><div class="line">        log(getViewTypeName(mCurrentViewType) + <span class="string">" set invisible"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    mCurrentViewType = viewType;</div><div class="line"></div><div class="line">    View currentView = mViewsArray.get(viewType);</div><div class="line"></div><div class="line">    <span class="comment">//从缓存中获取需要的 View，如果为 null 则需要创建</span></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">null</span> == currentView) &#123;</div><div class="line"></div><div class="line">        Adapter adapter = sDefaultAdapter;</div><div class="line"></div><div class="line">        <span class="comment">//如果用户设置了 Adapter 则使用自定义的，否则使用全局默认的 Adapter</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != mAdapter) &#123;</div><div class="line">            adapter = mAdapter;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == adapter) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"adapter can not be null"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//通过 Adapter 去创建对应状态的 View </span></div><div class="line">        currentView = adapter.onCreateView(<span class="keyword">this</span>, mContext, viewType);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == currentView) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(getViewTypeName(viewType) + <span class="string">" can not be null"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mWarpViewGroup.addView(currentView);</div><div class="line">    &#125;</div><div class="line">    mViewsArray.put(viewType, currentView);</div><div class="line"></div><div class="line">    <span class="comment">//设置指定状态的 View 为 visible</span></div><div class="line">    currentView.setVisibility(View.VISIBLE);</div><div class="line">    log(getViewTypeName(mCurrentViewType) + <span class="string">" set visible"</span>);</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>整体的逻辑就是获取上一个状态的 View ，设置为 invisible ，再获取到指定状态的 View ，设置为 visible ，这个参考了 RecycleView 的 Adapter ，通过 Adapter 去创建不同状态的 View。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Adapter</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="function">View <span class="title">onCreateView</span><span class="params">(Switcher switcher, Context context, <span class="keyword">int</span> viewType)</span></span>;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>整体的逻辑就是这样，现在已经可以在项目中使用了，具体的使用可以参考一下 Demo ，后续可能会添加一些回调，以后再做吧。</p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p><a href="https://github.com/BrainBear/Switcher" target="_blank" rel="external">Switcher</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/运行时动态修改Retrofit请求的host/" rel="next" title="运行时动态修改Retrofit请求的host">
+                <i class="fa fa-chevron-left"></i> 运行时动态修改Retrofit请求的host
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">54</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载界面"><span class="nav-number">1.</span> <span class="nav-text">加载界面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">2.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">3.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码实现"><span class="nav-number">4.</span> <span class="nav-text">代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">5.</span> <span class="nav-text">Demo</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
