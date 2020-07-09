@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/Android中的ClassLoader/index.html">
 <meta property="og:site_name" content="brainBear' Blog">
 <meta property="og:description" content="公司的插件项目是由我负责的，最近插件代码需要review，所以整理了一下相关的资料分享给没接触过的同事，这篇文章主要是简单的介绍了一下Android中ClassLoader。">
-<meta property="og:updated_time" content="2018-06-15T16:36:10.000Z">
+<meta property="og:updated_time" content="2020-06-28T12:06:43.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中的ClassLoader">
 <meta name="twitter:description" content="公司的插件项目是由我负责的，最近插件代码需要review，所以整理了一下相关的资料分享给没接触过的同事，这篇文章主要是简单的介绍了一下Android中ClassLoader。">
@@ -344,7 +344,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">public class PathClassLoader extends BaseDexClassLoader &#123;</div><div class="line">    </div><div class="line">    public PathClassLoader(String dexPath, ClassLoader parent) &#123;</div><div class="line">        super(dexPath, null, null, parent);</div><div class="line">    &#125;</div><div class="line">   </div><div class="line">    public PathClassLoader(String dexPath, String libraryPath,</div><div class="line">            ClassLoader parent) &#123;</div><div class="line">        super(dexPath, null, libraryPath, parent);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>他们的代码都很简单，只是重写了构造方法，逻辑还是在BaseDexClassLoader中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">public class BaseDexClassLoader extends ClassLoader &#123;</div><div class="line">   </div><div class="line">    /**</div><div class="line">     * Constructs an instance.</div><div class="line">     *</div><div class="line">     * @param dexPath the list of jar/apk files containing classes and</div><div class="line">     * resources, delimited by &#123;@code File.pathSeparator&#125;, which</div><div class="line">     * defaults to &#123;@code &quot;:&quot;&#125; on Android</div><div class="line">     * @param optimizedDirectory directory where optimized dex files</div><div class="line">     * should be written; may be &#123;@code null&#125;</div><div class="line">     * @param libraryPath the list of directories containing native</div><div class="line">     * libraries, delimited by &#123;@code File.pathSeparator&#125;; may be</div><div class="line">     * &#123;@code null&#125;</div><div class="line">     * @param parent the parent class loader</div><div class="line">     */</div><div class="line">    public BaseDexClassLoader(String dexPath, File optimizedDirectory,</div><div class="line">            String libraryPath, ClassLoader parent) &#123;</div><div class="line">        super(parent);</div><div class="line">        this.originalPath = dexPath;</div><div class="line">        this.pathList =</div><div class="line">            new DexPathList(this, dexPath, libraryPath, optimizedDirectory);</div><div class="line">    &#125;</div><div class="line">   </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>这里先只放BaseDexClassLoader的构造方法，可以看到PathClassLoader和DexClassLoader区别只是optimizedDirectory参数而已。</p>
-<p>网上说DexClassLoader可以加载任何路径的dex/jar/apk文件，而PathClassLoader只能加载已经安装过的apk，但是我继续往里面跟的时候最后跟到了native的代码，跟不下去了。所以等后续有能力分析再写文章。</p>
+<p>网上说DexClassLoader可以加载任何路径的dex/jar/apk文件，而PathClassLoader只能加载已经安装过的apk，但是我继续往里面跟的时候最后跟到了native的代码，跟不下去了。所以等后续有能力分析再写文章。（通过测试证明 PathClassLoader 也是可以加载任意路径的 dex 文件的，他们的区别仅仅只是 PathClassLoader 无法自定义 optimizedDirectory 路径而已）</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.ibm.com/developerworks/cn/java/j-lo-classloader/index.html" target="_blank" rel="external">深入探讨 Java 类加载器</a></p>
 
       
@@ -464,7 +464,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">54</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -475,7 +475,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -531,7 +531,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

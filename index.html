@@ -241,6 +241,368 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Framework学习笔记：Handler/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/Framework学习笔记：Handler/" itemprop="url">
+                  Framework学习笔记：Binder
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-18T20:09:23+08:00">
+                2019-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <a id="more"></a>
+<h2 id="Handler-是什么"><a href="#Handler-是什么" class="headerlink" title="Handler 是什么"></a>Handler 是什么</h2><p>Handler 是 Android 中最常用的消息机制，主要用于异步消息的处理。</p>
+<h2 id="Handler-的工作原理"><a href="#Handler-的工作原理" class="headerlink" title="Handler 的工作原理"></a>Handler 的工作原理</h2><p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMTJGMUNUZ1Fpd0wwMXM5.mp3" alt=""></p>
+<p>Handler 的核心类有：</p>
+<ul>
+<li>Handler：用户主要操作的类，主要用于发送消息，然后处理消息</li>
+<li>Looper：是整个功能的核心，一个线程只有一个 Looper 对象，它内部维护了一个消息队列，对外提供添加消息的接口，还有就是分发消息</li>
+<li>MessageQueue：消息队列</li>
+<li>Message：消息主体</li>
+</ul>
+<h3 id="创建-Handler"><a href="#创建-Handler" class="headerlink" title="创建 Handler"></a>创建 Handler</h3><p>我们一般通过以下方式来创建 Handler：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Handler handler = <span class="keyword">new</span> Handler() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>我们一般都是在 <code>handleMessage</code> 中处理对应的消息，然后我们看一下 Handler 的构造函数：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="comment">//获取当前线程的 looper</span></div><div class="line">    mLooper = Looper.myLooper();</div><div class="line">    <span class="comment">//如果获取不到 looper 会抛异常</span></div><div class="line">    <span class="keyword">if</span> (mLooper == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(</div><div class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//获取当前线程的消息队列</span></div><div class="line">    mQueue = mLooper.mQueue;</div><div class="line">    mCallback = callback;   <span class="comment">//可以通过传入 callback 回调来处理消息通知，callback 的优先级比重写 Handler 类的 handleMessage 高</span></div><div class="line">    mAsynchronous = async; <span class="comment">//标识是否是异步消息，对应用来说没啥用</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从上面的代码知道，Handler 在创建的时候会获取当前线程的 looper ，怎么获取的后面会说，如果获取不到的话会抛异常（一些国产手机的系统可能不会抛异常），在 Android 的主线程启动的时候系统就已经创建了 looper 所以不需要用户手动创建，但是在子线程使用 Handler 的话还是需要手动创建 looper。</p>
+<p>Handler 最重要的功能就是发送消息，Handler 提供了很多方法发送消息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">sendMessage</div><div class="line">sendEmptyMessage</div><div class="line">sendEmptyMessageDelayed</div><div class="line">sendEmptyMessageAtTime</div><div class="line">sendMessageDelayed</div><div class="line">sendMessageAtTime</div><div class="line">sendMessageAtFrontOfQueue</div><div class="line">post</div><div class="line">postAtTime</div><div class="line">postAtTime</div><div class="line">postDelayed</div><div class="line">postAtFrontOfQueue</div></pre></td></tr></table></figure></p>
+<p>这些方法全部都汇总到了 <code>enqueueMessage</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">    <span class="comment">//msg 的 target 字段赋值为当前 Handler 对象</span></div><div class="line">    msg.target = <span class="keyword">this</span>;</div><div class="line">    <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">        msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//把消息插入到消息列队中，这里的 queue 就是在构造方法中从 looper 获取的</span></div><div class="line">    <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里的重点就是把当前 handler 对象赋值给 Message 的 target，然后把 Message 插入到消息队列中。</p>
+<h3 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h3><p>我们在上面说了，主线程的 Looper 是系统自动就创建了的，具体的代码是在 <code>ActivityThread</code> 中的 <code>main</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="comment">//创建 looper</span></div><div class="line">    Looper.prepareMainLooper();</div><div class="line"></div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="comment">//开启消息循环</span></div><div class="line">    Looper.loop();</div><div class="line"></div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Looper 的构造方法是私有的，对外只提供了一系列的 prepare 方法来创建 looper：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Looper</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="comment">//创建 looper 的时候也对应创建了一个消息队列</span></div><div class="line">    mQueue = <span class="keyword">new</span> MessageQueue(quitAllowed);</div><div class="line">    mThread = Thread.currentThread();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们看一下 looper 的 prepare 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</div><div class="line">    <span class="comment">//如果当前线程已经有绑定过 looper 的话抛出异常</span></div><div class="line">    <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//把 looper 对象绑定到当前线程</span></div><div class="line">    sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepareMainLooper</span><span class="params">()</span> </span>&#123;</div><div class="line">    prepare(<span class="keyword">false</span>);</div><div class="line">    <span class="keyword">synchronized</span> (Looper.class) &#123;</div><div class="line">        <span class="keyword">if</span> (sMainLooper != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="comment">//缓存主线程的 looper 方便在子线程发送消息给主线程</span></div><div class="line">        sMainLooper = myLooper();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 prepare 方法中通过 <code>sThreadLocal</code> 来把 Looper 和当前线程绑定在一起，而且只允许绑定一次，而 Looper 在创建的时候创建了一个消息队列，这样就实现了<strong>一个线程只有一个 looper ，只有一个消息队列</strong>。<code>sThreadLocal</code> 是一个 ThreadLocal 对象，它的原理不在这里赘述。</p>
+<p>创建了 looper 之后，需要调用 <code>loop</code> 方法开启消息循环：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">//获取当前绑定的 looper</span></div><div class="line">    <span class="keyword">final</span> Looper me = myLooper();</div><div class="line">    <span class="keyword">if</span> (me == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">//如果获取为空证明还没有调用 prepare 跑出异常</span></div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"No Looper; Looper.prepare() wasn't called on this thread."</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">final</span> MessageQueue queue = me.mQueue;</div><div class="line"></div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="comment">//从消息队列中获取消息，如果消息队列中没有需要现在处理的消息则会挂起</span></div><div class="line">        Message msg = queue.next(); </div><div class="line">        <span class="keyword">if</span> (msg == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">//需要获取到消息为空，证明消息队列已经退出了，looper 也需要退出</span></div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// ...</span></div><div class="line">        </div><div class="line">        <span class="comment">//调用消息的 targe 字段来分发消息</span></div><div class="line">        msg.target.dispatchMessage(msg);</div><div class="line"></div><div class="line">        <span class="comment">// ...</span></div><div class="line"></div><div class="line">        <span class="comment">//回收消息</span></div><div class="line">        msg.recycleUnchecked();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>loop</code> 方法里面是个死循环，一直从消息队列中获取 Message ，如果获取到 null 则退出当前循环。如果获取到 Message，则分发给 Message 的 target ，这个 target 我们在 Handler 的 enqueueMessage 方法中分析过了，就是对应的 Handler 对象，所以我们看一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">Handler.<span class="function">java</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> &#123;</div><div class="line">    <span class="comment">//如果 Message 的 callback 不为空则调用该 callback</span></div><div class="line">    <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;</div><div class="line">        handleCallback(msg);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">//如果 Handler 的 mCallback 字段不为空则调用 mCallback</span></div><div class="line">        <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//如果 mCallback 为空或者 mCallback 返回 false 则调用 Handler 的 handleMessage 方法</span></div><div class="line">        handleMessage(msg);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>dispatchMessage 就是根据优先级去分发该消息而已。</p>
+<h3 id="MessageQueue"><a href="#MessageQueue" class="headerlink" title="MessageQueue"></a>MessageQueue</h3><p>从上面的分析知道，Handler 发送消息最终会插入到 MessageQueue，Looper 获取消息也是从 MessageQueue 中获取的，我们先看插入的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(Message msg, <span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">    <span class="comment">//安全性的检查</span></div><div class="line">    <span class="keyword">if</span> (msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Message must have a target."</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (msg.isInUse()) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(msg + <span class="string">" This message is already in use."</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//有可能从不同线程发送消息，所以需要加锁保证安全</span></div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (mQuitting) &#123;</div><div class="line">            IllegalStateException e = <span class="keyword">new</span> IllegalStateException(</div><div class="line">                    msg.target + <span class="string">" sending message to a Handler on a dead thread"</span>);</div><div class="line">            Log.w(TAG, e.getMessage(), e);</div><div class="line">            msg.recycle();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        msg.markInUse();</div><div class="line">        <span class="comment">//把执行时间赋值给 Message </span></div><div class="line">        msg.when = when;</div><div class="line">        Message p = mMessages;</div><div class="line">        <span class="keyword">boolean</span> needWake;</div><div class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span> <span class="comment">//队列为空</span></div><div class="line">            || when == <span class="number">0</span> <span class="comment">//头消息</span></div><div class="line">            || when &lt; p.when <span class="comment">//要入队的消息执行时间要比当前头消息执行时间要早</span></div><div class="line">            ) &#123;</div><div class="line">            <span class="comment">//上面的三种情况都需要直接把消息插入到队列头部</span></div><div class="line">            msg.next = p;</div><div class="line">            mMessages = msg;</div><div class="line">            <span class="comment">//如果当前队列已经阻塞了，需要唤醒队列</span></div><div class="line">            needWake = mBlocked;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//如果不是直接插入到队列头部的消息，则按照消息的执行时间来排序，插入到队列的对应位置</span></div><div class="line">            needWake = mBlocked &amp;&amp; p.target == <span class="keyword">null</span> &amp;&amp; msg.isAsynchronous();</div><div class="line">            Message prev;</div><div class="line">            <span class="keyword">for</span> (;;) &#123;</div><div class="line">                prev = p;</div><div class="line">                p = p.next;</div><div class="line">                <span class="keyword">if</span> (p == <span class="keyword">null</span> || when &lt; p.when) &#123;</div><div class="line">                    <span class="keyword">break</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">if</span> (needWake &amp;&amp; p.isAsynchronous()) &#123;</div><div class="line">                    needWake = <span class="keyword">false</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            msg.next = p; <span class="comment">// invariant: p == prev.next</span></div><div class="line">            prev.next = msg;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">// 如果需要唤醒的话再唤醒队列</span></div><div class="line">        <span class="keyword">if</span> (needWake) &#123;</div><div class="line">            nativeWake(mPtr);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>插入消息的逻辑比较简单，首先需要知道的是，MessageQueue 内部是一个按照执行时间排序的优先队列，Message 内部有个 <code>when</code> 字段就是该消息预计执行的时间。 <code>mMessages</code> 就是这个队列的头，消息队列取数据的时候也是只取头部的消息。我们来看一下读消息的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div></pre></td><td class="code"><pre><div class="line"><span class="function">Message <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">// mPrt 是消息队列在 native 层的指针，执行 native 方法的时候都需要传入这个指针，mPrt 只有消息循环退出的时候才为 null</span></div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> ptr = mPtr;</div><div class="line">    <span class="keyword">if</span> (ptr == <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">int</span> pendingIdleHandlerCount = -<span class="number">1</span>; <span class="comment">// -1 only during first iteration</span></div><div class="line">    <span class="comment">//距离下个消息处理需要等待的时间，0 不等待 小于 0 则一直等待，直到唤醒</span></div><div class="line">    <span class="keyword">int</span> nextPollTimeoutMillis = <span class="number">0</span>;</div><div class="line">    <span class="comment">//死循环遍历消息</span></div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        <span class="comment">//....</span></div><div class="line"></div><div class="line">        <span class="comment">//执行 native 的方法来等待指定的时间</span></div><div class="line">        nativePollOnce(ptr, nextPollTimeoutMillis);</div><div class="line"></div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="comment">// Try to retrieve the next message.  Return if found.</span></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</div><div class="line">            Message prevMsg = <span class="keyword">null</span>;</div><div class="line">            Message msg = mMessages;</div><div class="line"></div><div class="line">            <span class="comment">//处理消息屏障，应用的普通消息不会走到这里</span></div><div class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="comment">// Stalled by a barrier.  Find the next asynchronous message in the queue.</span></div><div class="line">                <span class="keyword">do</span> &#123;</div><div class="line">                    prevMsg = msg;</div><div class="line">                    msg = msg.next;</div><div class="line">                &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous());</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (msg != <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">if</span> (now &lt; msg.when) &#123;</div><div class="line">                    <span class="comment">//下一个消息还没有到要处理的时刻，计算需要等待的时间</span></div><div class="line">                    nextPollTimeoutMillis = (<span class="keyword">int</span>) Math.min(msg.when - now, Integer.MAX_VALUE);</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="comment">// 取到了需要处理的消息则返回，把该消息从队列头部中取出</span></div><div class="line">                    mBlocked = <span class="keyword">false</span>;</div><div class="line">                    <span class="keyword">if</span> (prevMsg != <span class="keyword">null</span>) &#123;</div><div class="line">                        prevMsg.next = msg.next;</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        mMessages = msg.next;</div><div class="line">                    &#125;</div><div class="line">                    msg.next = <span class="keyword">null</span>;</div><div class="line">                  </div><div class="line">                    <span class="keyword">return</span> msg;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">// 队列中没有消息了，一直等待</span></div><div class="line">                nextPollTimeoutMillis = -<span class="number">1</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">//检查队列是否退出了，如果退出则返回 null，通知 Looper 退出</span></div><div class="line">            <span class="keyword">if</span> (mQuitting) &#123;</div><div class="line">                dispose();</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        </div><div class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt; <span class="number">0</span></div><div class="line">                    &amp;&amp; (mMessages == <span class="keyword">null</span> || now &lt; mMessages.when)) &#123;</div><div class="line">                pendingIdleHandlerCount = mIdleHandlers.size();</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt;= <span class="number">0</span>) &#123;</div><div class="line">                <span class="comment">// 没有 IdleHandler 跳过后续的逻辑</span></div><div class="line">                mBlocked = <span class="keyword">true</span>;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">//  IdleHandler 的处理逻辑，暂时省略</span></div><div class="line">        &#125;</div><div class="line"></div><div class="line">       <span class="comment">//  IdleHandler 的处理逻辑，暂时省略</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>读取消息的主题逻辑也比较清晰，我们先不看消息屏障和 IdleHandler 的逻辑，方法先从队列中获取头部的消息，如果获取不到则一直等待。获取到了则判断这个消息是否到了执行的时刻，是则返回，否则计算等待的时间然后等待。</p>
+<p>等待的核心逻辑是 native 层实现的：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nativePollOnce(ptr, nextPollTimeoutMillis);</div></pre></td></tr></table></figure></p>
+<p>通过调用 native 方法等待指定的时间。</p>
+<h3 id="消息屏障"><a href="#消息屏障" class="headerlink" title="消息屏障"></a>消息屏障</h3><p>MessageQueue 提供了一个特殊的方法来设置一个屏障：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> postSyncBarrier(SystemClock.uptimeMillis());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">postSyncBarrier</span><span class="params">(<span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">        <span class="keyword">final</span> <span class="keyword">int</span> token = mNextBarrierToken++;</div><div class="line">        <span class="keyword">final</span> Message msg = Message.obtain();</div><div class="line">        msg.markInUse();</div><div class="line">        msg.when = when;</div><div class="line">        msg.arg1 = token;</div><div class="line"></div><div class="line">        Message prev = <span class="keyword">null</span>;</div><div class="line">        Message p = mMessages;</div><div class="line">        <span class="keyword">if</span> (when != <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; p.when &lt;= when) &#123;</div><div class="line">                prev = p;</div><div class="line">                p = p.next;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123; <span class="comment">// invariant: p == prev.next</span></div><div class="line">            msg.next = p;</div><div class="line">            prev.next = msg;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            msg.next = p;</div><div class="line">            mMessages = msg;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> token;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>消息屏障也是 Message ，它和普通消息的区别就是它的 target 字段是 null ，而没有 target 的话这个消息也无法分发处理，那么这个 Message 是干嘛的呢？我们把 <code>next</code> 方法里面可以知道：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (msg != <span class="keyword">null</span> &amp;&amp; msg.target == <span class="keyword">null</span>) &#123;</div><div class="line">    <span class="comment">//遍历异步消息</span></div><div class="line">    <span class="keyword">do</span> &#123;</div><div class="line">        prevMsg = msg;</div><div class="line">        msg = msg.next;</div><div class="line">    &#125; <span class="keyword">while</span> (msg != <span class="keyword">null</span> &amp;&amp; !msg.isAsynchronous());</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当 MessageQueue 在读取消息的时候，如果遇到一个屏障，则会直接跳过后面的普通消息，直接查询是否有异步消息，这样可以让异步消息更快执行。</p>
+<h3 id="IdleHandler"><a href="#IdleHandler" class="headerlink" title="IdleHandler"></a>IdleHandler</h3><p>我们先看看 IdleHandler 的定义：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">interface</span> <span class="title">IdleHandler</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">        * Called when the message queue has run out of messages and will now</div><div class="line">        * wait for more.  Return true to keep your idle handler active, false</div><div class="line">        * to have it removed.  This may be called if there are still messages</div><div class="line">        * pending in the queue, but they are all scheduled to be dispatched</div><div class="line">        * after the current time.</div><div class="line">        */</div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">queueIdle</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从注释中可以看到，当消息队列中没有需要执行的消息时，则会回调这个接口。需要注意的是：<strong>即使队列中有消息，但是还没有到对应的执行时间的话，也是会调用的</strong>。</p>
+<p>IdleHandler 也是在 MessageQueue 读取消息的时候生效：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line"><span class="function">Message <span class="title">next</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line"></div><div class="line">    <span class="comment">//初始化为 -1</span></div><div class="line">    <span class="keyword">int</span> pendingIdleHandlerCount = -<span class="number">1</span>; </div><div class="line">    <span class="keyword">int</span> nextPollTimeoutMillis = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span> (;;) &#123;</div><div class="line">        </div><div class="line"></div><div class="line">        nativePollOnce(ptr, nextPollTimeoutMillis);</div><div class="line"></div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="comment">//  ...</span></div><div class="line"></div><div class="line">            <span class="comment">//如果 pendingIdleHandlerCount 小于 0 的话 重新赋值</span></div><div class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt; <span class="number">0</span></div><div class="line">                    &amp;&amp; (mMessages == <span class="keyword">null</span> || now &lt; mMessages.when)) &#123;</div><div class="line">                pendingIdleHandlerCount = mIdleHandlers.size();</div><div class="line">            &#125;</div><div class="line">            <span class="comment">//如果 pendingIdleHandlerCount 还是 0 则跳过 IdleHandler 的处理 </span></div><div class="line">            <span class="keyword">if</span> (pendingIdleHandlerCount &lt;= <span class="number">0</span>) &#123;</div><div class="line">                mBlocked = <span class="keyword">true</span>;</div><div class="line">                <span class="keyword">continue</span>;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="comment">//如果有值则赋值给 mPendingIdleHandlers</span></div><div class="line">            <span class="keyword">if</span> (mPendingIdleHandlers == <span class="keyword">null</span>) &#123;</div><div class="line">                mPendingIdleHandlers = <span class="keyword">new</span> IdleHandler[Math.max(pendingIdleHandlerCount, <span class="number">4</span>)];</div><div class="line">            &#125;</div><div class="line">            mPendingIdleHandlers = mIdleHandlers.toArray(mPendingIdleHandlers);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//遍历执行 IdleHandler</span></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pendingIdleHandlerCount; i++) &#123;</div><div class="line">            <span class="keyword">final</span> IdleHandler idler = mPendingIdleHandlers[i];</div><div class="line">            mPendingIdleHandlers[i] = <span class="keyword">null</span>; <span class="comment">// release the reference to the handler</span></div><div class="line"></div><div class="line">            <span class="keyword">boolean</span> keep = <span class="keyword">false</span>;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="comment">// 调用 IdleHandler 的 queueIdle 方法，如果返回 false 则证明是一次性的，后面会自动删除</span></div><div class="line">                keep = idler.queueIdle();</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable t) &#123;</div><div class="line">                Log.wtf(TAG, <span class="string">"IdleHandler threw exception"</span>, t);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">if</span> (!keep) &#123;</div><div class="line">                <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">                    mIdleHandlers.remove(idler);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        pendingIdleHandlerCount = <span class="number">0</span>;</div><div class="line">        nextPollTimeoutMillis = <span class="number">0</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>那么这个 IdleHandler 有什么用呢？因为它回调的时候证明当前消息队列没有别的需要执行的任务，这样可以去做一下不需要马上执行的任务，而等到相对比较空间的时候再执行，相当于一种性能优化。</p>
+<h3 id="为什么一直阻塞但是不会-ANR-？"><a href="#为什么一直阻塞但是不会-ANR-？" class="headerlink" title="为什么一直阻塞但是不会 ANR ？"></a>为什么一直阻塞但是不会 ANR ？</h3><p>Android 系统的 ANR 检测其实也是通过 Handler 来处理的，它是发送了一个延时的回调来检测的，如果在延时执行前取消这个回调则相关无事，否则就会显示 ANR 。所以虽然 Looper 一直阻塞，但是发送消息的时候会主动唤醒去执行，所以正常情况下是不会 ANR 的。但是如果是在主线程中执行了一个耗时的操作，这样会阻塞消息队列的消息，导致没有及时取消 ANR 检测，这样 ANR 就发生了。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Framework学习笔记：Binder/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/Framework学习笔记：Binder/" itemprop="url">
+                  Framework学习笔记：Binder
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-07T22:05:00+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <a id="more"></a>
+<h2 id="Binder-是什么"><a href="#Binder-是什么" class="headerlink" title="Binder 是什么"></a>Binder 是什么</h2><p>Binder 是 Android 提供的一种通信机制，主要用于跨进程通信。</p>
+<h2 id="为什么要用-Binder"><a href="#为什么要用-Binder" class="headerlink" title="为什么要用 Binder"></a>为什么要用 Binder</h2><p>Android 是基于 Linux 的系统，Linux 已经有很多种跨进程通信的机制，例如：socket、管道、共享内存等。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Binder</th>
+<th>共享内存</th>
+<th>socket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>性能</td>
+<td>数据复制一次</td>
+<td>无需复制</td>
+<td>需要复制两次</td>
+</tr>
+<tr>
+<td>易用性</td>
+<td>基于 C/S 架构，面向对象</td>
+<td>控制复杂，需要各种同步逻辑</td>
+<td>通用接口</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>由系统保证通信安全</td>
+<td>依赖上层协议</td>
+<td>依赖上层协议</td>
+</tr>
+</tbody>
+</table>
+<p>由上面的表格对比可以知道，Binder 是基于性能、易用性和安全性综合考虑的结果。</p>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMWp4UF83M3JkZjIxZkdr.png" alt=""></p>
+<h2 id="通信原理"><a href="#通信原理" class="headerlink" title="通信原理"></a>通信原理</h2><h3 id="AIDL"><a href="#AIDL" class="headerlink" title="AIDL"></a>AIDL</h3><p>Android 提供了 AIDL 来简化 Binder 的使用，我们先来分析一下 AIDL 的逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>编译之后，Android 会自动生成一个 <code>IRemoteCall</code> 文件，里面有几个类，：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IRemoteCall</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Local-side IPC implementation stub class.</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">brainbear</span>.<span class="title">binder</span>.<span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"com.brainbear.binder.IRemoteCall"</span>;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line">         * Construct the stub at attach it to the interface.</div><div class="line">         */</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line">         * Cast an IBinder object into an com.brainbear.binder.IRemoteCall interface,</div><div class="line">         * generating a proxy if needed.</div><div class="line">         */</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> com.brainbear.binder.<span class="function">IRemoteCall <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">            <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.brainbear.binder.IRemoteCall))) &#123;</div><div class="line">                <span class="keyword">return</span> ((com.brainbear.binder.IRemoteCall) iin);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> com.brainbear.binder.IRemoteCall.Stub.Proxy(obj);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">            <span class="keyword">switch</span> (code) &#123;</div><div class="line">                <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">                    reply.writeString(DESCRIPTOR);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">case</span> TRANSACTION_call: &#123;</div><div class="line">                    data.enforceInterface(DESCRIPTOR);</div><div class="line">                    <span class="keyword">int</span> _arg0;</div><div class="line">                    _arg0 = data.readInt();</div><div class="line">                    <span class="keyword">int</span> _result = <span class="keyword">this</span>.call(_arg0);</div><div class="line">                    reply.writeNoException();</div><div class="line">                    reply.writeInt(_result);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">brainbear</span>.<span class="title">binder</span>.<span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">            <span class="keyword">private</span> android.os.IBinder mRemote;</div><div class="line"></div><div class="line">            Proxy(android.os.IBinder remote) &#123;</div><div class="line">                mRemote = remote;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> mRemote;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getInterfaceDescriptor</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> DESCRIPTOR;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">                <span class="keyword">int</span> _result;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">                    _data.writeInt(data);</div><div class="line">                    mRemote.transact(Stub.TRANSACTION_call, _data, _reply, <span class="number">0</span>);</div><div class="line">                    _reply.readException();</div><div class="line">                    _result = _reply.readInt();</div><div class="line">                &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                    _reply.recycle();</div><div class="line">                    _data.recycle();</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> _result;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_call = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里面有几个比较重要的类：</p>
+<ul>
+<li>IBinder：代表了跨进程通信的能力</li>
+<li>IInterface：表示服务端提供什么样的功能</li>
+<li>Binder ：继承了 IBinder ，所以他也具有跨进程通信的能力，实际上他是服务端的本地代理对象</li>
+<li>Stub : 代表服务端</li>
+<li>Proxy : 表示客户端</li>
+</ul>
+<p>完整 bindService 的代码就不给出了，我们先分析一下绑定的逻辑：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">        Log.e(TAG, <span class="string">"onServiceConnected: success"</span>);</div><div class="line">        iRemoteCall = IRemoteCall.Stub.asInterface(service);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</div><div class="line">        iRemoteCall = <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在绑定成功之后，我们调用了 <code>asInterface</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> com.brainbear.binder.<span class="function">IRemoteCall <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//这里是判断是本地调用还是跨进程的远程调用</span></div><div class="line">    android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">    <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.brainbear.binder.IRemoteCall))) &#123;</div><div class="line">        <span class="keyword">return</span> ((com.brainbear.binder.IRemoteCall) iin);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> com.brainbear.binder.IRemoteCall.Stub.Proxy(obj);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里通过 <code>IBinder</code> 的 <code>queryLocalInterface</code> 方法来判断是否是远程调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mDescriptor.equals(descriptor)) &#123;</div><div class="line">        <span class="keyword">return</span> mOwner;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里的 <code>mDescriptor</code> 是 Binder 在构造函数中初始化的，例如 <code>Stub</code> 类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attachInterface</span><span class="params">(IInterface owner, String descriptor)</span> </span>&#123;</div><div class="line">    mOwner = owner;</div><div class="line">    mDescriptor = descriptor;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为在客户端中并没有直接构造 <code>Stub</code> 对象，如果是本地调用的话 <code>asInreface</code> 方法中的 <code>obj</code> 就会是在服务端中创建的那个 <code>Stub</code> 对象。</p>
+<p>通过 <code>asInterface</code> 方法，如果是跨进程调用的话，客户端这边就获取到了 <code>Proxy</code> 对象。客户端这边就通过 <code>Proxy</code> 对象来远程调用。所以我们直接去看 <code>Proxy</code> 类的 <code>call</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="comment">//参数</span></div><div class="line">    android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">    <span class="comment">//返回值</span></div><div class="line">    android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">    <span class="keyword">int</span> _result;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">//校验</span></div><div class="line">        _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">        _data.writeInt(data);</div><div class="line">        <span class="comment">//真正的远程调用，如果不是 oneway 调用，那么客户端将会阻塞到服务端返回</span></div><div class="line">        mRemote.transact(Stub.TRANSACTION_call, _data, _reply, <span class="number">0</span>);</div><div class="line">        <span class="comment">//检查异常标志</span></div><div class="line">        _reply.readException();</div><div class="line">        <span class="comment">//读取返回值</span></div><div class="line">        _result = _reply.readInt();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        _reply.recycle();</div><div class="line">        _data.recycle();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> _result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当执行到 <code>mRemote.transact()</code> 方法时，才算是发起真正的远程调用，Binder 通过整形值 <code>Stub.TRANSACTION_call</code> 来判断调用的是哪个远程方法，然后 <code>_data</code> 和 <code>_reply</code> 用于标识方法参数和返回值，最后一个 <code>flag</code> 参数标识是否是 oneway 调用。</p>
+<p>系统会通过 Binder 回调到 <code>Stub</code> 类中的<code>onTransact</code>方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="keyword">switch</span> (code) &#123;</div><div class="line">        <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">            reply.writeString(DESCRIPTOR);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">//通过 code 判断调用的方法</span></div><div class="line">        <span class="keyword">case</span> TRANSACTION_call: &#123;</div><div class="line">            <span class="comment">//和 writeInterfaceToken 配合的校验</span></div><div class="line">            data.enforceInterface(DESCRIPTOR);</div><div class="line">            <span class="keyword">int</span> _arg0;</div><div class="line">            <span class="comment">//读取方法参数</span></div><div class="line">            _arg0 = data.readInt();</div><div class="line">            <span class="comment">//调用方法</span></div><div class="line">            <span class="keyword">int</span> _result = <span class="keyword">this</span>.call(_arg0);</div><div class="line">            reply.writeNoException();</div><div class="line">            <span class="comment">//写入方法返回值</span></div><div class="line">            reply.writeInt(_result);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>整体的通信流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Client-&gt;Proxy: IRemoteCall.Call()</div><div class="line">Proxy-&gt;Binder: mRemote.Transact()</div><div class="line">Binder-&gt;Stub: onTransact()</div><div class="line">Stub-&gt;Service: this.call()</div><div class="line">Service-&gt;Stub:</div><div class="line">Stub-&gt;Binder:</div><div class="line">Binder-&gt;Proxy:</div><div class="line">Proxy-&gt;Client:</div></pre></td></tr></table></figure>
+<!-- ![](https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMW1GQWEzdWxBMExwREww.png) -->
+<h3 id="在深入一点"><a href="#在深入一点" class="headerlink" title="在深入一点"></a>在深入一点</h3><p>通过跟踪 <code>bindService</code> 的代码流程发现，核心的逻辑是在 ActivityManagerService (AMS) ，在 api26 以后 AMS 的代码逻辑有比较大的变动，api26 以后是通过 AIDL 来实现的，具体的逻辑定义在 <a href="https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/app/IActivityManager.aidl" target="_blank" rel="external">IActivityManager.aidl</a> 中，其中与 service 相关的两个方法是：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">bindService</span><span class="params">(in IApplicationThread caller, in IBinder token, in Intent service,</span></span></div><div class="line">            in String resolvedType, in IServiceConnection connection, <span class="keyword">int</span> flags,</div><div class="line">            in String callingPackage, <span class="keyword">int</span> userId);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">publishService</span><span class="params">(in IBinder token, in Intent intent, in IBinder service)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>其中 <code>bindService</code> 是客户端向服务端发起的，而 <code>publishService</code> 是服务端绑定成功后对客户端的回调。这两个方法都有一个 IBinder 参数，我自己写了一个带 IBinder 参数的 aidl 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">binderParamCall</span><span class="params">(IBinder token)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>然后是对应生成的客户端和服务端的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">binderParamCall</span><span class="params">(android.os.IBinder token)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">    android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">        _data.writeStrongBinder(token);</div><div class="line">        mRemote.transact(Stub.TRANSACTION_binderParamCall, _data, _reply, <span class="number">0</span>);</div><div class="line">        _reply.readException();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        _reply.recycle();</div><div class="line">        _data.recycle();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="keyword">switch</span> (code) &#123;</div><div class="line">        <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">            reply.writeString(DESCRIPTOR);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">case</span> TRANSACTION_binderParamCall: &#123;</div><div class="line">            data.enforceInterface(DESCRIPTOR);</div><div class="line">            android.os.IBinder _arg0;</div><div class="line">            _arg0 = data.readStrongBinder();</div><div class="line">            <span class="keyword">this</span>.binderParamCall(_arg0);</div><div class="line">            reply.writeNoException();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>猜测关键的点是 <code>Parcel</code> 类的 <code>writeStrongBinder</code> 和 <code>readStrongBinder</code> 方法。</p>
+<p>跟踪发现调用到了 native 的方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">writeStrongBinder</span><span class="params">(IBinder val)</span> </span>&#123;</div><div class="line">    nativeWriteStrongBinder(mNativePtr, val);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>跳转到 <code>android_os_Parcel.cpp</code> 中：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">android_os_Parcel_writeStrongBinder</span><span class="params">(JNIEnv* env, jclass clazz, jlong nativePtr, jobject object)</span></span></div><div class="line">&#123;</div><div class="line">    Parcel* parcel = <span class="keyword">reinterpret_cast</span>&lt;Parcel*&gt;(nativePtr);</div><div class="line">    <span class="keyword">if</span> (parcel != <span class="literal">NULL</span>) &#123;</div><div class="line">        <span class="keyword">const</span> <span class="keyword">status_t</span> err = parcel-&gt;writeStrongBinder(ibinderForJavaObject(env, object));</div><div class="line">        <span class="keyword">if</span> (err != NO_ERROR) &#123;</div><div class="line">            signalExceptionForError(env, clazz, err);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>android_util_Binder.cpp:ibinderForJavaObject<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; ibinderForJavaObject(JNIEnv* env, jobject obj)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (obj == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="comment">//gBinderOffsets.mClass 是 java 层的 Binder class</span></div><div class="line">    <span class="keyword">if</span> (env-&gt;IsInstanceOf(obj, gBinderOffsets.mClass)) &#123;</div><div class="line">        JavaBBinderHolder* jbh = (JavaBBinderHolder*)</div><div class="line">            env-&gt;GetIntField(obj, gBinderOffsets.mObject);</div><div class="line">        <span class="keyword">return</span> jbh != <span class="literal">NULL</span> ? jbh-&gt;get(env, obj) : <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//gBinderProxyOffsets.mClass 是 java 层的 BinderProxy class</span></div><div class="line">    <span class="keyword">if</span> (env-&gt;IsInstanceOf(obj, gBinderProxyOffsets.mClass)) &#123;</div><div class="line">        <span class="keyword">return</span> (IBinder*)</div><div class="line">            env-&gt;GetIntField(obj, gBinderProxyOffsets.mObject);</div><div class="line">    &#125;</div><div class="line">    ALOGW(<span class="string">"ibinderForJavaObject: %p is not a Binder object"</span>, obj);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为 <code>publishService</code> 是服务端调用的，所以会走第一个判断，返回 JavaBBinderHolder ，它是一个包装类，里面有 JavaBBinder，而 JavaBBinder 继承 BBinder。</p>
+<p>也就是<code>parcel-&gt;writeStrongBinder(ibinderForJavaObject(env, object)</code> 调用了 Parcel 的 writeStrongBinder 传入了一个 JavaBBinderHolder。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">status_t</span> Parcel::writeStrongBinder(<span class="keyword">const</span> sp&lt;IBinder&gt;&amp; val)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> flatten_binder(ProcessState::self(), val, <span class="keyword">this</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">status_t</span> flatten_binder(<span class="keyword">const</span> sp&lt;ProcessState&gt;&amp; proc,</div><div class="line">    <span class="keyword">const</span> sp&lt;IBinder&gt;&amp; binder, Parcel* out)</div><div class="line">&#123;</div><div class="line">    flat_binder_object obj;</div><div class="line">    </div><div class="line">    obj.flags = <span class="number">0x7f</span> | FLAT_BINDER_FLAG_ACCEPTS_FDS;</div><div class="line">    <span class="keyword">if</span> (binder != <span class="literal">NULL</span>) &#123;</div><div class="line">        IBinder *local = binder-&gt;localBinder();</div><div class="line">        <span class="comment">//判断是否是本地调用，本地调用 type 是 BINDER_TYPE_BINDER 远程调用是 BINDER_TYPE_HANDLE</span></div><div class="line">        <span class="keyword">if</span> (!local) &#123;</div><div class="line">            <span class="comment">//创建了 BpBinder</span></div><div class="line">            BpBinder *proxy = binder-&gt;remoteBinder();</div><div class="line">            <span class="keyword">if</span> (proxy == <span class="literal">NULL</span>) &#123;</div><div class="line">                ALOGE(<span class="string">"null proxy"</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">const</span> <span class="keyword">int32_t</span> handle = proxy ? proxy-&gt;handle() : <span class="number">0</span>;</div><div class="line">            obj.type = BINDER_TYPE_HANDLE;</div><div class="line">            obj.handle = handle;</div><div class="line">            obj.cookie = <span class="literal">NULL</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            obj.type = BINDER_TYPE_BINDER;</div><div class="line">            obj.binder = local-&gt;getWeakRefs();</div><div class="line">            obj.cookie = local;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        obj.type = BINDER_TYPE_BINDER;</div><div class="line">        obj.binder = <span class="literal">NULL</span>;</div><div class="line">        obj.cookie = <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> finish_flatten_binder(binder, obj, out);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就把 bpBinder 发送给对端了，然后我们在看一下读取的逻辑。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> jobject <span class="title">android_os_Parcel_readStrongBinder</span><span class="params">(JNIEnv* env, jclass clazz, jlong nativePtr)</span></span></div><div class="line">&#123;</div><div class="line">    Parcel* parcel = <span class="keyword">reinterpret_cast</span>&lt;Parcel*&gt;(nativePtr);</div><div class="line">    <span class="keyword">if</span> (parcel != <span class="literal">NULL</span>) &#123;</div><div class="line">        <span class="keyword">return</span> javaObjectForIBinder(env, parcel-&gt;readStrongBinder());</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; Parcel::readStrongBinder() <span class="keyword">const</span></div><div class="line">&#123;</div><div class="line">    sp&lt;IBinder&gt; val;</div><div class="line">    unflatten_binder(ProcessState::self(), *<span class="keyword">this</span>, &amp;val);</div><div class="line">    <span class="keyword">return</span> val;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">status_t</span> unflatten_binder(<span class="keyword">const</span> sp&lt;ProcessState&gt;&amp; proc,</div><div class="line">    <span class="keyword">const</span> Parcel&amp; in, sp&lt;IBinder&gt;* out)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">const</span> flat_binder_object* flat = in.readObject(<span class="literal">false</span>);</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (flat) &#123;</div><div class="line">        <span class="keyword">switch</span> (flat-&gt;type) &#123;</div><div class="line">            <span class="keyword">case</span> BINDER_TYPE_BINDER:</div><div class="line">                *out = <span class="keyword">static_cast</span>&lt;IBinder*&gt;(flat-&gt;cookie);</div><div class="line">                <span class="keyword">return</span> finish_unflatten_binder(<span class="literal">NULL</span>, *flat, in);</div><div class="line">            <span class="comment">//远程调用会走到这里</span></div><div class="line">            <span class="keyword">case</span> BINDER_TYPE_HANDLE:</div><div class="line">                *out = proc-&gt;getStrongProxyForHandle(flat-&gt;handle);</div><div class="line">                <span class="keyword">return</span> finish_unflatten_binder(</div><div class="line">                    <span class="keyword">static_cast</span>&lt;BpBinder*&gt;(out-&gt;get()), *flat, in);</div><div class="line">        &#125;        </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> BAD_TYPE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>readStrongBinder 就是和 writeStrongBinder 对应的读取的逻辑实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; ProcessState::getStrongProxyForHandle(<span class="keyword">int32_t</span> handle)</div><div class="line">&#123;</div><div class="line">    sp&lt;IBinder&gt; result;</div><div class="line">    AutoMutex _l(mLock);</div><div class="line">    <span class="comment">//先查缓存</span></div><div class="line">    handle_entry* e = lookupHandleLocked(handle);</div><div class="line">    <span class="keyword">if</span> (e != <span class="literal">nullptr</span>) &#123;</div><div class="line">        <span class="comment">// We need to create a new BpBinder if there isn't currently one, OR we</span></div><div class="line">        <span class="comment">// are unable to acquire a weak reference on this current one.  The</span></div><div class="line">        <span class="comment">// attemptIncWeak() is safe because we know the BpBinder destructor will always</span></div><div class="line">        <span class="comment">// call expungeHandle(), which acquires the same lock we are holding now.</span></div><div class="line">        <span class="comment">// We need to do this because there is a race condition between someone</span></div><div class="line">        <span class="comment">// releasing a reference on this BpBinder, and a new reference on its handle</span></div><div class="line">        <span class="comment">// arriving from the driver.</span></div><div class="line">        IBinder* b = e-&gt;binder;</div><div class="line">        <span class="keyword">if</span> (b == <span class="literal">nullptr</span> || !e-&gt;refs-&gt;attemptIncWeak(<span class="keyword">this</span>)) &#123;</div><div class="line">            <span class="keyword">if</span> (handle == <span class="number">0</span>) &#123;</div><div class="line">                <span class="comment">// Special case for context manager...</span></div><div class="line">                <span class="comment">// The context manager is the only object for which we create</span></div><div class="line">                <span class="comment">// a BpBinder proxy without already holding a reference.</span></div><div class="line">                <span class="comment">// Perform a dummy transaction to ensure the context manager</span></div><div class="line">                <span class="comment">// is registered before we create the first local reference</span></div><div class="line">                <span class="comment">// to it (which will occur when creating the BpBinder).</span></div><div class="line">                <span class="comment">// If a local reference is created for the BpBinder when the</span></div><div class="line">                <span class="comment">// context manager is not present, the driver will fail to</span></div><div class="line">                <span class="comment">// provide a reference to the context manager, but the</span></div><div class="line">                <span class="comment">// driver API does not return status.</span></div><div class="line">                <span class="comment">//</span></div><div class="line">                <span class="comment">// Note that this is not race-free if the context manager</span></div><div class="line">                <span class="comment">// dies while this code runs.</span></div><div class="line">                <span class="comment">//</span></div><div class="line">                <span class="comment">// <span class="doctag">TODO:</span> add a driver API to wait for context manager, or</span></div><div class="line">                <span class="comment">// stop special casing handle 0 for context manager and add</span></div><div class="line">                <span class="comment">// a driver API to get a handle to the context manager with</span></div><div class="line">                <span class="comment">// proper reference counting.</span></div><div class="line">                Parcel data;</div><div class="line">                <span class="keyword">status_t</span> status = IPCThreadState::self()-&gt;transact(</div><div class="line">                        <span class="number">0</span>, IBinder::PING_TRANSACTION, data, <span class="literal">nullptr</span>, <span class="number">0</span>);</div><div class="line">                <span class="keyword">if</span> (status == DEAD_OBJECT)</div><div class="line">                   <span class="keyword">return</span> <span class="literal">nullptr</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="comment">//创建 BpBinder 代理对象</span></div><div class="line">            b = BpBinder::create(handle);</div><div class="line">            e-&gt;binder = b;</div><div class="line">            <span class="keyword">if</span> (b) e-&gt;refs = b-&gt;getWeakRefs();</div><div class="line">            result = b;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// This little bit of nastyness is to allow us to add a primary</span></div><div class="line">            <span class="comment">// reference to the remote proxy when this team doesn't have one</span></div><div class="line">            <span class="comment">// but another team is sending the handle to us.</span></div><div class="line">            result.force_set(b);</div><div class="line">            e-&gt;refs-&gt;decWeak(<span class="keyword">this</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>getStrongProxyForHandle 就是获取了 BpBinder 对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="function">jobject <span class="title">javaObjectForIBinder</span><span class="params">(JNIEnv* env, <span class="keyword">const</span> sp&lt;IBinder&gt;&amp; val)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (val == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="keyword">if</span> (val-&gt;checkSubclass(&amp;gBinderOffsets)) &#123;</div><div class="line">        <span class="comment">// One of our own!</span></div><div class="line">        jobject object = <span class="keyword">static_cast</span>&lt;JavaBBinder*&gt;(val.get())-&gt;object();</div><div class="line">        LOGDEATH(<span class="string">"objectForBinder %p: it's our own %p!\n"</span>, val.get(), object);</div><div class="line">        <span class="keyword">return</span> object;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// For the rest of the function we will hold this lock, to serialize</span></div><div class="line">    <span class="comment">// looking/creation of Java proxies for native Binder proxies.</span></div><div class="line">    AutoMutex _l(mProxyLock);</div><div class="line">    <span class="comment">// Someone else's...  do we know about it?</span></div><div class="line">    jobject object = (jobject)val-&gt;findObject(&amp;gBinderProxyOffsets);</div><div class="line">    <span class="keyword">if</span> (object != <span class="literal">NULL</span>) &#123;</div><div class="line">        jobject res = env-&gt;CallObjectMethod(object, gWeakReferenceOffsets.mGet);</div><div class="line">        <span class="keyword">if</span> (res != <span class="literal">NULL</span>) &#123;</div><div class="line">            ALOGV(<span class="string">"objectForBinder %p: found existing %p!\n"</span>, val.get(), res);</div><div class="line">            <span class="keyword">return</span> res;</div><div class="line">        &#125;</div><div class="line">        LOGDEATH(<span class="string">"Proxy object %p of IBinder %p no longer in working set!!!"</span>, object, val.get());</div><div class="line">        android_atomic_dec(&amp;gNumProxyRefs);</div><div class="line">        val-&gt;detachObject(&amp;gBinderProxyOffsets);</div><div class="line">        env-&gt;DeleteGlobalRef(object);</div><div class="line">    &#125;</div><div class="line">    object = env-&gt;NewObject(gBinderProxyOffsets.mClass, gBinderProxyOffsets.mConstructor);</div><div class="line">    <span class="keyword">if</span> (object != <span class="literal">NULL</span>) &#123;</div><div class="line">        LOGDEATH(<span class="string">"objectForBinder %p: created new proxy %p !\n"</span>, val.get(), object);</div><div class="line">        <span class="comment">// The proxy holds a reference to the native object.</span></div><div class="line">        env-&gt;SetIntField(object, gBinderProxyOffsets.mObject, (<span class="keyword">int</span>)val.get());</div><div class="line">        val-&gt;incStrong(object);</div><div class="line">        <span class="comment">// The native object needs to hold a weak reference back to the</span></div><div class="line">        <span class="comment">// proxy, so we can retrieve the same proxy if it is still active.</span></div><div class="line">        jobject refObject = env-&gt;NewGlobalRef(</div><div class="line">                env-&gt;GetObjectField(object, gBinderProxyOffsets.mSelf));</div><div class="line">        val-&gt;attachObject(&amp;gBinderProxyOffsets, refObject,</div><div class="line">                jnienv_to_javavm(env), proxy_cleanup);</div><div class="line">        <span class="comment">// Also remember the death recipients registered on this proxy</span></div><div class="line">        sp&lt;DeathRecipientList&gt; drl = <span class="keyword">new</span> DeathRecipientList;</div><div class="line">        drl-&gt;incStrong((<span class="keyword">void</span>*)javaObjectForIBinder);</div><div class="line">        env-&gt;SetIntField(object, gBinderProxyOffsets.mOrgue, <span class="keyword">reinterpret_cast</span>&lt;jint&gt;(drl.get()));</div><div class="line">        <span class="comment">// Note that a new object reference has been created.</span></div><div class="line">        android_atomic_inc(&amp;gNumProxyRefs);</div><div class="line">        incRefsCreated(env);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> object;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是把 native 层的 BpBinder 和 java 层的 BinderProxy 对应起来。</p>
+<p>整体的逻辑是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Client-&gt;AMS: bindService</div><div class="line">AMS-&gt;Service: 请求 binder 句柄</div><div class="line">Service-&gt;AMS: 发布 binder 句柄</div><div class="line">AMS-&gt;Client: 回调 binder 句柄</div><div class="line">Client-&gt;Service: binder 调用</div></pre></td></tr></table></figure>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMXNsQTg4TFFDVnJWWG9t.png" alt=""></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/0de4c4017052" target="_blank" rel="external">关于匿名binder的传输原理总结。
+</a></p>
+<p><a href="http://weishu.me/2016/01/12/binder-index-for-newer/" target="_blank" rel="external">Binder学习指南
+</a></p>
+<p><a href="https://blog.csdn.net/sinat_20059415/article/details/81041522" target="_blank" rel="external">Android O Service启动流程梳理——bindService</a></p>
+<p><a href="https://www.cnblogs.com/zhangxinyan/p/3487866.html" target="_blank" rel="external">IBinder的传递</a></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://yoursite.com/如何优雅地给界面添加加载中和重试界面/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1216,252 +1578,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Kotlin学习笔记_1_数据类型/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="brainBear">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpeg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="brainBear' Blog">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/Kotlin学习笔记_1_数据类型/" itemprop="url">
-                  Kotlin 学习笔记 1 数据类型
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-09T23:35:02+08:00">
-                2019-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>最近项目在准备使用 Kotlin ，其实之前就简单了解了一下 Kotlin ，但是开始用的时候很多东西忘接了，现在从新开始学习一下。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/Kotlin学习笔记_1_数据类型/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/在Android_Native_中使用_Protobuf-Lite/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="brainBear">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/images/avatar.jpeg">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="brainBear' Blog">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/在Android_Native_中使用_Protobuf-Lite/" itemprop="url">
-                  在 Android Native 中使用 ProtoBuf-Lite
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-30T21:30:05+08:00">
-                2019-04-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>上一篇文章中我们简单介绍了一下 Protobuf 的 C 实现 – Nanopb ，但是由于代码量很小，优点是简洁，生成的包很小，但是使用上不太方便，但是如果在 NDK 中直接使用 Protobuf 又太大了，但是在看官方文档的时候看到了通过设置参数优化。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/在Android_Native_中使用_Protobuf-Lite/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1509,7 +1625,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">54</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1520,7 +1636,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-count">48</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -1560,7 +1676,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2019</span>
+  <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>

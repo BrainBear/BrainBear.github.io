@@ -1,0 +1,802 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android,Framework,Binder," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Binder 是什么Binder 是 Android 提供的一种通信机制，主要用于跨进程通信。
+为什么要用 BinderAndroid 是基于 Linux 的系统，Linux 已经有很多种跨进程通信的机制，例如：socket、管道、共享内存等。
+
+
+
+
+Binder
+共享内存
+socket
+
+
+
+
+性能
+数据复制一次
+无需复制
+需要复制两次
+
+
+易用性
+基于 C/S 架构，面向对象
+控制复杂，需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Framework学习笔记：Binder">
+<meta property="og:url" content="http://yoursite.com/Framework学习笔记：Binder/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="Binder 是什么Binder 是 Android 提供的一种通信机制，主要用于跨进程通信。
+为什么要用 BinderAndroid 是基于 Linux 的系统，Linux 已经有很多种跨进程通信的机制，例如：socket、管道、共享内存等。
+
+
+
+
+Binder
+共享内存
+socket
+
+
+
+
+性能
+数据复制一次
+无需复制
+需要复制两次
+
+
+易用性
+基于 C/S 架构，面向对象
+控制复杂，需">
+<meta property="og:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMWp4UF83M3JkZjIxZkdr.png">
+<meta property="og:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMXNsQTg4TFFDVnJWWG9t.png">
+<meta property="og:updated_time" content="2020-07-04T09:30:46.755Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Framework学习笔记：Binder">
+<meta name="twitter:description" content="Binder 是什么Binder 是 Android 提供的一种通信机制，主要用于跨进程通信。
+为什么要用 BinderAndroid 是基于 Linux 的系统，Linux 已经有很多种跨进程通信的机制，例如：socket、管道、共享内存等。
+
+
+
+
+Binder
+共享内存
+socket
+
+
+
+
+性能
+数据复制一次
+无需复制
+需要复制两次
+
+
+易用性
+基于 C/S 架构，面向对象
+控制复杂，需">
+<meta name="twitter:image" content="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMWp4UF83M3JkZjIxZkdr.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Framework学习笔记：Binder/"/>
+
+
+
+
+
+  <title> Framework学习笔记：Binder | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Framework学习笔记：Binder/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Framework学习笔记：Binder
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-07T22:05:00+08:00">
+                2019-10-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <a id="more"></a>
+<h2 id="Binder-是什么"><a href="#Binder-是什么" class="headerlink" title="Binder 是什么"></a>Binder 是什么</h2><p>Binder 是 Android 提供的一种通信机制，主要用于跨进程通信。</p>
+<h2 id="为什么要用-Binder"><a href="#为什么要用-Binder" class="headerlink" title="为什么要用 Binder"></a>为什么要用 Binder</h2><p>Android 是基于 Linux 的系统，Linux 已经有很多种跨进程通信的机制，例如：socket、管道、共享内存等。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Binder</th>
+<th>共享内存</th>
+<th>socket</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>性能</td>
+<td>数据复制一次</td>
+<td>无需复制</td>
+<td>需要复制两次</td>
+</tr>
+<tr>
+<td>易用性</td>
+<td>基于 C/S 架构，面向对象</td>
+<td>控制复杂，需要各种同步逻辑</td>
+<td>通用接口</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>由系统保证通信安全</td>
+<td>依赖上层协议</td>
+<td>依赖上层协议</td>
+</tr>
+</tbody>
+</table>
+<p>由上面的表格对比可以知道，Binder 是基于性能、易用性和安全性综合考虑的结果。</p>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMWp4UF83M3JkZjIxZkdr.png" alt=""></p>
+<h2 id="通信原理"><a href="#通信原理" class="headerlink" title="通信原理"></a>通信原理</h2><h3 id="AIDL"><a href="#AIDL" class="headerlink" title="AIDL"></a>AIDL</h3><p>Android 提供了 AIDL 来简化 Binder 的使用，我们先来分析一下 AIDL 的逻辑。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>编译之后，Android 会自动生成一个 <code>IRemoteCall</code> 文件，里面有几个类，：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IRemoteCall</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">IInterface</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Local-side IPC implementation stub class.</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Stub</span> <span class="keyword">extends</span> <span class="title">android</span>.<span class="title">os</span>.<span class="title">Binder</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">brainbear</span>.<span class="title">binder</span>.<span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> java.lang.String DESCRIPTOR = <span class="string">"com.brainbear.binder.IRemoteCall"</span>;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line">         * Construct the stub at attach it to the interface.</div><div class="line">         */</div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">/**</span></div><div class="line">         * Cast an IBinder object into an com.brainbear.binder.IRemoteCall interface,</div><div class="line">         * generating a proxy if needed.</div><div class="line">         */</div><div class="line">        <span class="keyword">public</span> <span class="keyword">static</span> com.brainbear.binder.<span class="function">IRemoteCall <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">            &#125;</div><div class="line">            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">            <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.brainbear.binder.IRemoteCall))) &#123;</div><div class="line">                <span class="keyword">return</span> ((com.brainbear.binder.IRemoteCall) iin);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">new</span> com.brainbear.binder.IRemoteCall.Stub.Proxy(obj);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">            <span class="keyword">switch</span> (code) &#123;</div><div class="line">                <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">                    reply.writeString(DESCRIPTOR);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">case</span> TRANSACTION_call: &#123;</div><div class="line">                    data.enforceInterface(DESCRIPTOR);</div><div class="line">                    <span class="keyword">int</span> _arg0;</div><div class="line">                    _arg0 = data.readInt();</div><div class="line">                    <span class="keyword">int</span> _result = <span class="keyword">this</span>.call(_arg0);</div><div class="line">                    reply.writeNoException();</div><div class="line">                    reply.writeInt(_result);</div><div class="line">                    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Proxy</span> <span class="keyword">implements</span> <span class="title">com</span>.<span class="title">brainbear</span>.<span class="title">binder</span>.<span class="title">IRemoteCall</span> </span>&#123;</div><div class="line">            <span class="keyword">private</span> android.os.IBinder mRemote;</div><div class="line"></div><div class="line">            Proxy(android.os.IBinder remote) &#123;</div><div class="line">                mRemote = remote;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="keyword">public</span> android.os.<span class="function">IBinder <span class="title">asBinder</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> mRemote;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getInterfaceDescriptor</span><span class="params">()</span> </span>&#123;</div><div class="line">                <span class="keyword">return</span> DESCRIPTOR;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">                android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">                android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">                <span class="keyword">int</span> _result;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">                    _data.writeInt(data);</div><div class="line">                    mRemote.transact(Stub.TRANSACTION_call, _data, _reply, <span class="number">0</span>);</div><div class="line">                    _reply.readException();</div><div class="line">                    _result = _reply.readInt();</div><div class="line">                &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                    _reply.recycle();</div><div class="line">                    _data.recycle();</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> _result;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TRANSACTION_call = (android.os.IBinder.FIRST_CALL_TRANSACTION + <span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里面有几个比较重要的类：</p>
+<ul>
+<li>IBinder：代表了跨进程通信的能力</li>
+<li>IInterface：表示服务端提供什么样的功能</li>
+<li>Binder ：继承了 IBinder ，所以他也具有跨进程通信的能力，实际上他是服务端的本地代理对象</li>
+<li>Stub : 代表服务端</li>
+<li>Proxy : 表示客户端</li>
+</ul>
+<p>完整 bindService 的代码就不给出了，我们先分析一下绑定的逻辑：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> ServiceConnection connection = <span class="keyword">new</span> ServiceConnection() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceConnected</span><span class="params">(ComponentName name, IBinder service)</span> </span>&#123;</div><div class="line">        Log.e(TAG, <span class="string">"onServiceConnected: success"</span>);</div><div class="line">        iRemoteCall = IRemoteCall.Stub.asInterface(service);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onServiceDisconnected</span><span class="params">(ComponentName name)</span> </span>&#123;</div><div class="line">        iRemoteCall = <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>在绑定成功之后，我们调用了 <code>asInterface</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> com.brainbear.binder.<span class="function">IRemoteCall <span class="title">asInterface</span><span class="params">(android.os.IBinder obj)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> ((obj == <span class="keyword">null</span>)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//这里是判断是本地调用还是跨进程的远程调用</span></div><div class="line">    android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);</div><div class="line">    <span class="keyword">if</span> (((iin != <span class="keyword">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> com.brainbear.binder.IRemoteCall))) &#123;</div><div class="line">        <span class="keyword">return</span> ((com.brainbear.binder.IRemoteCall) iin);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">new</span> com.brainbear.binder.IRemoteCall.Stub.Proxy(obj);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里通过 <code>IBinder</code> 的 <code>queryLocalInterface</code> 方法来判断是否是远程调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> IInterface <span class="title">queryLocalInterface</span><span class="params">(String descriptor)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mDescriptor.equals(descriptor)) &#123;</div><div class="line">        <span class="keyword">return</span> mOwner;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里的 <code>mDescriptor</code> 是 Binder 在构造函数中初始化的，例如 <code>Stub</code> 类：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Stub</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.attachInterface(<span class="keyword">this</span>, DESCRIPTOR);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">attachInterface</span><span class="params">(IInterface owner, String descriptor)</span> </span>&#123;</div><div class="line">    mOwner = owner;</div><div class="line">    mDescriptor = descriptor;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为在客户端中并没有直接构造 <code>Stub</code> 对象，如果是本地调用的话 <code>asInreface</code> 方法中的 <code>obj</code> 就会是在服务端中创建的那个 <code>Stub</code> 对象。</p>
+<p>通过 <code>asInterface</code> 方法，如果是跨进程调用的话，客户端这边就获取到了 <code>Proxy</code> 对象。客户端这边就通过 <code>Proxy</code> 对象来远程调用。所以我们直接去看 <code>Proxy</code> 类的 <code>call</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">call</span><span class="params">(<span class="keyword">int</span> data)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="comment">//参数</span></div><div class="line">    android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">    <span class="comment">//返回值</span></div><div class="line">    android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">    <span class="keyword">int</span> _result;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="comment">//校验</span></div><div class="line">        _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">        _data.writeInt(data);</div><div class="line">        <span class="comment">//真正的远程调用，如果不是 oneway 调用，那么客户端将会阻塞到服务端返回</span></div><div class="line">        mRemote.transact(Stub.TRANSACTION_call, _data, _reply, <span class="number">0</span>);</div><div class="line">        <span class="comment">//检查异常标志</span></div><div class="line">        _reply.readException();</div><div class="line">        <span class="comment">//读取返回值</span></div><div class="line">        _result = _reply.readInt();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        _reply.recycle();</div><div class="line">        _data.recycle();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> _result;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当执行到 <code>mRemote.transact()</code> 方法时，才算是发起真正的远程调用，Binder 通过整形值 <code>Stub.TRANSACTION_call</code> 来判断调用的是哪个远程方法，然后 <code>_data</code> 和 <code>_reply</code> 用于标识方法参数和返回值，最后一个 <code>flag</code> 参数标识是否是 oneway 调用。</p>
+<p>系统会通过 Binder 回调到 <code>Stub</code> 类中的<code>onTransact</code>方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="keyword">switch</span> (code) &#123;</div><div class="line">        <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">            reply.writeString(DESCRIPTOR);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">//通过 code 判断调用的方法</span></div><div class="line">        <span class="keyword">case</span> TRANSACTION_call: &#123;</div><div class="line">            <span class="comment">//和 writeInterfaceToken 配合的校验</span></div><div class="line">            data.enforceInterface(DESCRIPTOR);</div><div class="line">            <span class="keyword">int</span> _arg0;</div><div class="line">            <span class="comment">//读取方法参数</span></div><div class="line">            _arg0 = data.readInt();</div><div class="line">            <span class="comment">//调用方法</span></div><div class="line">            <span class="keyword">int</span> _result = <span class="keyword">this</span>.call(_arg0);</div><div class="line">            reply.writeNoException();</div><div class="line">            <span class="comment">//写入方法返回值</span></div><div class="line">            reply.writeInt(_result);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>整体的通信流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">Client-&gt;Proxy: IRemoteCall.Call()</div><div class="line">Proxy-&gt;Binder: mRemote.Transact()</div><div class="line">Binder-&gt;Stub: onTransact()</div><div class="line">Stub-&gt;Service: this.call()</div><div class="line">Service-&gt;Stub:</div><div class="line">Stub-&gt;Binder:</div><div class="line">Binder-&gt;Proxy:</div><div class="line">Proxy-&gt;Client:</div></pre></td></tr></table></figure>
+<!-- ![](https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMW1GQWEzdWxBMExwREww.png) -->
+<h3 id="在深入一点"><a href="#在深入一点" class="headerlink" title="在深入一点"></a>在深入一点</h3><p>通过跟踪 <code>bindService</code> 的代码流程发现，核心的逻辑是在 ActivityManagerService (AMS) ，在 api26 以后 AMS 的代码逻辑有比较大的变动，api26 以后是通过 AIDL 来实现的，具体的逻辑定义在 <a href="https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/app/IActivityManager.aidl" target="_blank" rel="external">IActivityManager.aidl</a> 中，其中与 service 相关的两个方法是：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">bindService</span><span class="params">(in IApplicationThread caller, in IBinder token, in Intent service,</span></span></div><div class="line">            in String resolvedType, in IServiceConnection connection, <span class="keyword">int</span> flags,</div><div class="line">            in String callingPackage, <span class="keyword">int</span> userId);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">publishService</span><span class="params">(in IBinder token, in Intent intent, in IBinder service)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>其中 <code>bindService</code> 是客户端向服务端发起的，而 <code>publishService</code> 是服务端绑定成功后对客户端的回调。这两个方法都有一个 IBinder 参数，我自己写了一个带 IBinder 参数的 aidl 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">binderParamCall</span><span class="params">(IBinder token)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>然后是对应生成的客户端和服务端的代码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">binderParamCall</span><span class="params">(android.os.IBinder token)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    android.os.Parcel _data = android.os.Parcel.obtain();</div><div class="line">    android.os.Parcel _reply = android.os.Parcel.obtain();</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        _data.writeInterfaceToken(DESCRIPTOR);</div><div class="line">        _data.writeStrongBinder(token);</div><div class="line">        mRemote.transact(Stub.TRANSACTION_binderParamCall, _data, _reply, <span class="number">0</span>);</div><div class="line">        _reply.readException();</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        _reply.recycle();</div><div class="line">        _data.recycle();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onTransact</span><span class="params">(<span class="keyword">int</span> code, android.os.Parcel data, android.os.Parcel reply, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> android.os.RemoteException </span>&#123;</div><div class="line">    <span class="keyword">switch</span> (code) &#123;</div><div class="line">        <span class="keyword">case</span> INTERFACE_TRANSACTION: &#123;</div><div class="line">            reply.writeString(DESCRIPTOR);</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">case</span> TRANSACTION_binderParamCall: &#123;</div><div class="line">            data.enforceInterface(DESCRIPTOR);</div><div class="line">            android.os.IBinder _arg0;</div><div class="line">            _arg0 = data.readStrongBinder();</div><div class="line">            <span class="keyword">this</span>.binderParamCall(_arg0);</div><div class="line">            reply.writeNoException();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.onTransact(code, data, reply, flags);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>猜测关键的点是 <code>Parcel</code> 类的 <code>writeStrongBinder</code> 和 <code>readStrongBinder</code> 方法。</p>
+<p>跟踪发现调用到了 native 的方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">writeStrongBinder</span><span class="params">(IBinder val)</span> </span>&#123;</div><div class="line">    nativeWriteStrongBinder(mNativePtr, val);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>跳转到 <code>android_os_Parcel.cpp</code> 中：<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">android_os_Parcel_writeStrongBinder</span><span class="params">(JNIEnv* env, jclass clazz, jlong nativePtr, jobject object)</span></span></div><div class="line">&#123;</div><div class="line">    Parcel* parcel = <span class="keyword">reinterpret_cast</span>&lt;Parcel*&gt;(nativePtr);</div><div class="line">    <span class="keyword">if</span> (parcel != <span class="literal">NULL</span>) &#123;</div><div class="line">        <span class="keyword">const</span> <span class="keyword">status_t</span> err = parcel-&gt;writeStrongBinder(ibinderForJavaObject(env, object));</div><div class="line">        <span class="keyword">if</span> (err != NO_ERROR) &#123;</div><div class="line">            signalExceptionForError(env, clazz, err);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>android_util_Binder.cpp:ibinderForJavaObject<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; ibinderForJavaObject(JNIEnv* env, jobject obj)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (obj == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="comment">//gBinderOffsets.mClass 是 java 层的 Binder class</span></div><div class="line">    <span class="keyword">if</span> (env-&gt;IsInstanceOf(obj, gBinderOffsets.mClass)) &#123;</div><div class="line">        JavaBBinderHolder* jbh = (JavaBBinderHolder*)</div><div class="line">            env-&gt;GetIntField(obj, gBinderOffsets.mObject);</div><div class="line">        <span class="keyword">return</span> jbh != <span class="literal">NULL</span> ? jbh-&gt;get(env, obj) : <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//gBinderProxyOffsets.mClass 是 java 层的 BinderProxy class</span></div><div class="line">    <span class="keyword">if</span> (env-&gt;IsInstanceOf(obj, gBinderProxyOffsets.mClass)) &#123;</div><div class="line">        <span class="keyword">return</span> (IBinder*)</div><div class="line">            env-&gt;GetIntField(obj, gBinderProxyOffsets.mObject);</div><div class="line">    &#125;</div><div class="line">    ALOGW(<span class="string">"ibinderForJavaObject: %p is not a Binder object"</span>, obj);</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为 <code>publishService</code> 是服务端调用的，所以会走第一个判断，返回 JavaBBinderHolder ，它是一个包装类，里面有 JavaBBinder，而 JavaBBinder 继承 BBinder。</p>
+<p>也就是<code>parcel-&gt;writeStrongBinder(ibinderForJavaObject(env, object)</code> 调用了 Parcel 的 writeStrongBinder 传入了一个 JavaBBinderHolder。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">status_t</span> Parcel::writeStrongBinder(<span class="keyword">const</span> sp&lt;IBinder&gt;&amp; val)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> flatten_binder(ProcessState::self(), val, <span class="keyword">this</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">status_t</span> flatten_binder(<span class="keyword">const</span> sp&lt;ProcessState&gt;&amp; proc,</div><div class="line">    <span class="keyword">const</span> sp&lt;IBinder&gt;&amp; binder, Parcel* out)</div><div class="line">&#123;</div><div class="line">    flat_binder_object obj;</div><div class="line">    </div><div class="line">    obj.flags = <span class="number">0x7f</span> | FLAT_BINDER_FLAG_ACCEPTS_FDS;</div><div class="line">    <span class="keyword">if</span> (binder != <span class="literal">NULL</span>) &#123;</div><div class="line">        IBinder *local = binder-&gt;localBinder();</div><div class="line">        <span class="comment">//判断是否是本地调用，本地调用 type 是 BINDER_TYPE_BINDER 远程调用是 BINDER_TYPE_HANDLE</span></div><div class="line">        <span class="keyword">if</span> (!local) &#123;</div><div class="line">            <span class="comment">//创建了 BpBinder</span></div><div class="line">            BpBinder *proxy = binder-&gt;remoteBinder();</div><div class="line">            <span class="keyword">if</span> (proxy == <span class="literal">NULL</span>) &#123;</div><div class="line">                ALOGE(<span class="string">"null proxy"</span>);</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">const</span> <span class="keyword">int32_t</span> handle = proxy ? proxy-&gt;handle() : <span class="number">0</span>;</div><div class="line">            obj.type = BINDER_TYPE_HANDLE;</div><div class="line">            obj.handle = handle;</div><div class="line">            obj.cookie = <span class="literal">NULL</span>;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            obj.type = BINDER_TYPE_BINDER;</div><div class="line">            obj.binder = local-&gt;getWeakRefs();</div><div class="line">            obj.cookie = local;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        obj.type = BINDER_TYPE_BINDER;</div><div class="line">        obj.binder = <span class="literal">NULL</span>;</div><div class="line">        obj.cookie = <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="keyword">return</span> finish_flatten_binder(binder, obj, out);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就把 bpBinder 发送给对端了，然后我们在看一下读取的逻辑。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> jobject <span class="title">android_os_Parcel_readStrongBinder</span><span class="params">(JNIEnv* env, jclass clazz, jlong nativePtr)</span></span></div><div class="line">&#123;</div><div class="line">    Parcel* parcel = <span class="keyword">reinterpret_cast</span>&lt;Parcel*&gt;(nativePtr);</div><div class="line">    <span class="keyword">if</span> (parcel != <span class="literal">NULL</span>) &#123;</div><div class="line">        <span class="keyword">return</span> javaObjectForIBinder(env, parcel-&gt;readStrongBinder());</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; Parcel::readStrongBinder() <span class="keyword">const</span></div><div class="line">&#123;</div><div class="line">    sp&lt;IBinder&gt; val;</div><div class="line">    unflatten_binder(ProcessState::self(), *<span class="keyword">this</span>, &amp;val);</div><div class="line">    <span class="keyword">return</span> val;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">status_t</span> unflatten_binder(<span class="keyword">const</span> sp&lt;ProcessState&gt;&amp; proc,</div><div class="line">    <span class="keyword">const</span> Parcel&amp; in, sp&lt;IBinder&gt;* out)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">const</span> flat_binder_object* flat = in.readObject(<span class="literal">false</span>);</div><div class="line">    </div><div class="line">    <span class="keyword">if</span> (flat) &#123;</div><div class="line">        <span class="keyword">switch</span> (flat-&gt;type) &#123;</div><div class="line">            <span class="keyword">case</span> BINDER_TYPE_BINDER:</div><div class="line">                *out = <span class="keyword">static_cast</span>&lt;IBinder*&gt;(flat-&gt;cookie);</div><div class="line">                <span class="keyword">return</span> finish_unflatten_binder(<span class="literal">NULL</span>, *flat, in);</div><div class="line">            <span class="comment">//远程调用会走到这里</span></div><div class="line">            <span class="keyword">case</span> BINDER_TYPE_HANDLE:</div><div class="line">                *out = proc-&gt;getStrongProxyForHandle(flat-&gt;handle);</div><div class="line">                <span class="keyword">return</span> finish_unflatten_binder(</div><div class="line">                    <span class="keyword">static_cast</span>&lt;BpBinder*&gt;(out-&gt;get()), *flat, in);</div><div class="line">        &#125;        </div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> BAD_TYPE;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>readStrongBinder 就是和 writeStrongBinder 对应的读取的逻辑实现</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div></pre></td><td class="code"><pre><div class="line">sp&lt;IBinder&gt; ProcessState::getStrongProxyForHandle(<span class="keyword">int32_t</span> handle)</div><div class="line">&#123;</div><div class="line">    sp&lt;IBinder&gt; result;</div><div class="line">    AutoMutex _l(mLock);</div><div class="line">    <span class="comment">//先查缓存</span></div><div class="line">    handle_entry* e = lookupHandleLocked(handle);</div><div class="line">    <span class="keyword">if</span> (e != <span class="literal">nullptr</span>) &#123;</div><div class="line">        <span class="comment">// We need to create a new BpBinder if there isn't currently one, OR we</span></div><div class="line">        <span class="comment">// are unable to acquire a weak reference on this current one.  The</span></div><div class="line">        <span class="comment">// attemptIncWeak() is safe because we know the BpBinder destructor will always</span></div><div class="line">        <span class="comment">// call expungeHandle(), which acquires the same lock we are holding now.</span></div><div class="line">        <span class="comment">// We need to do this because there is a race condition between someone</span></div><div class="line">        <span class="comment">// releasing a reference on this BpBinder, and a new reference on its handle</span></div><div class="line">        <span class="comment">// arriving from the driver.</span></div><div class="line">        IBinder* b = e-&gt;binder;</div><div class="line">        <span class="keyword">if</span> (b == <span class="literal">nullptr</span> || !e-&gt;refs-&gt;attemptIncWeak(<span class="keyword">this</span>)) &#123;</div><div class="line">            <span class="keyword">if</span> (handle == <span class="number">0</span>) &#123;</div><div class="line">                <span class="comment">// Special case for context manager...</span></div><div class="line">                <span class="comment">// The context manager is the only object for which we create</span></div><div class="line">                <span class="comment">// a BpBinder proxy without already holding a reference.</span></div><div class="line">                <span class="comment">// Perform a dummy transaction to ensure the context manager</span></div><div class="line">                <span class="comment">// is registered before we create the first local reference</span></div><div class="line">                <span class="comment">// to it (which will occur when creating the BpBinder).</span></div><div class="line">                <span class="comment">// If a local reference is created for the BpBinder when the</span></div><div class="line">                <span class="comment">// context manager is not present, the driver will fail to</span></div><div class="line">                <span class="comment">// provide a reference to the context manager, but the</span></div><div class="line">                <span class="comment">// driver API does not return status.</span></div><div class="line">                <span class="comment">//</span></div><div class="line">                <span class="comment">// Note that this is not race-free if the context manager</span></div><div class="line">                <span class="comment">// dies while this code runs.</span></div><div class="line">                <span class="comment">//</span></div><div class="line">                <span class="comment">// <span class="doctag">TODO:</span> add a driver API to wait for context manager, or</span></div><div class="line">                <span class="comment">// stop special casing handle 0 for context manager and add</span></div><div class="line">                <span class="comment">// a driver API to get a handle to the context manager with</span></div><div class="line">                <span class="comment">// proper reference counting.</span></div><div class="line">                Parcel data;</div><div class="line">                <span class="keyword">status_t</span> status = IPCThreadState::self()-&gt;transact(</div><div class="line">                        <span class="number">0</span>, IBinder::PING_TRANSACTION, data, <span class="literal">nullptr</span>, <span class="number">0</span>);</div><div class="line">                <span class="keyword">if</span> (status == DEAD_OBJECT)</div><div class="line">                   <span class="keyword">return</span> <span class="literal">nullptr</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="comment">//创建 BpBinder 代理对象</span></div><div class="line">            b = BpBinder::create(handle);</div><div class="line">            e-&gt;binder = b;</div><div class="line">            <span class="keyword">if</span> (b) e-&gt;refs = b-&gt;getWeakRefs();</div><div class="line">            result = b;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// This little bit of nastyness is to allow us to add a primary</span></div><div class="line">            <span class="comment">// reference to the remote proxy when this team doesn't have one</span></div><div class="line">            <span class="comment">// but another team is sending the handle to us.</span></div><div class="line">            result.force_set(b);</div><div class="line">            e-&gt;refs-&gt;decWeak(<span class="keyword">this</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>getStrongProxyForHandle 就是获取了 BpBinder 对象</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="function">jobject <span class="title">javaObjectForIBinder</span><span class="params">(JNIEnv* env, <span class="keyword">const</span> sp&lt;IBinder&gt;&amp; val)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">if</span> (val == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    <span class="keyword">if</span> (val-&gt;checkSubclass(&amp;gBinderOffsets)) &#123;</div><div class="line">        <span class="comment">// One of our own!</span></div><div class="line">        jobject object = <span class="keyword">static_cast</span>&lt;JavaBBinder*&gt;(val.get())-&gt;object();</div><div class="line">        LOGDEATH(<span class="string">"objectForBinder %p: it's our own %p!\n"</span>, val.get(), object);</div><div class="line">        <span class="keyword">return</span> object;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// For the rest of the function we will hold this lock, to serialize</span></div><div class="line">    <span class="comment">// looking/creation of Java proxies for native Binder proxies.</span></div><div class="line">    AutoMutex _l(mProxyLock);</div><div class="line">    <span class="comment">// Someone else's...  do we know about it?</span></div><div class="line">    jobject object = (jobject)val-&gt;findObject(&amp;gBinderProxyOffsets);</div><div class="line">    <span class="keyword">if</span> (object != <span class="literal">NULL</span>) &#123;</div><div class="line">        jobject res = env-&gt;CallObjectMethod(object, gWeakReferenceOffsets.mGet);</div><div class="line">        <span class="keyword">if</span> (res != <span class="literal">NULL</span>) &#123;</div><div class="line">            ALOGV(<span class="string">"objectForBinder %p: found existing %p!\n"</span>, val.get(), res);</div><div class="line">            <span class="keyword">return</span> res;</div><div class="line">        &#125;</div><div class="line">        LOGDEATH(<span class="string">"Proxy object %p of IBinder %p no longer in working set!!!"</span>, object, val.get());</div><div class="line">        android_atomic_dec(&amp;gNumProxyRefs);</div><div class="line">        val-&gt;detachObject(&amp;gBinderProxyOffsets);</div><div class="line">        env-&gt;DeleteGlobalRef(object);</div><div class="line">    &#125;</div><div class="line">    object = env-&gt;NewObject(gBinderProxyOffsets.mClass, gBinderProxyOffsets.mConstructor);</div><div class="line">    <span class="keyword">if</span> (object != <span class="literal">NULL</span>) &#123;</div><div class="line">        LOGDEATH(<span class="string">"objectForBinder %p: created new proxy %p !\n"</span>, val.get(), object);</div><div class="line">        <span class="comment">// The proxy holds a reference to the native object.</span></div><div class="line">        env-&gt;SetIntField(object, gBinderProxyOffsets.mObject, (<span class="keyword">int</span>)val.get());</div><div class="line">        val-&gt;incStrong(object);</div><div class="line">        <span class="comment">// The native object needs to hold a weak reference back to the</span></div><div class="line">        <span class="comment">// proxy, so we can retrieve the same proxy if it is still active.</span></div><div class="line">        jobject refObject = env-&gt;NewGlobalRef(</div><div class="line">                env-&gt;GetObjectField(object, gBinderProxyOffsets.mSelf));</div><div class="line">        val-&gt;attachObject(&amp;gBinderProxyOffsets, refObject,</div><div class="line">                jnienv_to_javavm(env), proxy_cleanup);</div><div class="line">        <span class="comment">// Also remember the death recipients registered on this proxy</span></div><div class="line">        sp&lt;DeathRecipientList&gt; drl = <span class="keyword">new</span> DeathRecipientList;</div><div class="line">        drl-&gt;incStrong((<span class="keyword">void</span>*)javaObjectForIBinder);</div><div class="line">        env-&gt;SetIntField(object, gBinderProxyOffsets.mOrgue, <span class="keyword">reinterpret_cast</span>&lt;jint&gt;(drl.get()));</div><div class="line">        <span class="comment">// Note that a new object reference has been created.</span></div><div class="line">        android_atomic_inc(&amp;gNumProxyRefs);</div><div class="line">        incRefsCreated(env);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> object;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里就是把 native 层的 BpBinder 和 java 层的 BinderProxy 对应起来。</p>
+<p>整体的逻辑是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Client-&gt;AMS: bindService</div><div class="line">AMS-&gt;Service: 请求 binder 句柄</div><div class="line">Service-&gt;AMS: 发布 binder 句柄</div><div class="line">AMS-&gt;Client: 回调 binder 句柄</div><div class="line">Client-&gt;Service: binder 调用</div></pre></td></tr></table></figure>
+<p><img src="https://onedrive.gimhoy.com/1drv/aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBbHhTZUFNMzR2d25oMXNsQTg4TFFDVnJWWG9t.png" alt=""></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/0de4c4017052" target="_blank" rel="external">关于匿名binder的传输原理总结。
+</a></p>
+<p><a href="http://weishu.me/2016/01/12/binder-index-for-newer/" target="_blank" rel="external">Binder学习指南
+</a></p>
+<p><a href="https://blog.csdn.net/sinat_20059415/article/details/81041522" target="_blank" rel="external">Android O Service启动流程梳理——bindService</a></p>
+<p><a href="https://www.cnblogs.com/zhangxinyan/p/3487866.html" target="_blank" rel="external">IBinder的传递</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"># Framework</a>
+          
+            <a href="/tags/Binder/" rel="tag"># Binder</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/如何优雅地给界面添加加载中和重试界面/" rel="next" title="如何优雅地给界面添加加载中和重试界面">
+                <i class="fa fa-chevron-left"></i> 如何优雅地给界面添加加载中和重试界面
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Framework学习笔记：Handler/" rel="prev" title="Framework学习笔记：Binder">
+                Framework学习笔记：Binder <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">48</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Binder-是什么"><span class="nav-number">1.</span> <span class="nav-text">Binder 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么要用-Binder"><span class="nav-number">2.</span> <span class="nav-text">为什么要用 Binder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通信原理"><span class="nav-number">3.</span> <span class="nav-text">通信原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AIDL"><span class="nav-number">3.1.</span> <span class="nav-text">AIDL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在深入一点"><span class="nav-number">3.2.</span> <span class="nav-text">在深入一点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
