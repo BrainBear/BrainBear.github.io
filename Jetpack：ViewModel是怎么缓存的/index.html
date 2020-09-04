@@ -1,0 +1,695 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Jetpack,ViewModel," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言ViewModel 是 Jetpack 的一个组件，最大的作用就是管理界面的数据，并且不会因 Activity 的重建而销毁。今天来学习一下是怎实现的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jetpack：ViewModel是怎么缓存的">
+<meta property="og:url" content="http://yoursite.com/Jetpack：ViewModel是怎么缓存的/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="前言ViewModel 是 Jetpack 的一个组件，最大的作用就是管理界面的数据，并且不会因 Activity 的重建而销毁。今天来学习一下是怎实现的。">
+<meta property="og:updated_time" content="2020-08-30T15:32:48.973Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jetpack：ViewModel是怎么缓存的">
+<meta name="twitter:description" content="前言ViewModel 是 Jetpack 的一个组件，最大的作用就是管理界面的数据，并且不会因 Activity 的重建而销毁。今天来学习一下是怎实现的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Jetpack：ViewModel是怎么缓存的/"/>
+
+
+
+
+
+  <title> Jetpack：ViewModel是怎么缓存的 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Jetpack：ViewModel是怎么缓存的/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Jetpack：ViewModel是怎么缓存的
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-12T21:32:00+08:00">
+                2020-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>ViewModel 是 Jetpack 的一个组件，最大的作用就是管理界面的数据，并且不会因 Activity 的重建而销毁。今天来学习一下是怎实现的。<br><a id="more"></a></p>
+<blockquote>
+<p>本篇文章基于 androidx-2.2.0 版本</p>
+</blockquote>
+<h2 id="从使用入手"><a href="#从使用入手" class="headerlink" title="从使用入手"></a>从使用入手</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> vm = ViewModelProvider(<span class="keyword">this</span>).<span class="keyword">get</span>(TestViewModel::<span class="class"><span class="keyword">class</span>.<span class="title">java</span>)</span></div></pre></td></tr></table></figure>
+<p>我们需要通过 <code>ViewModelProvider</code> 来获取 <code>Viewmodel</code>。</p>
+<p><code>ViewModelProvider</code> 有三个构造方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewModelProvider</span><span class="params">(@NonNull ViewModelStoreOwner owner)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(owner.getViewModelStore(), owner <span class="keyword">instanceof</span> HasDefaultViewModelProviderFactory</div><div class="line">            ? ((HasDefaultViewModelProviderFactory) owner).getDefaultViewModelProviderFactory()</div><div class="line">            : NewInstanceFactory.getInstance());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewModelProvider</span><span class="params">(@NonNull ViewModelStoreOwner owner, @NonNull Factory factory)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>(owner.getViewModelStore(), factory);</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewModelProvider</span><span class="params">(@NonNull ViewModelStore store, @NonNull Factory factory)</span> </span>&#123;</div><div class="line">    mFactory = factory;</div><div class="line">    mViewModelStore = store;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终需要的参数是两个类：<code>ViewModelStore</code> 和 <code>Factory</code>。</p>
+<h2 id="ViewModelStore"><a href="#ViewModelStore" class="headerlink" title="ViewModelStore"></a>ViewModelStore</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewModelStore</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;String, ViewModel&gt; mMap = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(String key, ViewModel viewModel)</span> </span>&#123;</div><div class="line">        ViewModel oldViewModel = mMap.put(key, viewModel);</div><div class="line">        <span class="keyword">if</span> (oldViewModel != <span class="keyword">null</span>) &#123;</div><div class="line">            oldViewModel.onCleared();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">final</span> ViewModel <span class="title">get</span><span class="params">(String key)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> mMap.get(key);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function">Set&lt;String&gt; <span class="title">keys</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HashSet&lt;&gt;(mMap.keySet());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line">     *  Clears internal storage and notifies ViewModels that they are no longer used.</div><div class="line">     */</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">for</span> (ViewModel vm : mMap.values()) &#123;</div><div class="line">            vm.clear();</div><div class="line">        &#125;</div><div class="line">        mMap.clear();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>核心就是一个 Map，根据 key 来缓存 ViewModel，还提供了 <code>clear()</code> 方法来通知缓存的 ViewModel 要销毁了。</p>
+<p>和 <code>ViewModelStore</code> 相关的一个接口是 <code>ViewModelStoreOwner</code>：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ViewModelStoreOwner</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Returns owned &#123;<span class="doctag">@link</span> ViewModelStore&#125;</div><div class="line">     *</div><div class="line">     * <span class="doctag">@return</span> a &#123;<span class="doctag">@code</span> ViewModelStore&#125;</div><div class="line">     */</div><div class="line">    <span class="meta">@NonNull</span></div><div class="line">    <span class="function">ViewModelStore <span class="title">getViewModelStore</span><span class="params">()</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 <code>ComponentActivity</code> 和 <code>Fragment</code> 中都实现了这个接口</p>
+<h2 id="Factory"><a href="#Factory" class="headerlink" title="Factory"></a>Factory</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * Implementations of &#123;<span class="doctag">@code</span> Factory&#125; interface are responsible to instantiate ViewModels.</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line">     * Creates a new instance of the given &#123;<span class="doctag">@code</span> Class&#125;.</div><div class="line">     * &lt;p&gt;</div><div class="line">     *</div><div class="line">     * <span class="doctag">@param</span> modelClass a &#123;<span class="doctag">@code</span> Class&#125; whose instance is requested</div><div class="line">     * <span class="doctag">@param</span> &lt;T&gt;        The type parameter for the ViewModel.</div><div class="line">     * <span class="doctag">@return</span> a newly created ViewModel</div><div class="line">     */</div><div class="line">    <span class="meta">@NonNull</span></div><div class="line">    &lt;T extends ViewModel&gt; <span class="function">T <span class="title">create</span><span class="params">(@NonNull Class&lt;T&gt; modelClass)</span></span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>Factory</code> 接口用于创建具体的 <code>ViewModel</code> 实例。</p>
+<p>例如在 Activity 中如果不指定 Factory 的话默认就会使用 <code>SavedStateViewModelFactory</code> 。它针对 <code>Saved State</code> 进行缓存的处理。</p>
+<h2 id="ViewModelProvider-get"><a href="#ViewModelProvider-get" class="headerlink" title="ViewModelProvider.get()"></a>ViewModelProvider.get()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEFAULT_KEY =</div><div class="line">        <span class="string">"androidx.lifecycle.ViewModelProvider.DefaultKey"</span>;</div><div class="line"></div><div class="line"><span class="keyword">public</span> &lt;T extends ViewModel&gt; <span class="function">T <span class="title">get</span><span class="params">(@NonNull Class&lt;T&gt; modelClass)</span> </span>&#123;</div><div class="line">    String canonicalName = modelClass.getCanonicalName();</div><div class="line">    <span class="comment">//根据固定的字符串和类名来拼接成 key</span></div><div class="line">    <span class="keyword">return</span> get(DEFAULT_KEY + <span class="string">":"</span> + canonicalName, modelClass);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> &lt;T extends ViewModel&gt; <span class="function">T <span class="title">get</span><span class="params">(@NonNull String key, @NonNull Class&lt;T&gt; modelClass)</span> </span>&#123;</div><div class="line">    <span class="comment">//根据 key 从 ViewModelStore 中获取 ViewModel</span></div><div class="line">    ViewModel viewModel = mViewModelStore.get(key);</div><div class="line"></div><div class="line">    <span class="comment">//安全校验，检查类型是否匹配</span></div><div class="line">    <span class="keyword">if</span> (modelClass.isInstance(viewModel)) &#123;</div><div class="line">        <span class="keyword">if</span> (mFactory <span class="keyword">instanceof</span> OnRequeryFactory) &#123;</div><div class="line">            ((OnRequeryFactory) mFactory).onRequery(viewModel);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> (T) viewModel;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">//noinspection StatementWithEmptyBody</span></div><div class="line">        <span class="keyword">if</span> (viewModel != <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="comment">// <span class="doctag">TODO:</span> log a warning.</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//通过 factory 来创建 ViewModel 实例</span></div><div class="line">    <span class="keyword">if</span> (mFactory <span class="keyword">instanceof</span> KeyedFactory) &#123;</div><div class="line">        viewModel = ((KeyedFactory) (mFactory)).create(key, modelClass);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        viewModel = (mFactory).create(modelClass);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//把新创建的 ViewModel 实例放入 ViewModelStore 缓存</span></div><div class="line">    mViewModelStore.put(key, viewModel);</div><div class="line">    <span class="keyword">return</span> (T) viewModel;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="销毁时缓存"><a href="#销毁时缓存" class="headerlink" title="销毁时缓存"></a>销毁时缓存</h2><p>在 Activity 中提供了 <code>onRetainNonConfigurationInstance</code> 和 <code>getLastNonConfigurationInstance</code> 两个接口来处理在意外销毁（如配置改变）时保存数据。</p>
+<p>在 <code>ComponentActivity</code> 中使用了这两个接口：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">onRetainNonConfigurationInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">    Object custom = onRetainCustomNonConfigurationInstance();</div><div class="line"></div><div class="line">    ViewModelStore viewModelStore = mViewModelStore;</div><div class="line">    <span class="keyword">if</span> (viewModelStore == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="comment">// No one called getViewModelStore(), so see if there was an existing</span></div><div class="line">        <span class="comment">// ViewModelStore from our last NonConfigurationInstance</span></div><div class="line">        NonConfigurationInstances nc =</div><div class="line">                (NonConfigurationInstances) getLastNonConfigurationInstance();</div><div class="line">        <span class="keyword">if</span> (nc != <span class="keyword">null</span>) &#123;</div><div class="line">            viewModelStore = nc.viewModelStore;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (viewModelStore == <span class="keyword">null</span> &amp;&amp; custom == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    NonConfigurationInstances nci = <span class="keyword">new</span> NonConfigurationInstances();</div><div class="line">    nci.custom = custom;</div><div class="line">    nci.viewModelStore = viewModelStore;</div><div class="line">    <span class="keyword">return</span> nci;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 <code>ComponentActivity</code> 中重写了 <code>onRetainNonConfigurationInstance</code> 来实现 ViewModel 的缓存，为了防止用户意外重写影响逻辑，所以加了 <code>final</code> 修饰，另外单独提供了 <code>onRetainCustomNonConfigurationInstance</code> 接口来让用户去处理自定义的逻辑。</p>
+<p><code>NonConfigurationInstances</code> 是最后缓存的数据：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NonConfigurationInstances</span> </span>&#123;</div><div class="line">    Object custom; <span class="comment">//用于存储用户自定义的缓存数据</span></div><div class="line">    ViewModelStore viewModelStore;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>从上面的分析知道，<code>ViewModelStore</code> 缓存了 Activity 对应的 ViewModel，所以当 Activity 重建之后，取出 <code>viewModelStore</code>，再根据指定 key 就可以获取到之前的 ViewModel 实例。</p>
+<p>这里只分析到这一层，最终实现缓存和恢复的逻辑是在 <code>AMS</code> 和 <code>ActivityThread</code> 中的，下次再分析。</p>
+<h2 id="正常退出"><a href="#正常退出" class="headerlink" title="正常退出"></a>正常退出</h2><p>在 <code>ComponentActivity</code> 的构造函数中：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">ComponentActivity</span><span class="params">()</span> </span>&#123;</div><div class="line">    getLifecycle().addObserver(<span class="keyword">new</span> LifecycleEventObserver() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStateChanged</span><span class="params">(@NonNull LifecycleOwner source,</span></span></div><div class="line">                @NonNull Lifecycle.Event event) &#123;</div><div class="line">            <span class="keyword">if</span> (event == Lifecycle.Event.ON_DESTROY) &#123;</div><div class="line">                <span class="comment">//判断配置是否发生改变</span></div><div class="line">                <span class="keyword">if</span> (!isChangingConfigurations()) &#123;</div><div class="line">                    <span class="comment">//清除 ViewModelStore 中的数据</span></div><div class="line">                    getViewModelStore().clear();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>逻辑很简单：监听 Destroy 事件，如果配置没有发生改变，证明是正常退出，直接清空 ViewModelStore 中的数据。</p>
+<h2 id="在-Fragment-中缓存"><a href="#在-Fragment-中缓存" class="headerlink" title="在 Fragment 中缓存"></a>在 Fragment 中缓存</h2><p>ViewModel 也可以直接在 Fragment 中使用，Fragment 中也实现了 <code>ViewModelStoreOwner</code> 接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> ViewModelStore <span class="title">getViewModelStore</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mFragmentManager == <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Can't access ViewModels from detached fragment"</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> mFragmentManager.getViewModelStore(<span class="keyword">this</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>跟着代码流程可以发现一个很重要的类：<code>FragmentManagerViewModel</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FragmentManagerViewModel</span> <span class="keyword">extends</span> <span class="title">ViewModel</span> </span>&#123;</div><div class="line">    <span class="comment">//保存子 Fragment 的FragmentManagerViewModel</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;String, FragmentManagerViewModel&gt; mChildNonConfigs = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line">    <span class="comment">//保存当前 Fragment 的ViewModel</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;String, ViewModelStore&gt; mViewModelStores = <span class="keyword">new</span> HashMap&lt;&gt;();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>由于 Fragment 可以嵌套，所以 FragmentManagerViewModel 中不仅缓存了当前 Fragment 的 ViewModel，还缓存了子 Fragment 的 FragmentManagerViewModel。就像一个链表一样，只要保存了头结点，就可以找到全部子元素，那么头结点是怎么保存的呢？</p>
+<p>其实是在 FragmentActivity 中处理的。核心逻辑是在 <code>attachController</code> 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">attachController</span><span class="params">(@NonNull FragmentHostCallback&lt;?&gt; host,</span></span></div><div class="line">        @NonNull FragmentContainer container, @Nullable <span class="keyword">final</span> Fragment parent) &#123;</div><div class="line">    <span class="keyword">if</span> (mHost != <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already attached"</span>);</div><div class="line">    mHost = host;</div><div class="line">    mContainer = container;</div><div class="line">    mParent = parent;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">// Get the FragmentManagerViewModel</span></div><div class="line">    <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</div><div class="line">      <span class="comment">//[1]</span></div><div class="line">        mNonConfig = parent.mFragmentManager.getChildNonConfig(parent);</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (host <span class="keyword">instanceof</span> ViewModelStoreOwner) &#123;</div><div class="line">      <span class="comment">//[2]</span></div><div class="line">        ViewModelStore viewModelStore = ((ViewModelStoreOwner) host).getViewModelStore();</div><div class="line">        mNonConfig = FragmentManagerViewModel.getInstance(viewModelStore);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      <span class="comment">//[3]</span></div><div class="line">        mNonConfig = <span class="keyword">new</span> FragmentManagerViewModel(<span class="keyword">false</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 <code>FragmentActivity</code> 的 <code>onCreate</code> 中走到上面的代码，其中 <code>parent</code> 是 <code>null</code>，而且 <code>host</code> 是 <code>Activity，实现了</code> <code>ViewModelStoreOwner</code> 接口，所以会走到 [2] ，所以取出的 <code>ViewModelStore</code> 就是 <code>Activity</code> 中的那个 <code>ViewModelStore</code>。</p>
+<h2 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR"></a>TL;DR</h2><ul>
+<li>ViewModel 只能缓存配置改变引起 Activity 重建的数据，如果 Activity 或者整个进程在后台被回收了，是无法缓存的</li>
+<li>ViewModel 监听 Activity 的 Destroy 事件，如果配置没有发生改变就正常退出</li>
+<li>Fragment 中 ViewModel 是依赖 FragmentManagerViewModel 来实现嵌套缓存的逻辑，其中头结点是存储在 Activity 的 ViewModelStore</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Jetpack/" rel="tag"># Jetpack</a>
+          
+            <a href="/tags/ViewModel/" rel="tag"># ViewModel</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/JVM：内存模型/" rel="next" title="JVM：内存模型">
+                <i class="fa fa-chevron-left"></i> JVM：内存模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/Jetpack：Room是怎么实现数据的监听的/" rel="prev" title="Jetpack：Room是怎么实现数据的监听的">
+                Jetpack：Room是怎么实现数据的监听的 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从使用入手"><span class="nav-number">2.</span> <span class="nav-text">从使用入手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewModelStore"><span class="nav-number">3.</span> <span class="nav-text">ViewModelStore</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Factory"><span class="nav-number">4.</span> <span class="nav-text">Factory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewModelProvider-get"><span class="nav-number">5.</span> <span class="nav-text">ViewModelProvider.get()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#销毁时缓存"><span class="nav-number">6.</span> <span class="nav-text">销毁时缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#正常退出"><span class="nav-number">7.</span> <span class="nav-text">正常退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在-Fragment-中缓存"><span class="nav-number">8.</span> <span class="nav-text">在 Fragment 中缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TL-DR"><span class="nav-number">9.</span> <span class="nav-text">TL;DR</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

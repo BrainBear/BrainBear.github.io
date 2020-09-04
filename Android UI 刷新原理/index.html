@@ -1,0 +1,709 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="前言众所周知，手机的显示帧率要到达 60FPS 才达到流畅的标准，现在（2020 年 9 月）移动设备最高已经有 120 FPS 刷新率。那么 Android 内部是怎么协调 UI 的刷新的呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android UI 刷新原理">
+<meta property="og:url" content="http://yoursite.com/Android UI 刷新原理/index.html">
+<meta property="og:site_name" content="brainBear' Blog">
+<meta property="og:description" content="前言众所周知，手机的显示帧率要到达 60FPS 才达到流畅的标准，现在（2020 年 9 月）移动设备最高已经有 120 FPS 刷新率。那么 Android 内部是怎么协调 UI 的刷新的呢？">
+<meta property="og:updated_time" content="2020-09-04T17:08:43.654Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android UI 刷新原理">
+<meta name="twitter:description" content="前言众所周知，手机的显示帧率要到达 60FPS 才达到流畅的标准，现在（2020 年 9 月）移动设备最高已经有 120 FPS 刷新率。那么 Android 内部是怎么协调 UI 的刷新的呢？">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/Android UI 刷新原理/"/>
+
+
+
+
+
+  <title> Android UI 刷新原理 | brainBear' Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">brainBear' Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/Android UI 刷新原理/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="brainBear">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="brainBear' Blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="brainBear' Blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android UI 刷新原理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-01T23:21:00+08:00">
+                2020-09-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>众所周知，手机的显示帧率要到达 60FPS 才达到流畅的标准，现在（2020 年 9 月）移动设备最高已经有 120 FPS 刷新率。那么 Android 内部是怎么协调 UI 的刷新的呢？<br><a id="more"></a></p>
+<h2 id="从-invalidate-开始"><a href="#从-invalidate-开始" class="headerlink" title="从 invalidate 开始"></a>从 invalidate 开始</h2><p>从 invalidate 开始，一直跟踪源码可以发现以下调用逻辑：</p>
+<pre class="mermaid">sequenceDiagram
+    autonumber
+    View->>ViewGroup: invalidateInternal
+    loop 一直向父容器调用
+        ViewGroup->>ViewGroup: onDescendantInvalidated
+    end
+    ViewGroup->>ViewRootImpl: onDescendantInvalidated
+    ViewRootImpl->>Choreographer: postCallback
+    Choreographer->>ViewRootImpl: 回调</pre>
+
+<p>可以看到 ViewRootImpl 往 choreographer 注册了一个回调，所以重点去看 ViewRootImpl 和 choreographer 的代码</p>
+<h2 id="ViewRootImpl"><a href="#ViewRootImpl" class="headerlink" title="ViewRootImpl"></a>ViewRootImpl</h2><p>ViewRootImpl 是 View 树结构中的根节点，以后有机会再详细了解它，今天我们只看和刷新相关的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleTraversals</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="comment">//mTraversalScheduled 防止重入</span></div><div class="line">    <span class="keyword">if</span> (!mTraversalScheduled) &#123;</div><div class="line">        mTraversalScheduled = <span class="keyword">true</span>;</div><div class="line">        <span class="comment">//设置消息屏障</span></div><div class="line">        mTraversalBarrier = mHandler.getLooper().getQueue().postSyncBarrier();</div><div class="line">        <span class="comment">//往 choreographer 注册回调</span></div><div class="line">        mChoreographer.postCallback(</div><div class="line">                Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, <span class="keyword">null</span>);</div><div class="line">        <span class="comment">//....</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>在入口处使用 <code>mTraversalScheduled</code> 字段来防止重入，也就是说哪怕在一帧时间内，子控件多次触发重绘，也会在这个方法中被拦截，最终只会有一个回调任务设置到 <code>Choreographer</code> 中</li>
+<li>在注册回调前往当前线程的 <code>Handler</code> 中设置了消息屏障，为什么要设置屏障呢？因为有可能线程任务比较重，但是界面刷新的优先级肯定是要比其他任务更重要的，设置了消息屏障之后，会让 <code>Handler</code> 优先去处理异步消息</li>
+<li>往 <code>Choreographer</code> 中插入了一个 <code>CALLBACK_TRAVERSAL</code> 类型的任务 <code>mTraversalRunnable</code></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">final</span> TraversalRunnable mTraversalRunnable = <span class="keyword">new</span> TraversalRunnable();</div><div class="line"></div><div class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TraversalRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        doTraversal();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">doTraversal</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (mTraversalScheduled) &#123;</div><div class="line">        <span class="comment">//重置标志位</span></div><div class="line">        mTraversalScheduled = <span class="keyword">false</span>;</div><div class="line">        <span class="comment">//移除消息屏障</span></div><div class="line">        mHandler.getLooper().getQueue().removeSyncBarrier(mTraversalBarrier);</div><div class="line">        <span class="comment">//.....</span></div><div class="line">        <span class="comment">//触发子 View 去刷新界面</span></div><div class="line">        performTraversals();</div><div class="line">        <span class="comment">//.....</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Choreographer"><a href="#Choreographer" class="headerlink" title="Choreographer"></a>Choreographer</h2><p>从上面的逻辑来看，<code>ViewRootImpl</code> 只是根据 <code>Choreographer</code> 的回调来处理刷新的逻辑，所以帧率的控制肯定是在 <code>Choreographer</code> 内部。</p>
+<h3 id="构造实例"><a href="#构造实例" class="headerlink" title="构造实例"></a>构造实例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//构造方法是私有的</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="title">Choreographer</span><span class="params">(Looper looper, <span class="keyword">int</span> vsyncSource)</span> </span>&#123;</div><div class="line">    mLooper = looper;</div><div class="line">    mHandler = <span class="keyword">new</span> FrameHandler(looper);</div><div class="line">    <span class="comment">//mDisplayEventReceiver 是用于处理 VSYNC 信号的</span></div><div class="line">    mDisplayEventReceiver = USE_VSYNC</div><div class="line">            ? <span class="keyword">new</span> FrameDisplayEventReceiver(looper, vsyncSource)</div><div class="line">            : <span class="keyword">null</span>;</div><div class="line">    mLastFrameTimeNanos = Long.MIN_VALUE;</div><div class="line"></div><div class="line">    <span class="comment">//计算一帧的时间，单位纳秒</span></div><div class="line">    mFrameIntervalNanos = (<span class="keyword">long</span>)(<span class="number">1000000000</span> / getRefreshRate());</div><div class="line"></div><div class="line">    <span class="comment">//初始化一个队列数组，数组的大小是类型的个数，也就是说数组的每个元素是一个队列，一个队列存放一种类型的任务</span></div><div class="line">    mCallbackQueues = <span class="keyword">new</span> CallbackQueue[CALLBACK_LAST + <span class="number">1</span>];</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt;= CALLBACK_LAST; i++) &#123;</div><div class="line">        mCallbackQueues[i] = <span class="keyword">new</span> CallbackQueue();</div><div class="line">    &#125;</div><div class="line">    <span class="comment">// b/68769804: For low FPS experiments.</span></div><div class="line">    setFPSDivisor(SystemProperties.getInt(ThreadedRenderer.DEBUG_FPS_DIVISOR, <span class="number">1</span>));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>再看获取实例的方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Choreographer <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> sThreadInstance.get();</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;Choreographer&gt; sThreadInstance =</div><div class="line">        <span class="keyword">new</span> ThreadLocal&lt;Choreographer&gt;() &#123;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Choreographer <span class="title">initialValue</span><span class="params">()</span> </span>&#123;</div><div class="line">        Looper looper = Looper.myLooper();</div><div class="line">        <span class="keyword">if</span> (looper == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"The current thread must have a looper!"</span>);</div><div class="line">        &#125;</div><div class="line">        Choreographer choreographer = <span class="keyword">new</span> Choreographer(looper, VSYNC_SOURCE_APP);</div><div class="line">        <span class="keyword">if</span> (looper == Looper.getMainLooper()) &#123;</div><div class="line">            mMainInstance = choreographer;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> choreographer;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<p>代码比较简单，就是获取当前线程的 <code>Looper</code> ，然后创建 <code>Choreographer</code> ，并且与当前线程绑定，也就是说 <code>Choreographer</code> 是<strong>线程单例</strong>。</p>
+<h3 id="任务回调"><a href="#任务回调" class="headerlink" title="任务回调"></a>任务回调</h3><p>在 Choreographer 中定义了五种任务类型：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CALLBACK_INPUT = <span class="number">0</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CALLBACK_ANIMATION = <span class="number">1</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CALLBACK_INSETS_ANIMATION = <span class="number">2</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CALLBACK_TRAVERSAL = <span class="number">3</span>;</div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CALLBACK_COMMIT = <span class="number">4</span>;</div></pre></td></tr></table></figure></p>
+<p><code>Choreographer</code> 通过 <code>postCallback</code> 来插入任务，在做了一些参数的安全校验之后调用到了 <code>postCallbackDelayedInternal</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">postCallbackDelayedInternal</span><span class="params">(<span class="keyword">int</span> callbackType,</span></span></div><div class="line">        Object action, Object token, <span class="keyword">long</span> delayMillis) &#123;</div><div class="line">    <span class="comment">//....</span></div><div class="line"></div><div class="line">    <span class="keyword">synchronized</span> (mLock) &#123;</div><div class="line">        <span class="comment">//获取当前时间戳</span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</div><div class="line">        <span class="comment">//根据当前时间戳和指定的延时，算出执行的时间戳</span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">long</span> dueTime = now + delayMillis;</div><div class="line">        <span class="comment">//根据任务类型放入对应的队列中</span></div><div class="line">        mCallbackQueues[callbackType].addCallbackLocked(dueTime, action, token);</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (dueTime &lt;= now) &#123;</div><div class="line">            <span class="comment">//如果没有延迟则会直接执行</span></div><div class="line">            scheduleFrameLocked(now);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//有延迟则通过 Handler 处理，但是最终也是会走到 scheduleFrameLocked</span></div><div class="line">            Message msg = mHandler.obtainMessage(MSG_DO_SCHEDULE_CALLBACK, action);</div><div class="line">            msg.arg1 = callbackType;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">            mHandler.sendMessageAtTime(msg, dueTime);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>根据任务类型放入不同的队列中</li>
+<li>如果没有延时则会直接调用 <code>scheduleFrameLocked</code></li>
+<li>有延迟则通过 <code>Handler</code> 发送异步消息处理，但是最终也是会走到 <code>scheduleFrameLocked</code></li>
+</ol>
+<p>这里的 <code>mHandler</code> 是 <code>FrameHandler</code> 的实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FrameHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FrameHandler</span><span class="params">(Looper looper)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(looper);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">        <span class="keyword">switch</span> (msg.what) &#123;</div><div class="line">            <span class="keyword">case</span> MSG_DO_FRAME:</div><div class="line">                <span class="comment">//回调任务</span></div><div class="line">                doFrame(System.nanoTime(), <span class="number">0</span>);</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> MSG_DO_SCHEDULE_VSYNC:</div><div class="line">                <span class="comment">//申请 vsync 信号</span></div><div class="line">                doScheduleVsync();</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            <span class="keyword">case</span> MSG_DO_SCHEDULE_CALLBACK:</div><div class="line">                <span class="comment">//处理延时任务，最终还是会到上面两个逻辑</span></div><div class="line">                doScheduleCallback(msg.arg1);</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在 <code>doScheduleCallback</code> 中也是调用了 <code>doScheduleCallback</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduleFrameLocked</span><span class="params">(<span class="keyword">long</span> now)</span> </span>&#123;</div><div class="line">    <span class="comment">//mFrameScheduled 也是防重入的</span></div><div class="line">    <span class="keyword">if</span> (!mFrameScheduled) &#123;</div><div class="line">        mFrameScheduled = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (USE_VSYNC) &#123; </div><div class="line">            <span class="comment">// 检测当前线程是不是 Choregrapher 绑定的线程，如果是则执行 scheduleVsyncLocked 方法</span></div><div class="line">            <span class="keyword">if</span> (isRunningOnLooperThreadLocked()) &#123;</div><div class="line">                scheduleVsyncLocked();</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">//如果不是，则又通过 mHandler 切到对应线程去执行 scheduleVsyncLocked 方法</span></div><div class="line">                Message msg = mHandler.obtainMessage(MSG_DO_SCHEDULE_VSYNC);</div><div class="line">                msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">                mHandler.sendMessageAtFrontOfQueue(msg);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">// 不使用 vsync 则直接用 mHandler 去执行 doFrame 方法</span></div><div class="line">            <span class="keyword">final</span> <span class="keyword">long</span> nextFrameTime = Math.max(</div><div class="line">                    mLastFrameTimeNanos / TimeUtils.NANOS_PER_MS + sFrameDelay, now);</div><div class="line">            <span class="keyword">if</span> (DEBUG_FRAMES) &#123;</div><div class="line">                Log.d(TAG, <span class="string">"Scheduling next frame in "</span> + (nextFrameTime - now) + <span class="string">" ms."</span>);</div><div class="line">            &#125;</div><div class="line">            Message msg = mHandler.obtainMessage(MSG_DO_FRAME);</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">            mHandler.sendMessageAtTime(msg, nextFrameTime);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="申请-vsync"><a href="#申请-vsync" class="headerlink" title="申请 vsync"></a>申请 vsync</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduleVsyncLocked</span><span class="params">()</span> </span>&#123;</div><div class="line">    mDisplayEventReceiver.scheduleVsync();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>mDisplayEventReceiver</code> 是 <code>FrameDisplayEventReceiver</code> 的实例，而 <code>FrameDisplayEventReceiver</code> 继承于抽象类 <code>DisplayEventReceiver</code> ，<code>DisplayEventReceiver</code> 的代码逻辑比较简单，核心都在 native 层，这里就不详细分析了，简单来说就是通过 <code>scheduleVsync</code> 申请 vsync 信号，然后 native 层会回调到 <code>dispatchVsync</code> 方法，最终调到了 <code>FrameDisplayEventReceiver</code> 的 <code>onVsync</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FrameDisplayEventReceiver</span> <span class="keyword">extends</span> <span class="title">DisplayEventReceiver</span></span></div><div class="line">        <span class="keyword">implements</span> <span class="title">Runnable</span> &#123;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> mHavePendingVsync;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">long</span> mTimestampNanos;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mFrame;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FrameDisplayEventReceiver</span><span class="params">(Looper looper, <span class="keyword">int</span> vsyncSource)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(looper, vsyncSource);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    </div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onVsync</span><span class="params">(<span class="keyword">long</span> timestampNanos, <span class="keyword">long</span> physicalDisplayId, <span class="keyword">int</span> frame)</span> </span>&#123;</div><div class="line">        </div><div class="line">        <span class="keyword">long</span> now = System.nanoTime();</div><div class="line">        <span class="keyword">if</span> (timestampNanos &gt; now) &#123;</div><div class="line">            Log.w(TAG, <span class="string">"Frame time is "</span> + ((timestampNanos - now) * <span class="number">0.000001f</span>)</div><div class="line">                    + <span class="string">" ms in the future!  Check that graphics HAL is generating vsync "</span></div><div class="line">                    + <span class="string">"timestamps using the correct timebase."</span>);</div><div class="line">            timestampNanos = now;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (mHavePendingVsync) &#123;</div><div class="line">            Log.w(TAG, <span class="string">"Already have a pending vsync event.  There should only be "</span></div><div class="line">                    + <span class="string">"one at a time."</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            mHavePendingVsync = <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        mTimestampNanos = timestampNanos;</div><div class="line">        mFrame = frame;</div><div class="line">        Message msg = Message.obtain(mHandler, <span class="keyword">this</span>);</div><div class="line">        msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        mHandler.sendMessageAtTime(msg, timestampNanos / TimeUtils.NANOS_PER_MS);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        mHavePendingVsync = <span class="keyword">false</span>;</div><div class="line">        doFrame(mTimestampNanos, mFrame);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终还是走到了最关键的 doFrame 方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">doFrame</span><span class="params">(<span class="keyword">long</span> frameTimeNanos, <span class="keyword">int</span> frame)</span> </span>&#123;</div><div class="line">    <span class="keyword">final</span> <span class="keyword">long</span> startNanos;</div><div class="line">    </div><div class="line">    <span class="comment">//跳过了一下异常情况和掉帧的处理</span></div><div class="line"></div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        Trace.traceBegin(Trace.TRACE_TAG_VIEW, <span class="string">"Choreographer#doFrame"</span>);</div><div class="line">        AnimationUtils.lockAnimationClock(frameTimeNanos / TimeUtils.NANOS_PER_MS);</div><div class="line"></div><div class="line">        mFrameInfo.markInputHandlingStart();</div><div class="line">        doCallbacks(Choreographer.CALLBACK_INPUT, frameTimeNanos);</div><div class="line"></div><div class="line">        mFrameInfo.markAnimationsStart();</div><div class="line">        doCallbacks(Choreographer.CALLBACK_ANIMATION, frameTimeNanos);</div><div class="line">        doCallbacks(Choreographer.CALLBACK_INSETS_ANIMATION, frameTimeNanos);</div><div class="line"></div><div class="line">        mFrameInfo.markPerformTraversalsStart();</div><div class="line">        doCallbacks(Choreographer.CALLBACK_TRAVERSAL, frameTimeNanos);</div><div class="line"></div><div class="line">        doCallbacks(Choreographer.CALLBACK_COMMIT, frameTimeNanos);</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        AnimationUtils.unlockAnimationClock();</div><div class="line">        Trace.traceEnd(Trace.TRACE_TAG_VIEW);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在 doFrame 中调用 doCallbacks 来回调任务：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">doCallbacks</span><span class="params">(<span class="keyword">int</span> callbackType, <span class="keyword">long</span> frameTimeNanos)</span> </span>&#123;</div><div class="line">    CallbackRecord callbacks;</div><div class="line">    <span class="keyword">synchronized</span> (mLock) &#123;</div><div class="line">        <span class="comment">//根据时间戳从任务队列中取出需要回调的任务</span></div><div class="line">        <span class="keyword">final</span> <span class="keyword">long</span> now = System.nanoTime();</div><div class="line">        callbacks = mCallbackQueues[callbackType].extractDueCallbacksLocked(</div><div class="line">                now / TimeUtils.NANOS_PER_MS);</div><div class="line">        <span class="keyword">if</span> (callbacks == <span class="keyword">null</span>) &#123;</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">        mCallbacksRunning = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">        </div><div class="line">        <span class="comment">//.....</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        Trace.traceBegin(Trace.TRACE_TAG_VIEW, CALLBACK_TRACE_TITLES[callbackType]);</div><div class="line">        <span class="keyword">for</span> (CallbackRecord c = callbacks; c != <span class="keyword">null</span>; c = c.next) &#123;</div><div class="line">            <span class="comment">//真正去回调</span></div><div class="line">            c.run(frameTimeNanos);</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        <span class="comment">//....</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>整体的流程如下：</p>
+<pre class="mermaid">graph TD
+    postCallbackDelayedInternal -->|没有延时直接调用| scheduleFrameLocked
+    postCallbackDelayedInternal -->|有延时则通过 mHandler调用| scheduleFrameLocked
+    scheduleFrameLocked --> Vsync{是否使用 Vsync}
+    Vsync -->|N| doFrame
+    Vsync -->|Y| threadCheck{当前线程是否是Choreographer绑定的线程}
+    threadCheck -->|Y 直接调用| scheduleVsyncLocked
+    threadCheck -->|N 通过 mHandler 调用| scheduleVsyncLocked
+    scheduleVsyncLocked --> displayEvent(申请 Vsync 信号)
+    displayEvent --> onVsync(onVsync)
+    onVsync --> doFrame
+    doFrame --> doCallbacks</pre>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.jianshu.com/p/10db590ed9a6" target="_blank" rel="external">Android VSYNC （Choreographer）与UI刷新原理分析</a><br><a href="https://juejin.im/post/6863756420380196877" target="_blank" rel="external">“终于懂了” 系列：Android屏幕刷新机制—VSync、Choreographer 全面理解！</a><br><a href="https://juejin.im/post/6864365886837686285#heading-4" target="_blank" rel="external">读源码长知识 | Android卡顿真的是因为”掉帧“？</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Jetpack：Room是怎么实现数据的监听的/" rel="next" title="Jetpack：Room是怎么实现数据的监听的">
+                <i class="fa fa-chevron-left"></i> Jetpack：Room是怎么实现数据的监听的
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="brainBear" />
+          <p class="site-author-name" itemprop="name">brainBear</p>
+          <p class="site-description motion-element" itemprop="description">多写代码 少写Bug</p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">52</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从-invalidate-开始"><span class="nav-number">2.</span> <span class="nav-text">从 invalidate 开始</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ViewRootImpl"><span class="nav-number">3.</span> <span class="nav-text">ViewRootImpl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Choreographer"><span class="nav-number">4.</span> <span class="nav-text">Choreographer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#构造实例"><span class="nav-number">4.1.</span> <span class="nav-text">构造实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#任务回调"><span class="nav-number">4.2.</span> <span class="nav-text">任务回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#申请-vsync"><span class="nav-number">4.3.</span> <span class="nav-text">申请 vsync</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">brainBear</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
